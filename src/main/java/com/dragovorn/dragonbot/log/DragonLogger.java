@@ -26,7 +26,7 @@ public class DragonLogger extends Logger {
             addHandler(handler);
 
             ConsoleHandler console = new ConsoleHandler();
-            console.setTextArea(ConsoleWindow.makeWindow().getConsole());
+            console.setTextArea(ConsoleWindow.make().getConsole());
             console.setFormatter(FORMAT);
             addHandler(console);
         } catch (IOException exception) {
