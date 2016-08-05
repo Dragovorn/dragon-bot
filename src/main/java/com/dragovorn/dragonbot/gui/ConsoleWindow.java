@@ -27,7 +27,7 @@ public class ConsoleWindow extends JPanel {
         add(new JScrollPane(console));
     }
 
-    public static ConsoleWindow makeWindow() {
+    public static ConsoleWindow make() {
         ConsoleWindow window = new ConsoleWindow();
 
         JFrame frame = new JFrame("Console");
