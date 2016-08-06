@@ -14,14 +14,14 @@ public class ConsoleWindow extends JPanel {
     private JTextArea console;
 
     private ConsoleWindow() {
-        Dimension size = new Dimension(500, 500);
+        Dimension size = new Dimension(800, 300);
 
         setPreferredSize(size);
         setMinimumSize(size);
         setMaximumSize(size);
         setSize(size);
 
-        console = new JTextArea(28, 40);
+        console = new JTextArea(17, 65);
         console.setEditable(false);
 
         add(new JScrollPane(console));

@@ -3,6 +3,7 @@ package com.dragovorn.dragonbot.gui;
 import com.dragovorn.dragonbot.DragonBot;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -23,9 +24,14 @@ public class MainWindow {
     public MainWindow() {
         instance = this;
 
+        Dimension size = new Dimension(500, 500);
+
         panel = new JPanel();
+        panel.setSize(size);
+        panel.setPreferredSize(size);
+        panel.setMaximumSize(size);
+        panel.setMinimumSize(size);
         frame = new JFrame("Dragon Bot v" + DragonBot.getInstance().getVersion());
-        // TODO: Default panel elements
         frame.add(panel);
         frame.pack();
         frame.addWindowListener(new WindowAdapter() {
@@ -37,6 +43,18 @@ public class MainWindow {
                 DragonBot.getInstance().stop();
             }
         });
+        frame.setVisible(true);
+    }
+
+    public void remove(Component component) {
+        this.panel.remove(component);
+        this.frame.pack();
+
+    }
+
+    public void add(Component component) {
+        this.panel.add(component);
+        this.frame.pack();
     }
 
     public static MainWindow getInstance() {
