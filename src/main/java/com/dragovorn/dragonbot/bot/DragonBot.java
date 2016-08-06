@@ -33,9 +33,7 @@ import java.util.logging.Logger;
  */
 public class DragonBot extends Bot {
 
-    public volatile boolean isRunning; // Might end up not being needed.
-
-    private String name; // Make it the default config name in start()
+    private String name;
     private String charset;
     private String channelPrefixes = "#&+!";
 
@@ -100,11 +98,9 @@ public class DragonBot extends Bot {
             connect("irc.twitch.tv", 6667, config.getAuth());
 
             if (config.getAutoConnect() && !config.getChannel().equals("")) {
-                connectTo(config.getChannel());
+                connectTo("#" + config.getChannel());
             }
         }
-
-        DragonBot.this.isRunning = true;
 
         getLogger().info("Dragon Bot v" + getVersion() + " initialized!");
     }
@@ -115,7 +111,11 @@ public class DragonBot extends Bot {
 
             @Override
             public void run() {
-                DragonBot.this.isRunning = false;
+                leaveChannel();
+
+                getLogger().info("Saving configuration...");
+
+                config.save();
 
                 getLogger().info("Thank you and goodbye!");
 
@@ -170,13 +170,18 @@ public class DragonBot extends Bot {
 
     @Override
     public synchronized void connectTo(String channel) {
-        connection.setChannel(channel);
+        connection.setChannel(channel.substring(1));
+        config.setChannel(channel.substring(1));
 
         this.sendRawLine("JOIN " + channel);
     }
 
     @Override
     public void leaveChannel() {
+        if (connection.getChannel().equals("")) {
+            return;
+        }
+
         this.sendRawLine("PART " + connection.getChannel());
 
         connection.setChannel("");
@@ -290,7 +295,7 @@ public class DragonBot extends Bot {
             return; // We are no in a channel then
         }
 
-        outQueue.add("PRIVMSG " + connection.getChannel() + " :" + message);
+        outQueue.add("PRIVMSG #" + connection.getChannel() + " :" + message);
     }
 
     @Override
