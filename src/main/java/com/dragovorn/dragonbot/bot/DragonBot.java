@@ -117,8 +117,6 @@ public class DragonBot extends Bot {
 
                 config.save();
 
-                getLogger().info("Thank you and goodbye!");
-
                 for (Handler handler : getLogger().getHandlers()) {
                     handler.close();
                 }
