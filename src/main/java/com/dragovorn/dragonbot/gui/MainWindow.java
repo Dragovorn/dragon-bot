@@ -1,6 +1,6 @@
 package com.dragovorn.dragonbot.gui;
 
-import com.dragovorn.dragonbot.DragonBot;
+import com.dragovorn.dragonbot.bot.Bot;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,16 +31,16 @@ public class MainWindow {
         panel.setPreferredSize(size);
         panel.setMaximumSize(size);
         panel.setMinimumSize(size);
-        frame = new JFrame("Dragon Bot v" + DragonBot.getInstance().getVersion());
+        frame = new JFrame("Dragon Bot v" + Bot.getInstance().getVersion());
         frame.add(panel);
         frame.pack();
         frame.addWindowListener(new WindowAdapter() {
 
             @Override
             public void windowClosing(WindowEvent event) {
-                DragonBot.getInstance().getLogger().info("Shutting down!");
+                Bot.getInstance().getLogger().info("Shutting down!");
 
-                DragonBot.getInstance().stop();
+                Bot.getInstance().stop();
             }
         });
         frame.setVisible(true);
