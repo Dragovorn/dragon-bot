@@ -1,46 +1,83 @@
 package com.dragovorn.dragonbot.gui;
 
+import com.dragovorn.dragonbot.gui.filter.DocumentSizeFilter;
+import com.dragovorn.dragonbot.gui.listener.SendListener;
+
 import javax.swing.*;
+import javax.swing.text.DefaultStyledDocument;
 import java.awt.*;
 
 /**
  * *************************************************************************
- * (c) Dragovorn 2016. This file was created by Andrew at 5:03 PM.
- * as of 8/5/16 the project dragonbot is Copyrighted.
+ * (c) Dragovorn 2016. This file was created by Andrew at 12:05 PM.
+ * as of 8/6/16 the project dragonbot is Copyrighted.
  * *************************************************************************
  */
-public class ConsoleWindow extends JPanel {
+public class ConsoleWindow {
+
+    private JPanel panel;
+
+    private JFrame jFrame;
 
     private JTextArea console;
 
-    private ConsoleWindow() {
+    private JTextField command;
+
+    private JButton button;
+
+    private static ConsoleWindow instance;
+
+    public ConsoleWindow() {
+        instance = this;
+
         Dimension size = new Dimension(800, 300);
 
-        setPreferredSize(size);
-        setMinimumSize(size);
-        setMaximumSize(size);
-        setSize(size);
+        panel = new JPanel();
 
-        console = new JTextArea(17, 65);
+        panel.setLayout(new FlowLayout());
+        panel.setPreferredSize(size);
+        panel.setMinimumSize(size);
+        panel.setMaximumSize(size);
+        panel.setSize(size);
+
+        console = new JTextArea(16, 65);
         console.setEditable(false);
+        console.setLineWrap(true);
 
-        add(new JScrollPane(console));
-    }
+        command = new JTextField(58);
+        command.addActionListener(new SendListener());
 
-    public static ConsoleWindow make() {
-        ConsoleWindow window = new ConsoleWindow();
+        DefaultStyledDocument document = new DefaultStyledDocument();
+        document.setDocumentFilter(new DocumentSizeFilter(102));
 
-        JFrame frame = new JFrame("Console");
-        frame.setResizable(false);
-        frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-        frame.add(window);
-        frame.pack();
-        frame.setVisible(true);
+        command.setDocument(document);
 
-        return window;
+        button = new JButton("Send");
+        button.setSize(5, 5);
+        button.addActionListener(new SendListener());
+
+        panel.add(new JScrollPane(console));
+        panel.add(command);
+        panel.add(button);
+
+        jFrame = new JFrame("Console");
+
+        jFrame.setResizable(false);
+        jFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        jFrame.add(panel);
+        jFrame.pack();
+        jFrame.setVisible(true);
     }
 
     public JTextArea getConsole() {
         return this.console;
+    }
+
+    public JTextField getCommand() {
+        return this.command;
+    }
+
+    public static ConsoleWindow getInstance() {
+        return instance;
     }
 }

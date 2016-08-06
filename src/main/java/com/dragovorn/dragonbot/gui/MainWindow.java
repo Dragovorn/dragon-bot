@@ -31,7 +31,9 @@ public class MainWindow {
         panel.setPreferredSize(size);
         panel.setMaximumSize(size);
         panel.setMinimumSize(size);
+
         frame = new JFrame("Dragon Bot v" + Bot.getInstance().getVersion());
+        frame.setResizable(false);
         frame.add(panel);
         frame.pack();
         frame.addWindowListener(new WindowAdapter() {
