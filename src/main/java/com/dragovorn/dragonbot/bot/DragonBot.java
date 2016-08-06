@@ -1,7 +1,10 @@
 package com.dragovorn.dragonbot.bot;
 
+import com.dragovorn.dragonbot.FileLocations;
 import com.dragovorn.dragonbot.Utils;
+import com.dragovorn.dragonbot.configuration.BotConfiguration;
 import com.dragovorn.dragonbot.exceptions.ConnectionException;
+import com.dragovorn.dragonbot.gui.MainWindow;
 import com.dragovorn.dragonbot.log.DragonLogger;
 import com.dragovorn.dragonbot.log.LoggingOutputStream;
 import com.google.common.base.CharMatcher;
@@ -15,7 +18,6 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -31,12 +33,13 @@ import java.util.logging.Logger;
  */
 public class DragonBot extends Bot {
 
-    public volatile boolean isRunning;
+    public volatile boolean isRunning; // Might end up not being needed.
 
     private String name; // Make it the default config name in start()
     private String charset;
     private String channelPrefixes = "#&+!";
-    private List<String> mods = new ArrayList<>();
+
+    private BotConfiguration config;
 
     private Connection connection;
 
@@ -52,10 +55,31 @@ public class DragonBot extends Bot {
 
     private final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
-    public DragonBot() throws IOException {
-        logger = new DragonLogger("Dragon Bot", format.format(new Date()) + "-%g.log");
+    public DragonBot() throws Exception {
+        setInstance(this);
+
+        if (!FileLocations.directory.exists()) {
+            FileLocations.directory.mkdirs();
+        }
+
+        if (!FileLocations.config.exists()) {
+            FileLocations.config.createNewFile();
+            config = new BotConfiguration();
+            config.generate();
+        } else {
+            config = new BotConfiguration();
+            config.load();
+        }
+
+        if (!FileLocations.logs.exists()) {
+            FileLocations.logs.mkdirs();
+        }
+
+        logger = new DragonLogger("Dragon Bot", FileLocations.logs + File.separator + format.format(new Date()) + "-%g.log");
         System.setErr(new PrintStream(new LoggingOutputStream(logger, Level.SEVERE), true));
         System.setOut(new PrintStream(new LoggingOutputStream(logger, Level.INFO), true));
+
+        start();
     }
 
     public static DragonBot getInstance() {
@@ -64,13 +88,21 @@ public class DragonBot extends Bot {
 
     @Override
     public void start() throws Exception {
+        new MainWindow();
+
         getLogger().info("Initializing Dragon Bot v" + getVersion() + "!");
 
+        name = config.getName();
+
         getLogger().info("Connecting to twitch!");
-//        connect("irc.twitch.tv", 6667, "");
-//        sendRawLine("CAP REQ :twitch.tv/membership");
-//        sendRawLine("CAP REQ :twitch.tv/commands");
-//        sendRawLine("CAP REQ :twitch.tv/tags");
+
+        if (!name.equals("") && !config.getAuth().equals("")) {
+            connect("irc.twitch.tv", 6667, config.getAuth());
+
+            if (config.getAutoConnect() && !config.getChannel().equals("")) {
+                connectTo(config.getChannel());
+            }
+        }
 
         DragonBot.this.isRunning = true;
 
@@ -124,6 +156,11 @@ public class DragonBot extends Bot {
     @Override
     public File getPluginsFolder() {
         return null;
+    }
+
+    @Override
+    public BotConfiguration getConfiguration() {
+        return config;
     }
 
     @Override
@@ -239,6 +276,10 @@ public class DragonBot extends Bot {
             outputThread = new OutputThread(this, outQueue);
             outputThread.start();
         }
+
+        sendRawLine("CAP REQ :twitch.tv/membership");
+        sendRawLine("CAP REQ :twitch.tv/commands");
+        sendRawLine("CAP REQ :twitch.tv/tags");
 
         // Fire BotConnectServerEvent
     }

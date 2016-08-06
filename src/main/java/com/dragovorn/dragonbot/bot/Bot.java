@@ -1,5 +1,6 @@
 package com.dragovorn.dragonbot.bot;
 
+import com.dragovorn.dragonbot.configuration.BotConfiguration;
 import com.dragovorn.dragonbot.exceptions.ConnectionException;
 
 import java.io.File;
@@ -99,7 +100,12 @@ public abstract class Bot {
      */
     public abstract File getPluginsFolder();
 
-    // get config
+    /**
+     * Return the configuration in use by the bot
+     *
+     * @return the configuration in use by the bot
+     */
+    public abstract BotConfiguration getConfiguration();
 
     /**
      * Return the connected channel.
