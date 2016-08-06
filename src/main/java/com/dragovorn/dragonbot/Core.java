@@ -1,5 +1,7 @@
 package com.dragovorn.dragonbot;
 
+import com.dragovorn.dragonbot.gui.MainWindow;
+
 /**
  * *************************************************************************
  * (c) Dragovorn 2016. This file was created by Andrew at 3:43 PM.
@@ -13,5 +15,7 @@ public class Core {
 
         Bot.setInstance(bot);
         bot.start();
+
+        new MainWindow();
     }
 }

@@ -26,7 +26,7 @@ public class DragonBot extends Bot {
 
     private final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
-    public DragonBot() throws IOException {
+    DragonBot() throws IOException {
         logger = new DragonLogger("Dragon Bot", format.format(new Date()) + "-%g.log");
         System.setErr(new PrintStream(new LoggingOutputStream(logger, Level.SEVERE), true));
         System.setOut(new PrintStream(new LoggingOutputStream(logger, Level.INFO), true));
@@ -48,6 +48,7 @@ public class DragonBot extends Bot {
     @Override
     public void stop() {
         new Thread("Shutdown Thread") {
+
             @Override
             public void run() {
                 DragonBot.this.isRunning = false;
