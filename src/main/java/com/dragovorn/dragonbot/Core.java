@@ -1,5 +1,7 @@
 package com.dragovorn.dragonbot;
 
+import com.dragovorn.dragonbot.bot.Bot;
+import com.dragovorn.dragonbot.bot.DragonBot;
 import com.dragovorn.dragonbot.gui.MainWindow;
 
 /**
