@@ -1,8 +1,6 @@
 package com.dragovorn.dragonbot;
 
-import com.dragovorn.dragonbot.bot.Bot;
 import com.dragovorn.dragonbot.bot.DragonBot;
-import com.dragovorn.dragonbot.gui.MainWindow;
 
 /**
  * *************************************************************************
@@ -13,11 +11,6 @@ import com.dragovorn.dragonbot.gui.MainWindow;
 public class Core {
 
     public static void main(String[] args) throws Exception {
-        DragonBot bot = new DragonBot();
-
-        Bot.setInstance(bot);
-        bot.start();
-
-        new MainWindow();
+        new DragonBot();
     }
 }

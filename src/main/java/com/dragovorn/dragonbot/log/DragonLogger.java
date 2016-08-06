@@ -1,5 +1,6 @@
 package com.dragovorn.dragonbot.log;
 
+import com.dragovorn.dragonbot.bot.Bot;
 import com.dragovorn.dragonbot.gui.ConsoleWindow;
 
 import java.io.IOException;
@@ -25,10 +26,12 @@ public class DragonLogger extends Logger {
             handler.setFormatter(FORMAT);
             addHandler(handler);
 
-            ConsoleHandler console = new ConsoleHandler();
-            console.setTextArea(ConsoleWindow.make().getConsole());
-            console.setFormatter(FORMAT);
-            addHandler(console);
+            if (Bot.getInstance().getConfiguration().getConsole()) {
+                ConsoleHandler console = new ConsoleHandler();
+                console.setTextArea(new ConsoleWindow().getConsole());
+                console.setFormatter(FORMAT);
+                addHandler(console);
+            }
         } catch (IOException exception) {
             System.err.println("Could not register logger!");
             exception.printStackTrace();
