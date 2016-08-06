@@ -37,7 +37,7 @@ class OutputThread extends Thread {
                 }
 
                 if (line.startsWith("PRIVMSG")) {
-                    bot.getLogger().info("CHAT " + bot.getName() + ": " + line.substring(10 + bot.getChannel().length()));
+                    bot.getLogger().info("CHAT [Bot] " + bot.getName() + ": " + line.substring(line.indexOf(" :") + 2));
                 } else {
                     bot.getLogger().info(line);
                 }

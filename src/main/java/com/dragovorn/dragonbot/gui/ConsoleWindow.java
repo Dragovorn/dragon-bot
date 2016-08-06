@@ -77,6 +77,14 @@ public class ConsoleWindow {
         return this.command;
     }
 
+    public JPanel getPanel() {
+        return this.panel;
+    }
+
+    public JFrame getFrame() {
+        return this.jFrame;
+    }
+
     public static ConsoleWindow getInstance() {
         return instance;
     }
