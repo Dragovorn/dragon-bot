@@ -1,6 +1,11 @@
-package com.dragovorn.dragonbot;
+package com.dragovorn.dragonbot.bot;
+
+import com.dragovorn.dragonbot.exceptions.ConnectionException;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
 import java.util.logging.Logger;
 
 /**
@@ -50,11 +55,18 @@ public abstract class Bot {
     public abstract void stop();
 
     /**
-     * Gets the name of the currently running irc bot.
+     * Gets the name of the irc bot.
      *
-     * @return the name of the instance
+     * @return the name of irc bot
      */
     public abstract String getName();
+
+    /**
+     * Sets the name of the irc bot.
+     *
+     * @param name the new name of the bot
+     */
+    public abstract void setName(String name);
 
     /**
      * Gets the version of the currently running irc bot.
@@ -104,6 +116,20 @@ public abstract class Bot {
     public abstract void connectTo(String channel);
 
     /**
+     * Leaves the current channel.
+     */
+    public abstract void leaveChannel();
+
+    /**
+     * Connects the irc bot to the specified ip and port.
+     *
+     * @param ip the IP address of the irc server
+     * @param port the port of the irc server
+     * @param password the password for the account the bot is using
+     */
+    public abstract void connect(String ip, int port, String password) throws ConnectionException, IOException;
+
+    /**
      * Send the specified message to the connected channel.
      *
      * @param message the message to be sent
@@ -117,4 +143,67 @@ public abstract class Bot {
      * @param objects the objects for the message to be formatted with
      */
     public abstract void sendMessage(String message, Object... objects);
+
+    /**
+     * Checks if the irc bot is connected to a server.
+     *
+     * @return if the irc bot is connected to a server
+     */
+    public abstract boolean isConnected();
+
+    /**
+     * Handles a single line of response from the irc server.
+     *
+     * @param rawLine the raw line to handle
+     */
+    protected abstract void handleLine(String rawLine);
+
+    /**
+     * Sends the raw line of data to the irc server
+     *
+     * @param line the line of data
+     */
+    public abstract void sendRawLine(String line);
+
+    /**
+     * Adds a raw line of data to the queue of data
+     *
+     * @param line the line of data
+     */
+    public abstract void sendRawLineViaQueue(String line);
+
+    /**
+     * Gets the max line length of the bot
+     *
+     * @return the max line length of the bot
+     */
+    public abstract int getMaxLineLength();
+
+    /**
+     * Gets the message delay of the bot
+     *
+     * @return the message delay of the bot
+     */
+    public abstract int getMessageDelay();
+
+    /**
+     * Sets the encoding charset.
+     *
+     * @param charset the new encoding charset
+     */
+    public abstract void setEncoding(String charset) throws UnsupportedEncodingException;
+
+    /**
+     * Gets the encoding charset
+     *
+     * @return the encoding charset used by the bot
+     */
+    public abstract String getEncoding();
+
+    /**
+     * Gets the InetAddress of the server the bot is connected to
+     *
+     * @return The InetAddress of the server
+     */
+    public abstract InetAddress getAddress();
 }
