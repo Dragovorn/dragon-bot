@@ -67,7 +67,7 @@ public class PluginLoader {
 
                 return botPlugin;
             } catch (Exception exception) {
-                throw new InvalidPluginException("Encountered exception ", exception);
+                throw new InvalidPluginException(exception);
             }
         }
 
