@@ -1,9 +1,7 @@
 package com.dragovorn.dragonbot;
 
 import com.google.common.base.CharMatcher;
-import com.sun.istack.internal.NotNull;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,15 +12,6 @@ import java.util.List;
  * *************************************************************************
  */
 public class Utils {
-
-    @Nullable
-    public static String parseCommand(@NotNull String prefix, @NotNull String message) {
-        if (message.startsWith(prefix)) {
-            return message.substring(prefix.length());
-        }
-
-        return null;
-    }
 
     public static List<String> tokenizeLine(String input) {
         List<String> parts = new ArrayList<>();
