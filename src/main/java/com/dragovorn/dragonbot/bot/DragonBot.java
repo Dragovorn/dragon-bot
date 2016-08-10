@@ -4,10 +4,12 @@ import com.dragovorn.dragonbot.FileLocations;
 import com.dragovorn.dragonbot.Utils;
 import com.dragovorn.dragonbot.configuration.BotConfiguration;
 import com.dragovorn.dragonbot.exceptions.ConnectionException;
+import com.dragovorn.dragonbot.exceptions.InvalidPluginException;
 import com.dragovorn.dragonbot.gui.MainWindow;
 import com.dragovorn.dragonbot.log.DragonLogger;
 import com.dragovorn.dragonbot.log.LoggingOutputStream;
 import com.dragovorn.dragonbot.plugin.BotPlugin;
+import com.dragovorn.dragonbot.plugin.PluginLoader;
 import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -39,7 +41,7 @@ public class DragonBot extends Bot {
     private String charset;
     private String channelPrefixes = "#&+!";
 
-//    private PluginLoader loader;
+    private PluginLoader loader;
 
     private ImmutableList<BotPlugin> plugins;
 
@@ -83,7 +85,7 @@ public class DragonBot extends Bot {
             FileLocations.plugins.mkdirs();
         }
 
-//        loader = new PluginLoader();
+        loader = new PluginLoader();
 
         logger = new DragonLogger("Dragon Bot", FileLocations.logs + File.separator + format.format(new Date()) + "-%g.log");
         System.setErr(new PrintStream(new LoggingOutputStream(logger, Level.SEVERE), true));
@@ -110,15 +112,15 @@ public class DragonBot extends Bot {
 
         if (FileLocations.plugins.listFiles() != null) {
             for (File file : FileLocations.plugins.listFiles()) {
-                if (!file.getName().matches(".+..jar")) {
+                if (!file.getName().matches("(.+).(jar)$")) {
                     continue;
                 }
 
-//                try {
-//                    builder.add(loader.loadPlugin(file));
-//                } catch (InvalidPluginException exception) {
-//                    exception.printStackTrace();
-//                }
+                try {
+                    builder.add(loader.loadPlugin(file));
+                } catch (InvalidPluginException exception) {
+                    exception.printStackTrace();
+                }
             }
         }
 
@@ -149,7 +151,9 @@ public class DragonBot extends Bot {
                 getLogger().info("Disabling plugins...");
 
                 for (BotPlugin plugin : plugins) {
+                    getLogger().info("Disabling " + plugin.getInfo().getName() + " v" + plugin.getInfo().getVersion() + "!");
                     plugin.onDisable();
+                    getLogger().info(plugin.getInfo().getName() + " v" + plugin.getInfo().getVersion() + " disabled!");
                 }
 
                 getLogger().info("Saving configuration...");
@@ -215,7 +219,7 @@ public class DragonBot extends Bot {
 
     @Override
     public void leaveChannel() {
-        if (connection.getChannel().equals("")) {
+        if (connection == null || connection.getChannel().equals("")) {
             return;
         }
 
