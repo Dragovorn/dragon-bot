@@ -1,5 +1,6 @@
 package com.dragovorn.dragonbot.bot;
 
+import com.dragovorn.dragonbot.command.CommandManager;
 import com.dragovorn.dragonbot.configuration.BotConfiguration;
 import com.dragovorn.dragonbot.exceptions.ConnectionException;
 
@@ -18,6 +19,8 @@ import java.util.logging.Logger;
 
 public abstract class Bot {
 
+    private BotState state;
+
     private static Bot instance;
 
     /**
@@ -26,7 +29,7 @@ public abstract class Bot {
      *
      * @param instance the new instance set
      */
-    public static void setInstance(Bot instance) {
+    static void setInstance(Bot instance) {
         if (instance == null) {
             return; // Log a severe when I make loggers
         } else if (Bot.instance != null) {
@@ -43,6 +46,24 @@ public abstract class Bot {
      */
     public static Bot getInstance() {
         return Bot.instance;
+    }
+
+    /**
+     * Sets the current bot state.
+     *
+     * @param state the new bot state
+     */
+    protected final void setState(BotState state) {
+        this.state = state;
+    }
+
+    /**
+     * Gets the current bot state.
+     *
+     * @return the bot's state
+     */
+    public final BotState getState() {
+        return state;
     }
 
     /**
@@ -212,4 +233,11 @@ public abstract class Bot {
      * @return The InetAddress of the server
      */
     public abstract InetAddress getAddress();
+
+    /**
+     * Gets the command manager in use by the bot
+     *
+     * @return the command manager in use by the bot
+     */
+    public abstract CommandManager getCommandManager();
 }

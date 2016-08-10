@@ -10,9 +10,9 @@ public abstract class BotPlugin {
 
     private PluginInfo info;
 
-    public abstract void onEnable();
+    public void onEnable() { }
 
-    public abstract void onDisable();
+    public void onDisable() { }
 
     void setInfo(PluginInfo info) {
         this.info = info;

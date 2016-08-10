@@ -2,6 +2,8 @@ package com.dragovorn.dragonbot.bot;
 
 import com.dragovorn.dragonbot.FileLocations;
 import com.dragovorn.dragonbot.Utils;
+import com.dragovorn.dragonbot.command.Command;
+import com.dragovorn.dragonbot.command.CommandManager;
 import com.dragovorn.dragonbot.configuration.BotConfiguration;
 import com.dragovorn.dragonbot.exceptions.ConnectionException;
 import com.dragovorn.dragonbot.exceptions.InvalidPluginException;
@@ -45,6 +47,8 @@ public class DragonBot extends Bot {
 
     private ImmutableList<BotPlugin> plugins;
 
+    private CommandManager manager;
+
     private BotConfiguration config;
 
     private Connection connection;
@@ -87,6 +91,8 @@ public class DragonBot extends Bot {
 
         loader = new PluginLoader();
 
+        manager = new CommandManager();
+
         logger = new DragonLogger("Dragon Bot", FileLocations.logs + File.separator + format.format(new Date()) + "-%g.log");
         System.setErr(new PrintStream(new LoggingOutputStream(logger, Level.SEVERE), true));
         System.setOut(new PrintStream(new LoggingOutputStream(logger, Level.INFO), true));
@@ -100,6 +106,8 @@ public class DragonBot extends Bot {
 
     @Override
     public void start() throws Exception {
+        setState(BotState.STARTING);
+
         new MainWindow();
 
         getLogger().info("Initializing Dragon Bot v" + getVersion() + "!");
@@ -137,11 +145,14 @@ public class DragonBot extends Bot {
             }
         }
 
+        setState(BotState.RUNNING);
         getLogger().info("Dragon Bot v" + getVersion() + " initialized!");
     }
 
     @Override
     public void stop() {
+        setState(BotState.ENDING);
+
         new Thread("Shutdown Thread") {
 
             @Override
@@ -327,7 +338,7 @@ public class DragonBot extends Bot {
         sendRawLine("CAP REQ :twitch.tv/commands");
         sendRawLine("CAP REQ :twitch.tv/tags");
 
-        // Fire BotConnectServerEvent
+        // Send server connect event
     }
 
     @Override
@@ -438,8 +449,25 @@ public class DragonBot extends Bot {
         } else if (command.equals("PRIVMSG") && channelPrefixes.indexOf(target.charAt(0)) >= 0) {
             User user = new User(nick, login, hostname, tags.build());
 
-            // Execute message event
-            getLogger().info("CHAT " + (user.isMod() ? "" : "[M] ") + user.getName() + ": " + line.substring(line.indexOf(" :") + 2));
+            String message = line.substring(line.indexOf(" :") + 2);
+            boolean isCommand = false;
+
+            getLogger().info("CHAT " + (user.isMod() ? "" : "[M] ") + user.getName() + ": " + message);
+
+            if (message.startsWith("!")) {
+                for (Command cmd : getCommandManager().getCommands()) {
+                    String[] args;
+
+                    if ((args = getCommandManager().parseCommand(cmd.getName(), message)) != null) {
+                        if (cmd.getArgs() == -1 || cmd.isArgsRequired() ? args.length - 1 == cmd.getArgs() : args.length - 1 <= cmd.getArgs()) {
+                            isCommand = true;
+                            cmd.execute(user, getCommandManager().parseCommand(cmd.getName(), message));
+                        }
+                    }
+                }
+            }
+
+            // Send message event
         }
     }
 
@@ -486,5 +514,10 @@ public class DragonBot extends Bot {
     @Override
     public InetAddress getAddress() {
         return inetAddress;
+    }
+
+    @Override
+    public CommandManager getCommandManager() {
+        return manager;
     }
 }
