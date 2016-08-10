@@ -28,6 +28,10 @@ public class CommandManager {
             return;
         }
 
+        if (commands.contains(command)) {
+            return;
+        }
+
         commands.add(command);
     }
 
