@@ -1,4 +1,5 @@
 /.idea/
-*.iml
 /Dragon Bot/
-target/
+/out/
+/target/
+*.iml
