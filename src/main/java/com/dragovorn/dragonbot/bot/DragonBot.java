@@ -7,7 +7,9 @@ import com.dragovorn.dragonbot.exceptions.ConnectionException;
 import com.dragovorn.dragonbot.gui.MainWindow;
 import com.dragovorn.dragonbot.log.DragonLogger;
 import com.dragovorn.dragonbot.log.LoggingOutputStream;
+import com.dragovorn.dragonbot.plugin.BotPlugin;
 import com.google.common.base.CharMatcher;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 import javax.net.SocketFactory;
@@ -36,6 +38,10 @@ public class DragonBot extends Bot {
     private String name;
     private String charset;
     private String channelPrefixes = "#&+!";
+
+//    private PluginLoader loader;
+
+    private ImmutableList<BotPlugin> plugins;
 
     private BotConfiguration config;
 
@@ -73,6 +79,12 @@ public class DragonBot extends Bot {
             FileLocations.logs.mkdirs();
         }
 
+        if (!FileLocations.plugins.exists()) {
+            FileLocations.plugins.mkdirs();
+        }
+
+//        loader = new PluginLoader();
+
         logger = new DragonLogger("Dragon Bot", FileLocations.logs + File.separator + format.format(new Date()) + "-%g.log");
         System.setErr(new PrintStream(new LoggingOutputStream(logger, Level.SEVERE), true));
         System.setOut(new PrintStream(new LoggingOutputStream(logger, Level.INFO), true));
@@ -92,6 +104,27 @@ public class DragonBot extends Bot {
 
         name = config.getName();
 
+        getLogger().info("Enabling plugins...");
+
+        ImmutableList.Builder<BotPlugin> builder = new ImmutableList.Builder<>();
+
+        if (FileLocations.plugins.listFiles() != null) {
+            for (File file : FileLocations.plugins.listFiles()) {
+                if (!file.getName().matches(".+..jar")) {
+                    continue;
+                }
+
+//                try {
+//                    builder.add(loader.loadPlugin(file));
+//                } catch (InvalidPluginException exception) {
+//                    exception.printStackTrace();
+//                }
+            }
+        }
+
+        plugins = builder.build();
+
+        getLogger().info("Loaded " + plugins.size() + " " + (plugins.size() == 0 || plugins.size() > 1 ? "plugins" : "plugin") + "!");
         getLogger().info("Connecting to twitch!");
 
         if (!name.equals("") && !config.getAuth().equals("")) {
@@ -112,6 +145,12 @@ public class DragonBot extends Bot {
             @Override
             public void run() {
                 leaveChannel();
+
+                getLogger().info("Disabling plugins...");
+
+                for (BotPlugin plugin : plugins) {
+                    plugin.onDisable();
+                }
 
                 getLogger().info("Saving configuration...");
 
@@ -188,7 +227,7 @@ public class DragonBot extends Bot {
     @Override
     public synchronized void connect(String ip, int port, String password) throws ConnectionException, IOException {
         if (isConnected()) {
-            throw new ConnectionException("You are already connected to a server!");
+            throw new ConnectionException("You are already connected to twitch!");
         }
 
         this.connection = new Connection(ip, port, password);
@@ -214,7 +253,7 @@ public class DragonBot extends Bot {
             socket = new Socket(connection.getServer(), connection.getPort());
         }
 
-        getLogger().info("Connected to server!");
+        getLogger().info("Connected to twitch!");
 
         inetAddress = socket.getInetAddress();
 
