@@ -2,8 +2,7 @@ package com.dragovorn.dragonbot.configuration;
 
 import com.dragovorn.dragonbot.FileLocations;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * *************************************************************************
@@ -17,15 +16,34 @@ public class BotConfiguration extends Configuration {
         super(FileLocations.config);
     }
 
-    private void setDefaults() {
-        entries.clear();
+    protected Map<String, Object> defaults = new HashMap<>();
 
-        set("name", "");
-        set("oauth", "");
-        set("channel", "");
-        set("console", false);
-        set("auto-connect", false);
-        set("disabled commands", new ArrayList<String>());
+    private void addDefaults() {
+        defaults.clear();
+
+        defaults.put("name", "");
+        defaults.put("oauth", "");
+        defaults.put("channel", "");
+        defaults.put("console", false);
+        defaults.put("auto-connect", false);
+        defaults.put("twitch-api key", "");
+        defaults.put("disabled commands", new ArrayList<String>());
+    }
+
+    private void setDefaults() {
+        addDefaults();
+        entries.clear();
+        entries.putAll(defaults);
+    }
+
+    public void update() {
+        addDefaults();
+
+        for (Map.Entry<String, Object> entry : defaults.entrySet()) {
+            if (!entries.containsKey(entry.getKey())) {
+                entries.put(entry.getKey(), entry.getValue());
+            }
+        }
     }
 
     public void generate() {

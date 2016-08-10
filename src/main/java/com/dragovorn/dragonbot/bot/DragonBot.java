@@ -79,6 +79,7 @@ public class DragonBot extends Bot {
         } else {
             config = new BotConfiguration();
             config.load();
+            config.update();
         }
 
         if (!FileLocations.logs.exists()) {
