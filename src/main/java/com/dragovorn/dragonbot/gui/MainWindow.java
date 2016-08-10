@@ -38,7 +38,7 @@ public class MainWindow {
     public MainWindow() {
         instance = this;
 
-        Dimension size = new Dimension(500, 500);
+        Dimension size = new Dimension(500, 150);
 
         panel = new JPanel();
         panel.setLayout(new FlowLayout());
