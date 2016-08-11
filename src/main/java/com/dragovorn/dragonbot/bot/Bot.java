@@ -3,6 +3,7 @@ package com.dragovorn.dragonbot.bot;
 import com.dragovorn.dragonbot.command.CommandManager;
 import com.dragovorn.dragonbot.configuration.BotConfiguration;
 import com.dragovorn.dragonbot.exceptions.ConnectionException;
+import com.google.common.eventbus.EventBus;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +22,8 @@ public abstract class Bot {
 
     private BotState state;
 
+    private EventBus eventBus = new EventBus();
+
     private static Bot instance;
 
     /**
@@ -29,7 +32,7 @@ public abstract class Bot {
      *
      * @param instance the new instance set
      */
-    static void setInstance(Bot instance) {
+    protected static void setInstance(Bot instance) {
         if (instance == null) {
             return; // Log a severe when I make loggers
         } else if (Bot.instance != null) {
@@ -64,6 +67,15 @@ public abstract class Bot {
      */
     public final BotState getState() {
         return state;
+    }
+
+    /**
+     * Gets the bot's event bus
+     *
+     * @return the EventBus of the bot
+     */
+    public final EventBus getEventBus() {
+        return this.eventBus;
     }
 
     /**

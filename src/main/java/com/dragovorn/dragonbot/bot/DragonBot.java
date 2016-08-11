@@ -5,6 +5,9 @@ import com.dragovorn.dragonbot.Utils;
 import com.dragovorn.dragonbot.command.Command;
 import com.dragovorn.dragonbot.command.CommandManager;
 import com.dragovorn.dragonbot.configuration.BotConfiguration;
+import com.dragovorn.dragonbot.event.ChannelEnterEvent;
+import com.dragovorn.dragonbot.event.ServerConnectEvent;
+import com.dragovorn.dragonbot.event.UserMessageEvent;
 import com.dragovorn.dragonbot.exceptions.ConnectionException;
 import com.dragovorn.dragonbot.exceptions.InvalidPluginException;
 import com.dragovorn.dragonbot.gui.MainWindow;
@@ -227,6 +230,8 @@ public class DragonBot extends Bot {
         config.setChannel(channel.substring(1));
 
         this.sendRawLine("JOIN " + channel);
+
+        getEventBus().post(new ChannelEnterEvent(channel));
     }
 
     @Override
@@ -339,7 +344,7 @@ public class DragonBot extends Bot {
         sendRawLine("CAP REQ :twitch.tv/commands");
         sendRawLine("CAP REQ :twitch.tv/tags");
 
-        // Send server connect event
+        getEventBus().post(new ServerConnectEvent());
     }
 
     @Override
@@ -468,7 +473,7 @@ public class DragonBot extends Bot {
                 }
             }
 
-            // Send message event
+            getEventBus().post(new UserMessageEvent(user, message, isCommand));
         }
     }
 

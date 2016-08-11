@@ -2,8 +2,8 @@ package com.dragovorn.dragonbot.event;
 
 /**
  * *************************************************************************
- * (c) Dragovorn 2016. This file was created by Andrew at 4:48 PM.
- * as of 8/10/16 the project dragonbot is Copyrighted.
+ * (c) Dragovorn 2016. This file was created by Andrew at 3:21 PM.
+ * as of 8/11/16 the project dragonbot is Copyrighted.
  * *************************************************************************
  */
-public interface Listener { }
+public class ServerConnectEvent { }
