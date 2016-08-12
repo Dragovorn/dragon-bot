@@ -16,8 +16,8 @@ public class OptionsListener implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent event) {
-        MainWindow.getInstance().getFrame().setContentPane(new OptionsPanel());
-        MainWindow.getInstance().getFrame().setTitle(MainWindow.TITLE + " - Options");
-        MainWindow.getInstance().getFrame().pack();
+        MainWindow.getInstance().setContentPane(new OptionsPanel());
+        MainWindow.getInstance().setTitle(MainWindow.TITLE + " - Options");
+        MainWindow.getInstance().pack();
     }
 }
