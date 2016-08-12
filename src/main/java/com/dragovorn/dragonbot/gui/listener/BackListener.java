@@ -27,8 +27,8 @@ public class BackListener implements ActionListener {
             }
         }
 
-        MainWindow.getInstance().getFrame().setContentPane(MainWindow.getInstance().getPanel());
-        MainWindow.getInstance().getFrame().setTitle(MainWindow.TITLE);
-        MainWindow.getInstance().getFrame().pack();
+        MainWindow.getInstance().setContentPane(MainWindow.getInstance().getPanel());
+        MainWindow.getInstance().setTitle(MainWindow.TITLE);
+        MainWindow.getInstance().pack();
     }
 }

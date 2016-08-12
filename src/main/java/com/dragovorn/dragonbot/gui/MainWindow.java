@@ -110,18 +110,15 @@ public class MainWindow {
         return panel;
     }
 
-    public JFrame getFrame() {
-        return frame;
+    public void setContentPane(Container container) {
+        this.frame.setContentPane(container);
     }
 
-    public void remove(Component component) {
-        this.panel.remove(component);
-        this.frame.pack();
-
+    public void setTitle(String title) {
+        this.frame.setTitle(title);
     }
 
-    public void add(Component component) {
-        this.panel.add(component);
+    public void pack() {
         this.frame.pack();
     }
 
