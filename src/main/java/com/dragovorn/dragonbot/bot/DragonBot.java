@@ -1,5 +1,11 @@
 package com.dragovorn.dragonbot.bot;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.transfer.TransferManager;
+import com.dragovorn.dragonbot.Core;
 import com.dragovorn.dragonbot.FileLocations;
 import com.dragovorn.dragonbot.Utils;
 import com.dragovorn.dragonbot.command.Command;
@@ -11,6 +17,7 @@ import com.dragovorn.dragonbot.event.UserMessageEvent;
 import com.dragovorn.dragonbot.exceptions.ConnectionException;
 import com.dragovorn.dragonbot.exceptions.InvalidPluginException;
 import com.dragovorn.dragonbot.gui.MainWindow;
+import com.dragovorn.dragonbot.gui.panel.UpdatePanel;
 import com.dragovorn.dragonbot.log.DragonLogger;
 import com.dragovorn.dragonbot.log.LoggingOutputStream;
 import com.dragovorn.dragonbot.plugin.BotPlugin;
@@ -50,7 +57,9 @@ public class DragonBot extends Bot {
 
     private ImmutableList<BotPlugin> plugins;
 
-    private CommandManager manager;
+    private CommandManager commandManager;
+
+    private TransferManager manager;
 
     private BotConfiguration config;
 
@@ -95,7 +104,7 @@ public class DragonBot extends Bot {
 
         loader = new PluginLoader();
 
-        manager = new CommandManager();
+        commandManager = new CommandManager();
 
         logger = new DragonLogger("Dragon Bot", FileLocations.logs + File.separator + format.format(new Date()) + "-%g.log");
         System.setErr(new PrintStream(new LoggingOutputStream(logger, Level.SEVERE), true));
@@ -113,6 +122,18 @@ public class DragonBot extends Bot {
         setState(BotState.STARTING);
 
         new MainWindow();
+
+        getLogger().info("Checking for updates...");
+
+        AmazonS3 client = new AmazonS3Client();
+        manager = new TransferManager(client);
+        S3Object object = client.getObject(new GetObjectRequest("dl.dragovorn.com", "DragonBot/DragonBot.jar"));
+
+        if (object.getObjectMetadata().getLastModified().getTime() > new File(Core.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).lastModified()) {
+            getLogger().info("Found an update! Downloading now...");
+
+            MainWindow.getInstance().setContentPane(new UpdatePanel(manager));
+        }
 
         getLogger().info("Initializing Dragon Bot v" + getVersion() + "!");
 
@@ -161,6 +182,8 @@ public class DragonBot extends Bot {
 
             @Override
             public void run() {
+                manager.shutdownNow();
+
                 leaveChannel();
 
                 getLogger().info("Disabling plugins...");
@@ -524,6 +547,6 @@ public class DragonBot extends Bot {
 
     @Override
     public CommandManager getCommandManager() {
-        return manager;
+        return commandManager;
     }
 }
