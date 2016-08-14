@@ -3,6 +3,7 @@ package com.dragovorn.dragonbot.gui.panel;
 import com.amazonaws.services.s3.transfer.TransferManager;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * *************************************************************************
@@ -12,7 +13,18 @@ import javax.swing.*;
  */
 public class UpdatePanel extends JPanel {
 
+    private JProgressBar progressBar;
+
     public UpdatePanel(TransferManager manager) {
-        // TODO
+        progressBar = new JProgressBar(0, 100);
+        progressBar.setStringPainted(true);
+        progressBar.setString("Updating...");
+
+        Dimension size = new Dimension(200, 30);
+        add(progressBar);
+        setSize(size);
+        setPreferredSize(size);
+        setMinimumSize(size);
+        setMaximumSize(size);
     }
 }
