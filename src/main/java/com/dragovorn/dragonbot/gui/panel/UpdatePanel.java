@@ -65,10 +65,12 @@ public class UpdatePanel extends JPanel {
                     }
 
                     progressBar.setValue((int) download.getProgress().getPercentTransferred());
+                    Bot.getInstance().getLogger().info("Downloaded " + download.getProgress().getBytesTransferred() + " of " + download.getProgress().getTotalBytesToTransfer() + " bytes!");
 
                     switch (event.getEventType()) {
                         case TRANSFER_COMPLETED_EVENT: {
                             progressBar.setValue(100);
+                            Bot.getInstance().getLogger().info("Download complete! Restarting...");
                             Bot.getInstance().restart();
                             break;
                         } case TRANSFER_FAILED_EVENT: {
@@ -82,7 +84,10 @@ public class UpdatePanel extends JPanel {
                     }
                 };
 
-                new File(Core.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).delete();
+                File file = new File(Core.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+
+                Bot.getInstance().getLogger().info("Deleting old jar: " + file.getPath());
+                Bot.getInstance().getLogger().info((file.delete() ? "Successfully" : "Unsuccessfully") + " deleted " + file.getPath());
 
                 GetObjectRequest request = new GetObjectRequest("dl.dragovorn.com", "DragonBot/DragonBot.jar").withGeneralProgressListener(listener);
 
