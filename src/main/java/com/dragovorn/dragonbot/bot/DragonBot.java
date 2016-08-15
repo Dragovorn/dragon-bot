@@ -521,7 +521,7 @@ public class DragonBot extends Bot {
                     String[] args;
 
                     if ((args = getCommandManager().parseCommand(cmd.getName(), message)) != null) {
-                        if (cmd.getArgs() == -1 || cmd.isArgsRequired() ? args.length - 1 == cmd.getArgs() : args.length - 1 <= cmd.getArgs()) {
+                        if (cmd.getArgs() == -1 || (cmd.isArgsRequired() ? args.length - 1 == cmd.getArgs() : args.length - 1 <= cmd.getArgs())) {
                             isCommand = true;
                             cmd.execute(user, getCommandManager().parseCommand(cmd.getName(), message));
                         }
