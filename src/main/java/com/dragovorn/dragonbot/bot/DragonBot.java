@@ -1,9 +1,13 @@
 package com.dragovorn.dragonbot.bot;
 
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.event.ProgressEvent;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.transfer.Download;
 import com.amazonaws.services.s3.transfer.TransferManager;
-import com.dragovorn.dragonbot.Core;
 import com.dragovorn.dragonbot.FileLocations;
 import com.dragovorn.dragonbot.Utils;
 import com.dragovorn.dragonbot.command.Command;
@@ -31,9 +35,7 @@ import javax.net.ssl.SSLSocketFactory;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -56,6 +58,8 @@ public class DragonBot extends Bot {
     private PluginLoader loader;
 
     private ImmutableList<BotPlugin> plugins;
+
+    private Download download;
 
     private CommandManager commandManager;
 
@@ -125,12 +129,48 @@ public class DragonBot extends Bot {
         manager = new TransferManager(client);
 
         getLogger().info("Checking for updates...");
+        getLogger().info("Checking for newer version of the updater...");
+
+        S3Object object = client.getObject("dl.dragovorn.com", "DragonBot/updater.jar");
+
+        if (object.getObjectMetadata().getLastModified().getTime() > FileLocations.updater.lastModified()) {
+            getLogger().info("Found a newer version of the updater, downloading it now...");
+
+            GetObjectRequest request = new GetObjectRequest("dl.dragovorn.com", "DragonBot/updater.jar");
+            request.setGeneralProgressListener((ProgressEvent event) -> {
+                if (download == null) {
+                    return;
+                }
+
+                getLogger().info("Downloaded " + download.getProgress().getBytesTransferred() + " out of " + download.getProgress().getTotalBytesToTransfer() + " bytes!");
+
+                switch (event.getEventType()) {
+                    case TRANSFER_COMPLETED_EVENT: {
+                        getLogger().info("Download completed!");
+                        break;
+                    } case TRANSFER_FAILED_EVENT: {
+                        try {
+                            AmazonClientException exception = download.waitForException();
+
+                            exception.printStackTrace();
+                        } catch(InterruptedException exception) { /* Won't happen */ }
+                        break;
+                    }
+                }
+            });
+
+            download = manager.download(request, FileLocations.updater);
+
+            download.waitForCompletion();
+        }
 
         UpdatePanel update = new UpdatePanel(manager);
 
         new MainWindow(update); // Make everyone use the updater.jar
 
-        update.update();
+        if(update.update()) {
+            return;
+        }
 
         getLogger().info("Initializing Dragon Bot v" + getVersion() + "!");
 
@@ -211,29 +251,6 @@ public class DragonBot extends Bot {
                 System.exit(0);
             }
         }.start();
-    }
-
-    @Override
-    public void restart() {
-        try {
-            final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
-            final File currentJar = new File(Core.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
-
-            if (!currentJar.getName().endsWith(".jar")) {
-                stop();
-                return;
-            }
-
-            final ArrayList<String> command = new ArrayList<>();
-            command.add(javaBin);
-            command.add("-jar");
-            command.add(currentJar.getPath());
-
-            final ProcessBuilder builder = new ProcessBuilder(command);
-            builder.start();
-
-            stop();
-        } catch (URISyntaxException | IOException exception) { /* Shouldn't happen */ }
     }
 
     @Override
