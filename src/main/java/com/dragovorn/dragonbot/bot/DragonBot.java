@@ -165,6 +165,9 @@ public class DragonBot extends Bot {
             if (config.getAutoConnect() && !config.getChannel().equals("")) {
                 connectTo("#" + config.getChannel());
             }
+        } else {
+            MainWindow.getInstance().getChannelButton().setEnabled(false);
+            MainWindow.getInstance().getChannelButton().setToolTipText("Please make sure your bot has user information before attempting to connect!");
         }
 
         setState(BotState.RUNNING);
@@ -270,6 +273,10 @@ public class DragonBot extends Bot {
 
     @Override
     public String getChannel() {
+        if (connection == null) {
+            return "";
+        }
+
         return this.connection.getChannel();
     }
 
