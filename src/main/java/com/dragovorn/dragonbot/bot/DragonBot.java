@@ -128,6 +128,10 @@ public class DragonBot extends Bot {
         AmazonS3 client = new AmazonS3Client();
         manager = new TransferManager(client);
 
+        UpdatePanel update = new UpdatePanel(manager);
+
+        new MainWindow(update);
+
         getLogger().info("Checking for updates...");
         getLogger().info("Checking for newer version of the updater...");
 
@@ -163,10 +167,6 @@ public class DragonBot extends Bot {
 
             download.waitForCompletion();
         }
-
-        UpdatePanel update = new UpdatePanel(manager);
-
-        new MainWindow(update); // Make everyone use the updater.jar
 
         if(update.update()) {
             return;
