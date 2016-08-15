@@ -48,11 +48,13 @@ public class MainWindow {
             return null;
         }
 
-        Dimension size = new Dimension(500, 100);
+        Dimension size = new Dimension(500, 250);
 
         panel = new JPanel();
         panel.setLayout(new FlowLayout());
         panel.setSize(size);
+        panel.setPreferredSize(size);
+        panel.setMaximumSize(size);
         panel.setMinimumSize(size);
 
         channel = new JTextField(9);

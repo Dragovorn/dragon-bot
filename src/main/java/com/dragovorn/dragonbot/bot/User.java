@@ -44,6 +44,6 @@ public class User {
     }
 
     public boolean isMod() {
-        return tags.get("mod").equals("1");
+        return tags.get("mod").equals("1") || name.equals(Bot.getInstance().getChannel());
     }
 }
