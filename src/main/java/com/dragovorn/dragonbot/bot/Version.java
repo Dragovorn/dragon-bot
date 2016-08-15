@@ -8,10 +8,10 @@ package com.dragovorn.dragonbot.bot;
  */
 class Version {
 
-    private static final char PATCH = 'a';
+    private static final char PATCH = 'f';
 
     private static final int SNAPSHOT = 0;
 
-    private static final String VERSION = "1.04";
+    private static final String VERSION = "1.03";
     static final String PRETTY_VERSION = VERSION + PATCH + (SNAPSHOT > 0 ? "_SNAPSHOT-" + SNAPSHOT : "");
 }

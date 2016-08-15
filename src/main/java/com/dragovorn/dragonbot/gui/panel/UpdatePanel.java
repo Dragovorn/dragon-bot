@@ -1,20 +1,19 @@
 package com.dragovorn.dragonbot.gui.panel;
 
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.event.ProgressEvent;
-import com.amazonaws.event.ProgressListener;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.transfer.Download;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.dragovorn.dragonbot.Core;
+import com.dragovorn.dragonbot.FileLocations;
 import com.dragovorn.dragonbot.bot.Bot;
 import com.dragovorn.dragonbot.gui.MainWindow;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 
 /**
  * *************************************************************************
@@ -24,18 +23,10 @@ import java.net.URISyntaxException;
  */
 public class UpdatePanel extends JPanel {
 
-    private JProgressBar progressBar;
-
-    private Download download;
-
-     private TransferManager manager;
+    private TransferManager manager;
 
     public UpdatePanel(TransferManager manager) {
         this.manager = manager;
-
-        progressBar = new JProgressBar(0, 100);
-        progressBar.setStringPainted(true);
-        progressBar.setString("Updating...");
 
         JLabel label = new JLabel("Checking for updates...");
 
@@ -47,59 +38,45 @@ public class UpdatePanel extends JPanel {
         setMaximumSize(size);
     }
 
-    public void update() {
+    public boolean update() {
         S3Object object = manager.getAmazonS3Client().getObject(new GetObjectRequest("dl.dragovorn.com", "DragonBot/DragonBot.jar"));
 
         try {
             if (object.getObjectMetadata().getLastModified().getTime() > new File(Core.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).lastModified()) {
-                Bot.getInstance().getLogger().info("Found an update! Downloading now...");
+                Bot.getInstance().getLogger().info("Found an update! Starting the updater...");
 
-                removeAll();
-                add(progressBar);
-                MainWindow.getInstance().pack();
+                final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
 
-                ProgressListener listener = (ProgressEvent event) -> {
+                if (!FileLocations.updater.getName().endsWith(".jar")) {
+                    System.exit(0);
+                    return false;
+                }
 
-                    if (download == null) {
-                        return;
-                    }
+                final ArrayList<String> command = new ArrayList<>();
+                command.add(javaBin);
+                command.add("-jar");
+                command.add(FileLocations.updater.getPath());
+                command.add(new File(Core.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getPath());
 
-                    progressBar.setValue((int) download.getProgress().getPercentTransferred());
-                    Bot.getInstance().getLogger().info("Downloaded " + download.getProgress().getBytesTransferred() + " of " + download.getProgress().getTotalBytesToTransfer() + " bytes!");
+                Bot.getInstance().getLogger().info(FileLocations.updater.getPath());
+                Bot.getInstance().getLogger().info(new File(Core.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getPath());
 
-                    switch (event.getEventType()) {
-                        case TRANSFER_COMPLETED_EVENT: {
-                            progressBar.setValue(100);
-                            Bot.getInstance().getLogger().info("Download complete! Restarting...");
-                            Bot.getInstance().restart();
-                            break;
-                        } case TRANSFER_FAILED_EVENT: {
-                            try {
-                                AmazonClientException exception = download.waitForException();
+                final ProcessBuilder builder = new ProcessBuilder(command);
+                builder.start();
 
-                                exception.printStackTrace();
-                            } catch(InterruptedException exception) { /* Won't happen */ }
-                            break;
-                        }
-                    }
-                };
+                Bot.getInstance().stop();
 
-                File file = new File(Core.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
-
-                Bot.getInstance().getLogger().info("Deleting old jar: " + file.getPath());
-                Bot.getInstance().getLogger().info((file.delete() ? "Successfully" : "Unsuccessfully") + " deleted " + file.getPath());
-
-                GetObjectRequest request = new GetObjectRequest("dl.dragovorn.com", "DragonBot/DragonBot.jar").withGeneralProgressListener(listener);
-
-                download = manager.download(request, new File(Core.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()));
+                return true;
             } else {
                 Bot.getInstance().getLogger().info("No update found.");
                 MainWindow.getInstance().setContentPane(MainWindow.getInstance().getPanel());
                 MainWindow.getInstance().pack();
                 MainWindow.getInstance().center();
             }
-        } catch (URISyntaxException exception) {
+        } catch (URISyntaxException | IOException exception) {
             exception.printStackTrace();
         }
+
+        return false;
     }
 }

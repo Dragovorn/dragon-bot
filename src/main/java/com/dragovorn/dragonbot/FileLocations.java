@@ -14,4 +14,5 @@ public class FileLocations {
     public static final File config = new File(directory, "config.yml");
     public static final File logs = new File(directory, "logs");
     public static final File plugins = new File(directory, "plugins");
+    public static final File updater = new File(directory, "updater.jar");
 }
