@@ -128,7 +128,7 @@ public class DragonBot extends Bot {
 
         UpdatePanel update = new UpdatePanel(manager);
 
-        new MainWindow(update);
+        new MainWindow(update); // Make everyone use the updater.jar
 
         update.update();
 
