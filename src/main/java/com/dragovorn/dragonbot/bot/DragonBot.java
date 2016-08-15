@@ -1,6 +1,9 @@
 package com.dragovorn.dragonbot.bot;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.transfer.TransferManager;
+import com.dragovorn.dragonbot.Core;
 import com.dragovorn.dragonbot.FileLocations;
 import com.dragovorn.dragonbot.Utils;
 import com.dragovorn.dragonbot.command.Command;
@@ -12,6 +15,7 @@ import com.dragovorn.dragonbot.event.UserMessageEvent;
 import com.dragovorn.dragonbot.exceptions.ConnectionException;
 import com.dragovorn.dragonbot.exceptions.InvalidPluginException;
 import com.dragovorn.dragonbot.gui.MainWindow;
+import com.dragovorn.dragonbot.gui.panel.UpdatePanel;
 import com.dragovorn.dragonbot.log.DragonLogger;
 import com.dragovorn.dragonbot.log.LoggingOutputStream;
 import com.dragovorn.dragonbot.plugin.BotPlugin;
@@ -27,7 +31,9 @@ import javax.net.ssl.SSLSocketFactory;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -115,20 +121,16 @@ public class DragonBot extends Bot {
     public void start() throws Exception {
         setState(BotState.STARTING);
 
-        new MainWindow();
-
-//        MainWindow.getInstance().setContentPane(new UpdatePanel(manager));
-//        MainWindow.getInstance().pack();
+        AmazonS3 client = new AmazonS3Client();
+        manager = new TransferManager(client);
 
         getLogger().info("Checking for updates...");
 
-//        AmazonS3 client = new AmazonS3Client();
-//        manager = new TransferManager(client);
-//        S3Object object = client.getObject(new GetObjectRequest("dl.dragovorn.com", "DragonBot/DragonBot.jar"));
-//
-//        if (object.getObjectMetadata().getLastModified().getTime() > new File(Core.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).lastModified()) {
-//            getLogger().info("Found an update! Downloading now...");
-//        }
+        UpdatePanel update = new UpdatePanel(manager);
+
+        new MainWindow(update);
+
+        update.update();
 
         getLogger().info("Initializing Dragon Bot v" + getVersion() + "!");
 
@@ -177,16 +179,22 @@ public class DragonBot extends Bot {
 
             @Override
             public void run() {
-//                manager.shutdownNow();
+                manager.shutdownNow();
 
                 leaveChannel();
 
                 getLogger().info("Disabling plugins...");
 
-                for (BotPlugin plugin : plugins) {
-                    getLogger().info("Disabling " + plugin.getInfo().getName() + " v" + plugin.getInfo().getVersion() + "!");
-                    plugin.onDisable();
-                    getLogger().info(plugin.getInfo().getName() + " v" + plugin.getInfo().getVersion() + " disabled!");
+                if (plugins != null) {
+                    for (BotPlugin plugin : plugins) {
+                        if (plugin == null) {
+                            continue;
+                        }
+
+                        getLogger().info("Disabling " + plugin.getInfo().getName() + " v" + plugin.getInfo().getVersion() + "!");
+                        plugin.onDisable();
+                        getLogger().info(plugin.getInfo().getName() + " v" + plugin.getInfo().getVersion() + " disabled!");
+                    }
                 }
 
                 getLogger().info("Saving configuration...");
@@ -200,6 +208,29 @@ public class DragonBot extends Bot {
                 System.exit(0);
             }
         }.start();
+    }
+
+    @Override
+    public void restart() {
+        try {
+            final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
+            final File currentJar = new File(Core.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+
+            if (!currentJar.getName().endsWith(".jar")) {
+                stop();
+                return;
+            }
+
+            final ArrayList<String> command = new ArrayList<>();
+            command.add(javaBin);
+            command.add("-jar");
+            command.add(currentJar.getPath());
+
+            final ProcessBuilder builder = new ProcessBuilder(command);
+            builder.start();
+
+            stop();
+        } catch (URISyntaxException | IOException exception) { /* Shouldn't happen */ }
     }
 
     @Override

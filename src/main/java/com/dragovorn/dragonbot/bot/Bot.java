@@ -89,6 +89,11 @@ public abstract class Bot {
     public abstract void stop();
 
     /**
+     * Gracefully restart the irc bot.
+     */
+    public abstract void restart();
+
+    /**
      * Gets the name of the irc bot.
      *
      * @return the name of irc bot

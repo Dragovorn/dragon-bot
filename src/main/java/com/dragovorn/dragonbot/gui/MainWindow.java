@@ -33,18 +33,26 @@ public class MainWindow {
 
     private JPanel panel;
 
+    private Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+
     private static MainWindow instance;
 
-    public MainWindow() {
+    public MainWindow(Container container) {
         instance = this;
 
-        Dimension size = new Dimension(500, 150);
+        init(container);
+    }
+
+    private JPanel makePanel() {
+        if (panel != null) {
+            return null;
+        }
+
+        Dimension size = new Dimension(500, 100);
 
         panel = new JPanel();
         panel.setLayout(new FlowLayout());
         panel.setSize(size);
-        panel.setPreferredSize(size);
-        panel.setMaximumSize(size);
         panel.setMinimumSize(size);
 
         channel = new JTextField(9);
@@ -73,9 +81,21 @@ public class MainWindow {
         panel.add(channelButton);
         panel.add(options);
 
+        return panel;
+    }
+
+    private void init(Container container) {
+        if (container == null) {
+            container = makePanel();
+            this.panel = (JPanel) container;
+        } else {
+            this.panel = makePanel();
+        }
+
         frame = new JFrame(TITLE);
+        frame.setLocation(screen.width / 2 - container.getSize().width / 2, screen.height / 2 - container.getSize().height / 2);
         frame.setResizable(false);
-        frame.setContentPane(panel);
+        frame.setContentPane(container);
         frame.pack();
         frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         frame.addWindowListener(new WindowAdapter() {
@@ -108,6 +128,16 @@ public class MainWindow {
 
     public JPanel getPanel() {
         return panel;
+    }
+
+    public void center() {
+        Container container = this.frame.getContentPane();
+
+        setLocation(screen.width / 2 - container.getSize().width / 2, screen.height / 2 - container.getSize().height / 2);
+    }
+
+    public void setLocation(int x, int y) {
+        this.frame.setLocation(x, y);
     }
 
     public void setContentPane(Container container) {
