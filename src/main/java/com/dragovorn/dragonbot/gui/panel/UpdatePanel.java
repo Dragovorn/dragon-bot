@@ -98,6 +98,8 @@ public class UpdatePanel extends JPanel {
                 MainWindow.getInstance().pack();
                 MainWindow.getInstance().center();
             }
-        } catch (URISyntaxException exception) { /* Shouldn't toss an exception */ }
+        } catch (URISyntaxException exception) {
+            exception.printStackTrace();
+        }
     }
 }
