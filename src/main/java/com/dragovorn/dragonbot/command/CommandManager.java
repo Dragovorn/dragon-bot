@@ -18,9 +18,11 @@ import java.util.List;
 public class CommandManager {
 
     private List<Command> commands;
+    private List<ConsoleCommand> consoleCommands;
 
     public CommandManager() {
         commands = new ArrayList<>();
+        consoleCommands = new ArrayList<>();
     }
 
     public void registerCommand(Command command) {
@@ -33,6 +35,18 @@ public class CommandManager {
         }
 
         commands.add(command);
+    }
+
+    public void registerConsoleCommand(ConsoleCommand command) {
+        if (Bot.getInstance().getState() != BotState.STARTING) {
+            return;
+        }
+
+        if (consoleCommands.contains(command)) {
+            return;
+        }
+
+        consoleCommands.add(command);
     }
 
     public ImmutableList<Command> getCommands() {
