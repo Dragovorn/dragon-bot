@@ -140,6 +140,8 @@ public class DragonBot extends Bot {
         if (object.getObjectMetadata().getLastModified().getTime() > FileLocations.updater.lastModified()) {
             getLogger().info("Found a newer version of the updater, downloading it now...");
 
+            FileLocations.updater.delete();
+
             GetObjectRequest request = new GetObjectRequest("dl.dragovorn.com", "DragonBot/updater.jar");
             request.setGeneralProgressListener((ProgressEvent event) -> {
                 if (download == null) {
