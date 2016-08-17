@@ -1,5 +1,7 @@
 package com.dragovorn.dragonbot.plugin;
 
+import java.util.logging.Logger;
+
 /**
  * *************************************************************************
  * (c) Dragovorn 2016. This file was created by Andrew at 8:34 AM.
@@ -20,5 +22,9 @@ public abstract class BotPlugin {
 
     public PluginInfo getInfo() {
         return this.info;
+    }
+
+    public Logger getLogger() {
+        return null;
     }
 }
