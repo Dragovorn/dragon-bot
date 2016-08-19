@@ -1,6 +1,7 @@
 package com.dragovorn.dragonbot.gui.listener;
 
 import com.dragovorn.dragonbot.bot.Bot;
+import com.dragovorn.dragonbot.command.ConsoleCommand;
 import com.dragovorn.dragonbot.gui.ConsoleWindow;
 
 import java.awt.event.ActionEvent;
@@ -16,15 +17,17 @@ public class SendListener implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent event) {
-        String cmd = ConsoleWindow.getInstance().getCommand().getText();
+        String cmd = "!" + ConsoleWindow.getInstance().getCommand().getText();
 
         ConsoleWindow.getInstance().getCommand().setText("");
 
-        if (cmd.startsWith("chat ")) {
-            Bot.getInstance().getLogger().info(cmd);
-            Bot.getInstance().sendMessage(cmd.substring(5));
-        } else {
-            Bot.getInstance().getLogger().info("\'" + cmd.split(" ")[0] + "\' is not a valid developer command!");
+        for (ConsoleCommand command : Bot.getInstance().getCommandManager().getConsoleCommands()) {
+            if (Bot.getInstance().getCommandManager().parseCommand(command.getName(), cmd) != null) {
+                command.execute(Bot.getInstance().getCommandManager().parseCommand(command.getName(), cmd));
+                return;
+            }
         }
+
+        Bot.getInstance().getLogger().info("\'" + cmd.substring(1) + "\' is not a valid developer command!");
     }
 }

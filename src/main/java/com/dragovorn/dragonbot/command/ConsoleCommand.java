@@ -7,4 +7,29 @@ package com.dragovorn.dragonbot.command;
  * *************************************************************************
  */
 public abstract class ConsoleCommand {
+    private final boolean argsRequired;
+
+    private final int requiredArgs;
+
+    private final String name;
+
+    public ConsoleCommand(String name, int requiredArgs, boolean argsRequired) {
+        this.name = name;
+        this.requiredArgs = requiredArgs;
+        this.argsRequired = argsRequired;
+    }
+
+    public final boolean isArgsRequired() {
+        return argsRequired;
+    }
+
+    public final int getArgs() {
+        return requiredArgs;
+    }
+
+    public final String getName() {
+        return name;
+    }
+
+    public abstract void execute(String[] args);
 }

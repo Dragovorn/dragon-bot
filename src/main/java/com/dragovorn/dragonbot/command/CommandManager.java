@@ -53,6 +53,10 @@ public class CommandManager {
         return ImmutableList.copyOf(commands);
     }
 
+    public ImmutableList<ConsoleCommand> getConsoleCommands() {
+        return ImmutableList.copyOf(consoleCommands);
+    }
+
     @Nullable
     public String[] parseCommand(@NotNull String prefix, @NotNull String message) {
         prefix = "!" + prefix;
