@@ -1,4 +1,4 @@
-package com.dragovorn.dragonbot.configuration;
+package com.dragovorn.dragonbot.api.bot.configuration;
 
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;

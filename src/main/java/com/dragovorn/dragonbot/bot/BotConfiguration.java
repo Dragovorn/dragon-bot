@@ -1,6 +1,7 @@
-package com.dragovorn.dragonbot.configuration;
+package com.dragovorn.dragonbot.bot;
 
 import com.dragovorn.dragonbot.FileLocations;
+import com.dragovorn.dragonbot.api.bot.configuration.Configuration;
 
 import java.util.*;
 
@@ -26,8 +27,7 @@ public class BotConfiguration extends Configuration {
         defaults.put("channel", "");
         defaults.put("console", false);
         defaults.put("auto-connect", false);
-        defaults.put("twitch-api key", "");
-        defaults.put("disabled commands", new ArrayList<String>());
+        defaults.put("twitch-api key", ""); // This might get removed.
     }
 
     private void setDefaults() {
@@ -43,6 +43,18 @@ public class BotConfiguration extends Configuration {
             if (!entries.containsKey(entry.getKey())) {
                 entries.put(entry.getKey(), entry.getValue());
             }
+        }
+
+        ArrayList<String> remove = new ArrayList<>();
+
+        for (Map.Entry<String, Object> entry : entries.entrySet()) {
+            if (!defaults.containsKey(entry.getKey())) {
+                remove.add(entry.getKey());
+            }
+        }
+
+        for (String str : remove) {
+            entries.remove(str);
         }
     }
 
