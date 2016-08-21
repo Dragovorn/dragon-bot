@@ -1,8 +1,7 @@
 package com.dragovorn.dragonbot.gui.panel;
 
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.transfer.TransferManager;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.GetObjectMetadataRequest;
 import com.dragovorn.dragonbot.Core;
 import com.dragovorn.dragonbot.FileLocations;
 import com.dragovorn.dragonbot.bot.Bot;
@@ -23,10 +22,10 @@ import java.util.ArrayList;
  */
 public class UpdatePanel extends JPanel {
 
-    private TransferManager manager;
+    private AmazonS3 client;
 
-    public UpdatePanel(TransferManager manager) {
-        this.manager = manager;
+    public UpdatePanel(AmazonS3 client) {
+        this.client = client;
 
         JLabel label = new JLabel("Checking for updates...");
 
@@ -39,10 +38,8 @@ public class UpdatePanel extends JPanel {
     }
 
     public boolean update() {
-        S3Object object = manager.getAmazonS3Client().getObject(new GetObjectRequest("dl.dragovorn.com", "DragonBot/DragonBot.jar"));
-
         try {
-            if (object.getObjectMetadata().getLastModified().getTime() > new File(Core.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).lastModified()) {
+            if (client.getObjectMetadata(new GetObjectMetadataRequest("dl.dragovorn.com", "DragonBot/DragonBot.jar")).getLastModified().getTime() > new File(Core.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).lastModified()) {
                 Bot.getInstance().getLogger().info("Found an update! Starting the updater...");
 
                 final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";

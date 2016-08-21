@@ -1,7 +1,7 @@
 package com.dragovorn.dragonbot.gui.listener;
 
 import com.dragovorn.dragonbot.bot.Bot;
-import com.dragovorn.dragonbot.command.ConsoleCommand;
+import com.dragovorn.dragonbot.api.bot.command.ConsoleCommand;
 import com.dragovorn.dragonbot.gui.ConsoleWindow;
 
 import java.awt.event.ActionEvent;

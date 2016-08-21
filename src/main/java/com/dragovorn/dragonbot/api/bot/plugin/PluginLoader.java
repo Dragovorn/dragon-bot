@@ -1,4 +1,4 @@
-package com.dragovorn.dragonbot.plugin;
+package com.dragovorn.dragonbot.api.bot.plugin;
 
 import com.dragovorn.dragonbot.bot.Bot;
 import com.dragovorn.dragonbot.exceptions.InvalidPluginException;
