@@ -21,10 +21,14 @@ public class SendListener implements ActionListener {
 
         ConsoleWindow.getInstance().getCommand().setText("");
 
+        String[] args;
+
         for (ConsoleCommand command : Bot.getInstance().getCommandManager().getConsoleCommands()) {
-            if (Bot.getInstance().getCommandManager().parseCommand(command.getName(), cmd) != null) {
-                command.execute(Bot.getInstance().getCommandManager().parseCommand(command.getName(), cmd));
-                return;
+            if ((args = Bot.getInstance().getCommandManager().parseCommand(command.getName(), cmd)) != null) {
+                if (command.getArgs() == -1 || (command.isArgsRequired() ? args.length - 1 == command.getArgs() : args.length - 1 <= command.getArgs())) {
+                    command.execute(Bot.getInstance().getCommandManager().parseCommand(command.getName(), cmd));
+                    return;
+                }
             }
         }
 
