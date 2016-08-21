@@ -4,26 +4,26 @@ import com.amazonaws.AmazonClientException;
 import com.amazonaws.event.ProgressEvent;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.GetObjectMetadataRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.transfer.Download;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.dragovorn.dragonbot.FileLocations;
 import com.dragovorn.dragonbot.Utils;
-import com.dragovorn.dragonbot.command.Command;
-import com.dragovorn.dragonbot.command.CommandManager;
+import com.dragovorn.dragonbot.api.bot.command.Command;
+import com.dragovorn.dragonbot.api.bot.command.CommandManager;
+import com.dragovorn.dragonbot.api.bot.event.ChannelEnterEvent;
+import com.dragovorn.dragonbot.api.bot.event.ServerConnectEvent;
+import com.dragovorn.dragonbot.api.bot.event.UserMessageEvent;
+import com.dragovorn.dragonbot.api.bot.plugin.BotPlugin;
+import com.dragovorn.dragonbot.api.bot.plugin.PluginLoader;
 import com.dragovorn.dragonbot.configuration.BotConfiguration;
-import com.dragovorn.dragonbot.event.ChannelEnterEvent;
-import com.dragovorn.dragonbot.event.ServerConnectEvent;
-import com.dragovorn.dragonbot.event.UserMessageEvent;
 import com.dragovorn.dragonbot.exceptions.ConnectionException;
 import com.dragovorn.dragonbot.exceptions.InvalidPluginException;
 import com.dragovorn.dragonbot.gui.MainWindow;
 import com.dragovorn.dragonbot.gui.panel.UpdatePanel;
 import com.dragovorn.dragonbot.log.DragonLogger;
 import com.dragovorn.dragonbot.log.LoggingOutputStream;
-import com.dragovorn.dragonbot.plugin.BotPlugin;
-import com.dragovorn.dragonbot.plugin.PluginLoader;
 import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -128,16 +128,14 @@ public class DragonBot extends Bot {
         AmazonS3 client = new AmazonS3Client();
         manager = new TransferManager(client);
 
-        UpdatePanel update = new UpdatePanel(manager);
+        UpdatePanel update = new UpdatePanel(client);
 
         new MainWindow(update);
 
         getLogger().info("Checking for updates...");
         getLogger().info("Checking for newer version of the updater...");
 
-        S3Object object = client.getObject("dl.dragovorn.com", "DragonBot/updater.jar");
-
-        if (object.getObjectMetadata().getLastModified().getTime() > FileLocations.updater.lastModified()) {
+        if (client.getObjectMetadata(new GetObjectMetadataRequest("dl.dragovorn.com", "DragonBot/updater.jar")).getLastModified().getTime() > FileLocations.updater.lastModified()) {
             getLogger().info("Found a newer version of the updater, downloading it now...");
 
             FileLocations.updater.delete();

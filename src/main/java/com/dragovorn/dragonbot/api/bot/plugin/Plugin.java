@@ -1,4 +1,4 @@
-package com.dragovorn.dragonbot.plugin;
+package com.dragovorn.dragonbot.api.bot.plugin;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

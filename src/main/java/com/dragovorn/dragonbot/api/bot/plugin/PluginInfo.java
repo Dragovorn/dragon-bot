@@ -1,4 +1,4 @@
-package com.dragovorn.dragonbot.plugin;
+package com.dragovorn.dragonbot.api.bot.plugin;
 
 /**
  * *************************************************************************
