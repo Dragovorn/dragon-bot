@@ -1,4 +1,4 @@
-package com.dragovorn.dragonbot.event;
+package com.dragovorn.dragonbot.api.bot.event;
 
 import com.dragovorn.dragonbot.bot.User;
 

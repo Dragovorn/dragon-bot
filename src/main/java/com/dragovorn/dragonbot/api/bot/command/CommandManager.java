@@ -1,4 +1,4 @@
-package com.dragovorn.dragonbot.command;
+package com.dragovorn.dragonbot.api.bot.command;
 
 import com.dragovorn.dragonbot.bot.Bot;
 import com.dragovorn.dragonbot.bot.BotState;
