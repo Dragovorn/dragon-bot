@@ -17,7 +17,6 @@ import com.dragovorn.dragonbot.api.bot.event.ServerConnectEvent;
 import com.dragovorn.dragonbot.api.bot.event.UserMessageEvent;
 import com.dragovorn.dragonbot.api.bot.plugin.BotPlugin;
 import com.dragovorn.dragonbot.api.bot.plugin.PluginLoader;
-import com.dragovorn.dragonbot.configuration.BotConfiguration;
 import com.dragovorn.dragonbot.exceptions.ConnectionException;
 import com.dragovorn.dragonbot.exceptions.InvalidPluginException;
 import com.dragovorn.dragonbot.gui.MainWindow;

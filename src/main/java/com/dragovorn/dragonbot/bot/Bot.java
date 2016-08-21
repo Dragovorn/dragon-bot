@@ -1,7 +1,6 @@
 package com.dragovorn.dragonbot.bot;
 
 import com.dragovorn.dragonbot.api.bot.command.CommandManager;
-import com.dragovorn.dragonbot.configuration.BotConfiguration;
 import com.dragovorn.dragonbot.exceptions.ConnectionException;
 import com.google.common.eventbus.EventBus;
 
