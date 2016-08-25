@@ -17,6 +17,7 @@ import com.dragovorn.dragonbot.api.bot.event.ServerConnectEvent;
 import com.dragovorn.dragonbot.api.bot.event.UserMessageEvent;
 import com.dragovorn.dragonbot.api.bot.plugin.BotPlugin;
 import com.dragovorn.dragonbot.api.bot.plugin.PluginLoader;
+import com.dragovorn.dragonbot.api.github.GitHubAPI;
 import com.dragovorn.dragonbot.exceptions.ConnectionException;
 import com.dragovorn.dragonbot.exceptions.InvalidPluginException;
 import com.dragovorn.dragonbot.gui.MainWindow;
@@ -76,6 +77,8 @@ public class DragonBot extends Bot {
 
     private Queue outQueue = new Queue();
 
+    private GitHubAPI gitHubAPI;
+
     private final Logger logger;
 
     private final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
@@ -106,8 +109,8 @@ public class DragonBot extends Bot {
         }
 
         loader = new PluginLoader();
-
         commandManager = new CommandManager();
+        gitHubAPI = new GitHubAPI("dragovorn", "dragon-bot-twitch", false);
 
         logger = new DragonLogger("Dragon Bot", FileLocations.logs + File.separator + format.format(new Date()) + "-%g.log");
         System.setErr(new PrintStream(new LoggingOutputStream(logger, Level.SEVERE), true));
@@ -171,7 +174,7 @@ public class DragonBot extends Bot {
             return;
         }
 
-        getLogger().info("Initializing Dragon Bot v" + getVersion() + "!");
+        getLogger().info("Initializing Dragon Bot " + getVersion() + "!");
 
         name = config.getName();
 
@@ -210,7 +213,7 @@ public class DragonBot extends Bot {
         }
 
         setState(BotState.RUNNING);
-        getLogger().info("Dragon Bot v" + getVersion() + " initialized!");
+        getLogger().info("Dragon Bot " + getVersion() + " initialized!");
     }
 
     @Override
@@ -233,9 +236,9 @@ public class DragonBot extends Bot {
                             continue;
                         }
 
-                        getLogger().info("Disabling " + plugin.getInfo().getName() + " v" + plugin.getInfo().getVersion() + "!");
+                        getLogger().info("Disabling " + plugin.getInfo().getName() + " " + plugin.getInfo().getVersion() + "!");
                         plugin.onDisable();
-                        getLogger().info(plugin.getInfo().getName() + " v" + plugin.getInfo().getVersion() + " disabled!");
+                        getLogger().info(plugin.getInfo().getName() + " " + plugin.getInfo().getVersion() + " disabled!");
                     }
                 }
 
@@ -597,5 +600,9 @@ public class DragonBot extends Bot {
     @Override
     public CommandManager getCommandManager() {
         return commandManager;
+    }
+
+    public GitHubAPI getGitHubAPI() {
+        return gitHubAPI;
     }
 }
