@@ -13,5 +13,5 @@ class Version {
     private static final int SNAPSHOT = 3;
 
     private static final String VERSION = "1.04";
-    static final String PRETTY_VERSION = VERSION + PATCH + (SNAPSHOT > 0 ? "_SNAPSHOT-" + SNAPSHOT : "");
+    static final String PRETTY_VERSION = "v" + VERSION + PATCH + (SNAPSHOT > 0 ? "_SNAPSHOT-" + SNAPSHOT : "");
 }

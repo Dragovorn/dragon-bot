@@ -1,18 +1,13 @@
 package com.dragovorn.dragonbot.gui.panel;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.GetObjectMetadataRequest;
-import com.dragovorn.dragonbot.Core;
-import com.dragovorn.dragonbot.FileLocations;
 import com.dragovorn.dragonbot.bot.Bot;
-import com.dragovorn.dragonbot.gui.MainWindow;
+import com.dragovorn.dragonbot.bot.DragonBot;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * *************************************************************************
@@ -38,11 +33,8 @@ public class UpdatePanel extends JPanel {
     }
 
     public boolean update() {
-        try {
-            if (client.getObjectMetadata(new GetObjectMetadataRequest("dl.dragovorn.com", "DragonBot/DragonBot.jar")).getLastModified().getTime() > new File(Core.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).lastModified()) {
-                Bot.getInstance().getLogger().info("Found an update! Starting the updater...");
-
-                final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
+        /*
+        final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
 
                 if (!FileLocations.updater.getName().endsWith(".jar")) {
                     System.exit(0);
@@ -55,24 +47,21 @@ public class UpdatePanel extends JPanel {
                 command.add(FileLocations.updater.getPath());
                 command.add(new File(Core.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getPath());
 
-                Bot.getInstance().getLogger().info(FileLocations.updater.getPath());
-                Bot.getInstance().getLogger().info(new File(Core.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getPath());
-
                 final ProcessBuilder builder = new ProcessBuilder(command);
                 builder.start();
+         */
 
-                Bot.getInstance().stop();
+        try {
+            Map<String, String> releases = DragonBot.getInstance().getGitHubAPI().getReleases();
 
-                return true;
-            } else {
-                Bot.getInstance().getLogger().info("No update found.");
-                MainWindow.getInstance().setContentPane(MainWindow.getInstance().getPanel());
-                MainWindow.getInstance().pack();
-                MainWindow.getInstance().center();
+            for (Map.Entry<String, String> entry : releases.entrySet()) {
+                if (!entry.getKey().equals(Bot.getInstance().getVersion().substring(1))) {
+                    double newVersion = Double.valueOf(entry.getKey().substring(1, 4));
+                    double botVersion = Double.valueOf(Bot.getInstance().getVersion().substring(1, 4));
+                }
             }
-        } catch (URISyntaxException | IOException exception) {
-            exception.printStackTrace();
-        }
+        } catch (IOException exception) { /* This won't happen */}
+
 
         return false;
     }
