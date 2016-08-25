@@ -26,7 +26,10 @@ public class BotConfiguration extends Configuration {
         defaults.put("oauth", "");
         defaults.put("channel", "");
         defaults.put("console", false);
-        defaults.put("auto-connect", false);
+        defaults.put("auto connect", false);
+        defaults.put("test versions", false);
+        defaults.put("ask for update", true);
+        defaults.put("check for updates", false);
         defaults.put("twitch-api key", ""); // This might get removed.
     }
 
