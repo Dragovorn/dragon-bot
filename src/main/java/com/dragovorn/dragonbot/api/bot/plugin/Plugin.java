@@ -17,6 +17,6 @@ import java.lang.annotation.Target;
 public @interface Plugin {
 
     String name();
-    String version() default "1.0";
+    String version() default "1.00a";
     String author() default "Unknown";
 }

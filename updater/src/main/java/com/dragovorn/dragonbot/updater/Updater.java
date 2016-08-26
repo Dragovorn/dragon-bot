@@ -56,6 +56,10 @@ public class Updater {
             return;
         }
 
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException exception) { /* If this happens you happen to have a messed up system */ }
+
         new Updater();
 
         String path = args[0];
