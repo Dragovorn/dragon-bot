@@ -171,6 +171,7 @@ public class DragonBot extends Bot {
         }
 
         if(update.update()) {
+            stop();
             return;
         }
 
@@ -213,6 +214,9 @@ public class DragonBot extends Bot {
         }
 
         setState(BotState.RUNNING);
+
+        MainWindow.getInstance().setContentPane(MainWindow.getInstance().getPanel());
+
         getLogger().info("Dragon Bot " + getVersion() + " initialized!");
     }
 
