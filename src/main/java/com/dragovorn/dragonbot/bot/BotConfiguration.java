@@ -83,11 +83,11 @@ public class BotConfiguration extends Configuration {
     }
 
     public boolean getAutoConnect() {
-        return getBoolean("auto-connect");
+        return getBoolean("auto connect");
     }
 
-    public List<String> getDisabledCommands() {
-        return (List<String>) getList("disabled commands");
+    public boolean getPreReleases() {
+        return getBoolean("test versions");
     }
 
     public void setName(String name) {
@@ -107,34 +107,10 @@ public class BotConfiguration extends Configuration {
     }
 
     public void setAutoConnect(boolean autoConnect) {
-        set("auto-connect", autoConnect);
+        set("auto connect", autoConnect);
     }
 
-    public void setDisabledCommands(List<String> disabledCommands) {
-        set("disabled commands", disabledCommands);
-    }
-
-    public void addDisabledCommand(String disabledCommand) {
-        List<String> commands = (List<String>) entries.get("disabled commands");
-
-        if (commands.contains(disabledCommand)) {
-            return;
-        }
-
-        commands.add(disabledCommand);
-
-        setDisabledCommands(commands);
-    }
-
-    public void removeDisabledCommand(String disabledCommand) {
-        List<String> commands = (List<String>) entries.get("disabled commands");
-
-        if (!commands.contains(disabledCommand)) {
-            return;
-        }
-
-        commands.remove(disabledCommand);
-
-        setDisabledCommands(commands);
+    public void setPreReleases(boolean preReleases) {
+        set("test versions", preReleases);
     }
 }

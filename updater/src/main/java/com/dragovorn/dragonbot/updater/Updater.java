@@ -1,18 +1,14 @@
 package com.dragovorn.dragonbot.updater;
 
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.event.ProgressEvent;
-import com.amazonaws.event.ProgressListener;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.transfer.Download;
-import com.amazonaws.services.s3.transfer.TransferManager;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 
 /**
@@ -26,8 +22,6 @@ public class Updater {
     private static JProgressBar progressBar;
 
     private static File file;
-
-    private static Download download;
 
     private Updater() {
         JPanel panel = new JPanel();
@@ -58,7 +52,7 @@ public class Updater {
     public static void main(String[] args) {
         if (args.length == 0) {
             return;
-        } else if (args.length > 1) {
+        } else if (args.length > 2) {
             return;
         }
 
@@ -68,38 +62,41 @@ public class Updater {
 
         file = new File(path);
 
-        AmazonS3 client = new AmazonS3Client();
-        TransferManager manager = new TransferManager(client);
-
         file.delete();
+        try {
+            file.createNewFile();
 
-        ProgressListener listener = (ProgressEvent event) -> {
-            if (download == null) {
-                return;
-            }
+            HttpClient client = HttpClientBuilder.create().build();
 
-            progressBar.setValue((int) download.getProgress().getPercentTransferred());
+            HttpGet request = new HttpGet(args[1]);
+            HttpResponse response = client.execute(request);
+            HttpEntity entity = response.getEntity();
 
-            switch (event.getEventType()) {
-                case TRANSFER_COMPLETED_EVENT: {
-                    progressBar.setValue(100);
-                    complete();
-                    break;
-                } case TRANSFER_FAILED_EVENT: {
-                    try {
-                        AmazonClientException exception = download.waitForException();
+            if (entity != null) {
+                long size = entity.getContentLength();
 
-                        exception.printStackTrace();
-                    } catch(InterruptedException exception) { /* Won't happen */ }
-                    break;
+                BufferedInputStream bufferedInputStream = new BufferedInputStream(entity.getContent());
+                BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(file));
+
+                int inByte;
+                int sum = 0;
+
+                while ((inByte = bufferedInputStream.read()) != -1) {
+                    bufferedOutputStream.write(inByte);
+
+                    sum += inByte;
+
+                    progressBar.setValue(sum / (int) size * 100);
                 }
+
+                bufferedInputStream.close();
+                bufferedOutputStream.close();
+
+                complete();
             }
-        };
-
-        GetObjectRequest request = new GetObjectRequest("dl.dragovorn.com", "DragonBot/DragonBot.jar");
-        request.setGeneralProgressListener(listener);
-
-        download = manager.download(request, file);
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
     }
 
     private static void complete() {
