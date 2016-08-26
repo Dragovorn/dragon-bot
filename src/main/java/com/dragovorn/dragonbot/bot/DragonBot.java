@@ -216,6 +216,7 @@ public class DragonBot extends Bot {
         setState(BotState.RUNNING);
 
         MainWindow.getInstance().setContentPane(MainWindow.getInstance().getPanel());
+        MainWindow.getInstance().pack();
 
         getLogger().info("Dragon Bot " + getVersion() + " initialized!");
     }
