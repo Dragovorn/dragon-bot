@@ -68,7 +68,7 @@ public class UpdatePanel extends JPanel {
                         Bot.getInstance().getLogger().info("Detected newer version (v" + entry.getKey() + ")");
                         launchUpdater(entry.getValue());
                         return true;
-                    } else if (newSnapshot == 0 || (oldSnapshot != 0 && newSnapshot > oldSnapshot)) {
+                    } else if (newSnapshot == 0 && (oldSnapshot != 0 && newSnapshot > oldSnapshot)) {
                         Bot.getInstance().getLogger().info("Detected newer version (v" + entry.getKey() + ")");
                         launchUpdater(entry.getValue());
                         return true;
