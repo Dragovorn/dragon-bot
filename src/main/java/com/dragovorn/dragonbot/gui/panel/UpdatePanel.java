@@ -60,14 +60,17 @@ public class UpdatePanel extends JPanel {
                 }
 
                 if (newVersion > botVersion) {
-                    launchUpdater("v" + entry.getValue());
+                    Bot.getInstance().getLogger().info("Detected newer version (v" + entry.getKey() + ")");
+                    launchUpdater(entry.getValue());
                     return true;
                 } else if (newVersion == botVersion) {
                     if (newPatch > botPatch) {
-                        launchUpdater("v" + entry.getValue());
+                        Bot.getInstance().getLogger().info("Detected newer version (v" + entry.getKey() + ")");
+                        launchUpdater(entry.getValue());
                         return true;
                     } else if (newSnapshot == 0 || (oldSnapshot != 0 && newSnapshot > oldSnapshot)) {
-                        launchUpdater("v" + entry.getValue());
+                        Bot.getInstance().getLogger().info("Detected newer version (v" + entry.getKey() + ")");
+                        launchUpdater(entry.getValue());
                         return true;
                     }
                 }

@@ -20,7 +20,7 @@ import java.awt.event.WindowEvent;
  */
 public class MainWindow {
 
-    public static final String TITLE = "Dragon Bot v" + Bot.getInstance().getVersion();
+    public static final String TITLE = "Dragon Bot " + Bot.getInstance().getVersion();
 
     private JFrame frame;
 
