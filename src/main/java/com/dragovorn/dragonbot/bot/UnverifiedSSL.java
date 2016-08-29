@@ -11,9 +11,9 @@ import java.security.cert.X509Certificate;
  * as of 8/6/16 the project dragonbot is Copyrighted.
  * *************************************************************************
  */
-public class UnverifiedSSL {
+class UnverifiedSSL {
 
-    public static SSLContext getUnverifedSSLContext() throws Exception {
+    static SSLContext getUnverifedSSLContext() throws Exception {
         TrustManager[] trustAllCerts = new TrustManager[] {new X509TrustManager() {
             @Override
             public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException { /* NOTHING */ }

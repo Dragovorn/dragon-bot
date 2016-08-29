@@ -16,7 +16,7 @@ public class User {
 
     private final ImmutableMap<String, String> tags;
 
-    public User(String name, String login, String hostname, ImmutableMap<String, String> tags) {
+    User(String name, String login, String hostname, ImmutableMap<String, String> tags) {
         this.name = name;
         this.login = login;
         this.hostname = hostname;
