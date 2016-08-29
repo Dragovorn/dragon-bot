@@ -8,7 +8,7 @@ import java.util.Vector;
  * as of 8/6/16 the project dragonbot is Copyrighted.
  * *************************************************************************
  */
-public class Queue {
+class Queue {
 
     private Vector queue = new Vector();
 
