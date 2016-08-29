@@ -9,6 +9,7 @@ import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.transfer.Download;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.dragovorn.dragonbot.FileLocations;
+import com.dragovorn.dragonbot.Keys;
 import com.dragovorn.dragonbot.Utils;
 import com.dragovorn.dragonbot.api.bot.command.Command;
 import com.dragovorn.dragonbot.api.bot.command.CommandManager;
@@ -18,6 +19,7 @@ import com.dragovorn.dragonbot.api.bot.event.UserMessageEvent;
 import com.dragovorn.dragonbot.api.bot.plugin.BotPlugin;
 import com.dragovorn.dragonbot.api.bot.plugin.PluginLoader;
 import com.dragovorn.dragonbot.api.github.GitHubAPI;
+import com.dragovorn.dragonbot.api.twitch.TwitchAPI;
 import com.dragovorn.dragonbot.exceptions.ConnectionException;
 import com.dragovorn.dragonbot.exceptions.InvalidPluginException;
 import com.dragovorn.dragonbot.gui.MainWindow;
@@ -79,6 +81,8 @@ public class DragonBot extends Bot {
 
     private GitHubAPI gitHubAPI;
 
+    private TwitchAPI twitchAPI;
+
     private final Logger logger;
 
     private final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
@@ -111,6 +115,7 @@ public class DragonBot extends Bot {
         loader = new PluginLoader();
         commandManager = new CommandManager();
         gitHubAPI = new GitHubAPI("dragovorn", "dragon-bot-twitch", false);
+        twitchAPI = new TwitchAPI(Keys.twitchClientID);
 
         logger = new DragonLogger("Dragon Bot", FileLocations.logs + File.separator + format.format(new Date()) + "-%g.log");
         System.setErr(new PrintStream(new LoggingOutputStream(logger, Level.SEVERE), true));

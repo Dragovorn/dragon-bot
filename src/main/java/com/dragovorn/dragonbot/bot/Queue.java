@@ -12,8 +12,6 @@ public class Queue {
 
     private Vector queue = new Vector();
 
-    public Queue() {}
-
     public void add(Object object) {
         synchronized (queue) {
             queue.addElement(object);

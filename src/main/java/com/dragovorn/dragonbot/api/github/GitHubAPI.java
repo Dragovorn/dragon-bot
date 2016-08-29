@@ -66,7 +66,7 @@ public class GitHubAPI {
     public Map<String, String> getReleases() throws IOException {
         HashMap<String, String> strs = new HashMap<>();
 
-        HttpGet request = new HttpGet("https://api.github.com/repos/dragovorn/dragon-bot-twitch/releases");
+        HttpGet request = new HttpGet(BASE_URL + GitApiType.REPO.path + owner + "/" + repository + "/releases");
         request.addHeader("content-type", "application/json");
 
         HttpResponse response = client.execute(request);
