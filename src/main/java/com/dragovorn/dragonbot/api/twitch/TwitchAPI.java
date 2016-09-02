@@ -41,6 +41,10 @@ public class TwitchAPI {
         return new JSONObject(EntityUtils.toString(response.getEntity(), "UTF-8"));
     }
 
+    public JSONObject getFollowers(String channel) throws IOException {
+        return null;
+    }
+
     private HttpGet makeGetRequest(String url) {
         HttpGet request = new HttpGet(url);
         request.addHeader("content-type", "application/json");
