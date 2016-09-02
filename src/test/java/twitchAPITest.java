@@ -1,13 +1,8 @@
 import com.dragovorn.dragonbot.Keys;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONObject;
+import com.dragovorn.dragonbot.api.twitch.TwitchAPI;
 import org.junit.Test;
 
-import java.io.IOException;
+import static org.junit.Assert.fail;
 
 /**
  * *************************************************************************
@@ -17,20 +12,31 @@ import java.io.IOException;
  */
 public class twitchAPITest {
 
+    private TwitchAPI api = new TwitchAPI(Keys.twitchClientID);
+
     /*
-     * This method tests connectivity to the twitch api
+     * This method tests the twitch api channel connectivity
      */
     @Test
-    public void testTwitchAPI() throws IOException {
-        HttpClient client = HttpClientBuilder.create().build();
+    public void testTwitchAPI() {
+        try {
+            System.out.println(api.getChannel("arteezy").toString(4));
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            fail();
+        }
+    }
 
-        HttpGet request = new HttpGet("https://api.twitch.tv/kraken/channels/dragovorn");
-        request.addHeader("content-type", "application/json");
-        request.addHeader("Client-ID", Keys.twitchClientID);
-        request.addHeader("Accept", "application/vnd.twitchtv.v3+json");
-
-        HttpResponse response = client.execute(request);
-
-        System.out.println(new JSONObject(EntityUtils.toString(response.getEntity(), "UTF-8")).getString("display_name"));
+    /*
+     * This method tests the twitch api streams request
+     */
+    @Test
+    public void testStreams() {
+        try {
+            System.out.println(api.getStream("arteezy").toString(4));
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            fail();
+        }
     }
 }
