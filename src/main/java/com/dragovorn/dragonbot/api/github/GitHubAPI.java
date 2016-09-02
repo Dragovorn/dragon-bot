@@ -20,22 +20,12 @@ import java.util.Map;
  */
 public class GitHubAPI {
 
-    private enum GitApiType {
-
-        REPO("repos/");
-
-        private String path;
-
-        GitApiType(String path) {
-            this.path = path;
-        }
-    }
-
     private static final String BASE_URL = "https://api.github.com/";
+    private static final String REPO = "repos/";
     private final String owner;
     private final String repository;
 
-    private HttpClient client;
+    private final HttpClient client;
 
     private final boolean prereleases;
 
@@ -43,22 +33,17 @@ public class GitHubAPI {
         this.owner = owner;
         this.repository = repository;
         this.prereleases = prereleases;
-
-        client = HttpClientBuilder.create().build();
+        this.client = HttpClientBuilder.create().build();
     }
 
     public JSONObject getLatestRelease() throws IOException {
-        HttpGet request = new HttpGet(BASE_URL + GitApiType.REPO.path + owner + "/" + repository + "/releases/latest");
-        request.addHeader("content-type", "application/json");
-        HttpResponse response = client.execute(request);
+        HttpResponse response = client.execute(makeGetRequest(BASE_URL + REPO + owner + "/" + repository + "/releases/latest"));
 
         return new JSONObject(EntityUtils.toString(response.getEntity(), "UTF-8"));
     }
 
     public JSONObject getRelease(String tag) throws IOException {
-        HttpGet request = new HttpGet(BASE_URL + GitApiType.REPO.path + owner + "/" + repository + "/releases/tags/" + tag);
-        request.addHeader("content-type", "application/json");
-        HttpResponse response = client.execute(request);
+        HttpResponse response = client.execute(makeGetRequest(BASE_URL + REPO + owner + "/" + repository + "/releases/tags/" + tag));
 
         return new JSONObject(EntityUtils.toString(response.getEntity(), "UTF-8"));
     }
@@ -66,17 +51,14 @@ public class GitHubAPI {
     public Map<String, String> getReleases() throws IOException {
         HashMap<String, String> strs = new HashMap<>();
 
-        HttpGet request = new HttpGet(BASE_URL + GitApiType.REPO.path + owner + "/" + repository + "/releases");
-        request.addHeader("content-type", "application/json");
-
-        HttpResponse response = client.execute(request);
+        HttpResponse response = client.execute(makeGetRequest(BASE_URL + REPO + owner + "/" + repository + "/releases"));
 
         JSONArray array = new JSONArray(EntityUtils.toString(response.getEntity(), "UTF-8"));
 
         for (Object object : array) {
             JSONObject jsonObject = new JSONObject(object.toString());
 
-            if (jsonObject.getBoolean("prerelease") && prereleases) {
+            if (jsonObject.getBoolean("prerelease") && !prereleases) {
                 continue;
             }
 
@@ -84,5 +66,12 @@ public class GitHubAPI {
         }
 
         return strs;
+    }
+
+    private HttpGet makeGetRequest(String url) {
+        HttpGet request = new HttpGet(url);
+        request.addHeader("content-type", "application/json");
+
+        return request;
     }
 }
