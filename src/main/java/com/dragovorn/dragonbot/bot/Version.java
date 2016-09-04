@@ -21,7 +21,7 @@ package com.dragovorn.dragonbot.bot;
 
 class Version {
 
-    private static final char PATCH = 'a';
+    private static final char PATCH = 'b';
 
     private static final int SNAPSHOT = 0;
 
