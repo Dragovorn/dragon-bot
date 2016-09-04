@@ -51,9 +51,9 @@ public class Uptime extends Command {
 
             long difference = System.currentTimeMillis() - parse.getTime();
 
-            int days = (int) difference / 864000;
-            int remainder = (int) difference % 864000;
-            int hours = (int) (difference / 3600000);
+            int days = (int) difference / 8640000;
+            int remainder = (int) difference % 8640000;
+            int hours = remainder / 3600000;
             remainder = remainder % 3600000;
             int minutes = remainder / 60000;
             remainder = remainder % 60000;
@@ -62,15 +62,15 @@ public class Uptime extends Command {
             StringBuilder builder = new StringBuilder();
 
             if (days > 0) {
-                builder.append(days).append(" day").append((days > 1 ? "s " : " "));
+                builder.append(days).append(" day").append((days > 1 ? "s, " : ", "));
             }
 
             if (hours > 0) {
-                builder.append(hours).append(" hour").append((hours > 1 ? "s " : " "));
+                builder.append(hours).append(" hour").append((hours > 1 ? "s, " : ", "));
             }
 
             if (minutes > 0) {
-                builder.append(minutes).append(" minute").append((minutes > 1 ? "s " : " "));
+                builder.append(minutes).append(" minute").append((minutes > 1 ? "s, " : ", "));
             }
 
             if (seconds > 0) {
