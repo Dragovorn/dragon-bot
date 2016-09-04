@@ -19,7 +19,12 @@
 
 import com.dragovorn.dragonbot.Keys;
 import com.dragovorn.dragonbot.api.twitch.TwitchAPI;
+import org.json.JSONObject;
 import org.junit.Test;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 import static org.junit.Assert.fail;
 
@@ -51,5 +56,52 @@ public class twitchAPITest {
             exception.printStackTrace();
             fail();
         }
+    }
+
+    /**
+     * This method tests the uptime equation
+     */
+    @Test
+    public void testUptime() throws Exception {
+        JSONObject stream = (JSONObject) api.getStream("swordmas_").get("stream");
+
+        if (stream == null) {
+//            Bot.getInstance().sendMessage("%s isn\'t live!", Bot.getInstance().getChannel());
+            return;
+        }
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        format.setTimeZone(TimeZone.getTimeZone("GMT"));
+        Date parse = format.parse(stream.getString("created_at"));
+
+        long difference = System.currentTimeMillis() - parse.getTime();
+
+        int days = (int) difference / 8640000;
+        int remainder = (int) difference % 8640000;
+        int hours = remainder / 3600000;
+        remainder = remainder % 3600000;
+        int minutes = remainder / 60000;
+        remainder = remainder % 60000;
+        int seconds = remainder / 1000;
+
+        StringBuilder builder = new StringBuilder();
+
+        if (days > 0) {
+            builder.append(days).append(" day").append((days > 1 ? "s, " : ", "));
+        }
+
+        if (hours > 0) {
+            builder.append(hours).append(" hour").append((hours > 1 ? "s, " : ", "));
+        }
+
+        if (minutes > 0) {
+            builder.append(minutes).append(" minute").append((minutes > 1 ? "s, " : ", "));
+        }
+
+        if (seconds > 0) {
+            builder.append(seconds).append(" second").append((seconds > 1 ? "s" : ""));
+        }
+
+        System.out.println(builder.toString().trim());
     }
 }
