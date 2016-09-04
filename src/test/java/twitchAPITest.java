@@ -63,10 +63,12 @@ public class twitchAPITest {
      */
     @Test
     public void testUptime() throws Exception {
-        JSONObject stream = (JSONObject) api.getStream("swordmas_").get("stream");
+        JSONObject stream;
 
-        if (stream == null) {
-//            Bot.getInstance().sendMessage("%s isn\'t live!", Bot.getInstance().getChannel());
+        try {
+            stream = (JSONObject) api.getStream("arteezy").get("stream");
+        } catch (ClassCastException exception) {
+            System.out.println("Channel isn't live.");
             return;
         }
 
@@ -76,8 +78,8 @@ public class twitchAPITest {
 
         long difference = System.currentTimeMillis() - parse.getTime();
 
-        int days = (int) difference / 8640000;
-        int remainder = (int) difference % 8640000;
+        int days = (int) difference / 86400000;
+        int remainder = (int) difference % 86400000;
         int hours = remainder / 3600000;
         remainder = remainder % 3600000;
         int minutes = remainder / 60000;
@@ -99,6 +101,10 @@ public class twitchAPITest {
         }
 
         if (seconds > 0) {
+            if (builder.length() > 0) {
+                builder.append("and ");
+            }
+
             builder.append(seconds).append(" second").append((seconds > 1 ? "s" : ""));
         }
 
