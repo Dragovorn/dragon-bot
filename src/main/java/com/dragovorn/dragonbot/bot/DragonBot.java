@@ -39,6 +39,7 @@ import com.dragovorn.dragonbot.api.bot.plugin.BotPlugin;
 import com.dragovorn.dragonbot.api.bot.plugin.PluginLoader;
 import com.dragovorn.dragonbot.api.github.GitHubAPI;
 import com.dragovorn.dragonbot.api.twitch.TwitchAPI;
+import com.dragovorn.dragonbot.command.Github;
 import com.dragovorn.dragonbot.command.Uptime;
 import com.dragovorn.dragonbot.exceptions.ConnectionException;
 import com.dragovorn.dragonbot.exceptions.InvalidPluginException;
@@ -217,6 +218,7 @@ public class DragonBot extends Bot {
         }
 
         commandManager.registerCommand(new Uptime());
+        commandManager.registerCommand(new Github());
 
         plugins = builder.build();
 
