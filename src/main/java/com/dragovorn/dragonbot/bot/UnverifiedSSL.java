@@ -14,7 +14,7 @@
  * PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
  * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
- * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE..
+ * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 package com.dragovorn.dragonbot.bot;
@@ -40,13 +40,7 @@ class UnverifiedSSL {
             }
         }};
 
-        HostnameVerifier allHostsValid = new HostnameVerifier() { // Make lambda later
-
-            @Override
-            public boolean verify(String s, SSLSession sslSession) {
-                return true;
-            }
-        };
+        HostnameVerifier allHostsValid = (String s, SSLSession sslSession) -> true;
 
         SSLContext context = SSLContext.getInstance("SSL");
         context.init(null, trustAllCerts, new SecureRandom());
