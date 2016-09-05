@@ -17,29 +17,12 @@
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.dragovorn.dragonbot.api.bot.plugin;
+import org.junit.Test;
 
-public class PluginInfo {
+public class ScratchPad {
 
-    private final String name;
-    private final String version;
-    private final String author;
+    @Test
+    public void scratchPad() {
 
-    public PluginInfo(Plugin plugin) {
-        this.name = plugin.name();
-        this.version = plugin.version();
-        this.author = plugin.author();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public String getAuthor() {
-        return author;
     }
 }
