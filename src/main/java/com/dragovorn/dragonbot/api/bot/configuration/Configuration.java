@@ -40,10 +40,9 @@ public class Configuration {
     public void save() {
         try {
             DumperOptions options = new DumperOptions();
-
             options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
 
-            Yaml yaml = new Yaml();
+            Yaml yaml = new Yaml(options);
             FileWriter writer = new FileWriter(this.file);
 
             yaml.dump(entries, writer);
