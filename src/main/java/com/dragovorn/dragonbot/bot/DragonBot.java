@@ -62,6 +62,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -204,17 +206,24 @@ public class DragonBot extends Bot {
         ImmutableList.Builder<BotPlugin> builder = new ImmutableList.Builder<>();
 
         if (FileLocations.plugins.listFiles() != null) {
+            ExecutorService executorService = Executors.newCachedThreadPool();
+
             for (File file : FileLocations.plugins.listFiles()) {
                 if (!file.getName().matches("(.+).(jar)$")) {
                     continue;
                 }
 
-                try {
-                    builder.add(loader.loadPlugin(file));
-                } catch (InvalidPluginException exception) {
-                    exception.printStackTrace();
-                }
+                executorService.execute(() -> {
+                    try {
+                        builder.add(loader.loadPlugin(file));
+                    } catch (InvalidPluginException exception) {
+                        getLogger().severe("Failed to load plugin!");
+                        exception.printStackTrace();
+                    }
+                });
             }
+
+            executorService.shutdown();
         }
 
         commandManager.registerCommand(new Uptime());
