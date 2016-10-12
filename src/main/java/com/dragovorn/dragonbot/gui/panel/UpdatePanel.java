@@ -19,11 +19,9 @@
 
 package com.dragovorn.dragonbot.gui.panel;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.dragovorn.dragonbot.Core;
+import com.dragovorn.dragonbot.DragonBotMain;
 import com.dragovorn.dragonbot.FileLocations;
 import com.dragovorn.dragonbot.bot.Bot;
-import com.dragovorn.dragonbot.bot.DragonBot;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,11 +31,7 @@ import java.util.Map;
 
 public class UpdatePanel extends JPanel {
 
-    private AmazonS3 client;
-
-    public UpdatePanel(AmazonS3 client) {
-        this.client = client;
-
+    public UpdatePanel() {
         JLabel label = new JLabel("Checking for updates...");
 
         Dimension size = new Dimension(250, 30);
@@ -50,7 +44,7 @@ public class UpdatePanel extends JPanel {
 
     public boolean update() {
         try {
-            Map<String, String> releases = DragonBot.getInstance().getGitHubAPI().getReleases();
+            Map<String, String> releases = com.dragovorn.dragonbot.bot.DragonBot.getInstance().getGitHubAPI().getReleases();
 
             for (Map.Entry<String, String> entry : releases.entrySet()) {
                 double newVersion = Double.valueOf(entry.getKey().substring(0, 4));
@@ -107,7 +101,7 @@ public class UpdatePanel extends JPanel {
         command.add(javaBin);
         command.add("-jar");
         command.add(FileLocations.updater.getPath());
-        command.add(Core.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+        command.add(DragonBotMain.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
         command.add(url);
 
         final ProcessBuilder builder = new ProcessBuilder(command);

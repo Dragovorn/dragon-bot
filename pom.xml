@@ -16,7 +16,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>com.dragovorn.dragonbot.Core</mainClass>
+                            <mainClass>com.dragovorn.dragonbot.DragonBotMain</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -76,6 +76,11 @@
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
             <version>3.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.rjeschke</groupId>
+            <artifactId>txtmark</artifactId>
+            <version>0.13</version>
         </dependency>
     </dependencies>
 </project>
