@@ -152,7 +152,7 @@ public class DragonBot extends Bot {
         AmazonS3 client = new AmazonS3Client();
         manager = new TransferManager(client);
 
-        UpdatePanel update = new UpdatePanel(client);
+        UpdatePanel update = new UpdatePanel();
 
         new MainWindow(update);
 

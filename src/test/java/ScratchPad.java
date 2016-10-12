@@ -18,59 +18,15 @@
  */
 
 import com.dragovorn.dragonbot.api.github.GitHubAPI;
-import com.dragovorn.dragonbot.bot.Bot;
+import com.github.rjeschke.txtmark.Processor;
 import org.junit.Test;
-
-import java.util.Map;
-
-import static org.junit.Assert.fail;
 
 public class ScratchPad {
 
     @Test
-    public void scratchPad() {
+    public void scratchPad() throws Exception {
         GitHubAPI api = new GitHubAPI("dragovorn", "dragon-bot-twitch", false);
 
-        String version = "v1.05d";
-
-        try {
-            Map<String, String> releases = api.getReleases();
-
-            for (Map.Entry<String, String> entry : releases.entrySet()) {
-                double newVersion = Double.valueOf(entry.getKey().substring(0, 4));
-                double botVersion = Double.valueOf(version.substring(1, 5));
-
-                char newPatch = entry.getKey().charAt(4);
-                char botPatch = version.charAt(5);
-
-                int newSnapshot = 0;
-                int oldSnapshot = 0;
-
-                if (false) {
-                    if (entry.getKey().contains("SNAPSHOT")) {
-                        newSnapshot = Integer.valueOf(entry.getKey().split("-")[1]);
-                    }
-
-                    if (Bot.getInstance().getVersion().contains("SNAPSHOT")) {
-                        oldSnapshot = Integer.valueOf(Bot.getInstance().getVersion().split("-")[1]);
-                    }
-                }
-
-                if (newVersion > botVersion) {
-                    System.out.println("New version greater than bot version.");
-                    fail();
-                } else if (newVersion == botVersion) {
-                    if (newPatch > botPatch) {
-                        System.out.println("New patch greater than bot patch.");
-                        fail();
-                    } else if (newSnapshot == 0 && (oldSnapshot != 0 && newSnapshot > oldSnapshot)) {
-                        System.out.println("New snapshot greater than bot snapshot.");
-                        fail();
-                    }
-                }
-            }
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }
+        System.out.println(Processor.process(api.getRelease("v1.05e").getString("body")));
     }
 }
