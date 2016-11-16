@@ -25,7 +25,7 @@ public class PluginInfo {
     private final String version;
     private final String author;
 
-    public PluginInfo(Plugin plugin) {
+    PluginInfo(Plugin plugin) {
         this.name = plugin.name();
         this.version = plugin.version();
         this.author = plugin.author();

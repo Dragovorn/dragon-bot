@@ -29,15 +29,15 @@ public abstract class BotPlugin {
 
     public void onDisable() { }
 
-    void setInfo(PluginInfo info) {
+    final void setInfo(PluginInfo info) {
         this.info = info;
     }
 
-    public PluginInfo getInfo() {
+    public final PluginInfo getInfo() {
         return this.info;
     }
 
-    public Logger getLogger() {
+    public final Logger getLogger() {
         return null;
     }
 }
