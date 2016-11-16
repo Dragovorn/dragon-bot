@@ -31,7 +31,7 @@ public class Configuration {
 
     protected Map<String, Object> entries = new HashMap<>();
 
-    protected File file;
+    private File file;
 
     public Configuration(File file) {
         this.file = file;
@@ -45,7 +45,7 @@ public class Configuration {
             Yaml yaml = new Yaml(options);
             FileWriter writer = new FileWriter(this.file);
 
-            yaml.dump(entries, writer);
+            yaml.dump(this.entries, writer);
         } catch (IOException exception) {
             exception.printStackTrace();
         }
@@ -55,35 +55,35 @@ public class Configuration {
         try {
             Yaml yaml = new Yaml();
 
-            InputStream stream = new FileInputStream(file);
+            InputStream stream = new FileInputStream(this.file);
 
-            entries = (Map<String, Object>) yaml.load(stream);
+            this.entries = (Map<String, Object>) yaml.load(stream);
         } catch (FileNotFoundException exception) {
             exception.printStackTrace();
         }
     }
 
     public void clear() {
-        entries.clear();
+        this.entries.clear();
     }
 
     public void set(String key, Object value) {
-        entries.put(key, value);
+        this.entries.put(key, value);
     }
 
     public String getString(String key) {
-        return (String) entries.get(key);
+        return (String) this.entries.get(key);
     }
 
     public boolean getBoolean(String key) {
-        return (boolean) entries.get(key);
+        return (boolean) this.entries.get(key);
     }
 
     public List<?> getList(String key) {
-        return (List<?>) entries.get(key);
+        return (List<?>) this.entries.get(key);
     }
 
     public Map<String, Object> getEntries() {
-        return entries;
+        return this.entries;
     }
 }
