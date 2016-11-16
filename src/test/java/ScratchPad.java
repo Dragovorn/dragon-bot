@@ -29,6 +29,7 @@ public class ScratchPad {
         GitHubAPI api = new GitHubAPI("dragovorn", "dragon-bot-twitch", false);
 
         Dimension size = new Dimension(480, 138);
+        Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 
         JTextPane area = new JTextPane();
         area.setSize(size);
@@ -37,10 +38,14 @@ public class ScratchPad {
         area.setPreferredSize(size);
         area.setContentType("text/html");
         area.setEditable(false);
+        area.setBorder(null);
+        area.setBackground(UIManager.getColor("InternalFrame.background"));
         area.setText(Processor.process(api.getRelease("v1.05e").getString("body")) + "<br><br><p><b>Updating is always recommended</b></p>");
 
         JScrollPane scroll = new JScrollPane(area);
         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scroll.setViewportBorder(null);
+        scroll.setBorder(null);
 
         JButton update = new JButton("Update!");
         JButton no = new JButton("Not now");
@@ -52,6 +57,7 @@ public class ScratchPad {
         frame.add(scroll);
         frame.add(no);
         frame.add(update);
+        frame.setLocation(dimension.width / 2 - frame.getWidth() / 2, dimension.height / 2 - frame.getHeight() / 2);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
