@@ -90,6 +90,11 @@ public class UpdatePanel extends JPanel {
     }
 
     private void launchUpdater(String url) throws Exception {
+        removeAll();
+
+
+
+
         final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
 
         if (!FileLocations.updater.getName().endsWith(".jar")) {
