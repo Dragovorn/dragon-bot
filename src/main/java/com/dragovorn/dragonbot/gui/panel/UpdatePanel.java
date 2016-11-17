@@ -24,18 +24,21 @@ import com.dragovorn.dragonbot.FileLocations;
 import com.dragovorn.dragonbot.bot.Bot;
 import com.dragovorn.dragonbot.bot.DragonBot;
 import com.dragovorn.dragonbot.gui.MainWindow;
-import com.github.rjeschke.txtmark.Processor;
+import net.dgardiner.markdown.MarkdownProcessor;
+import net.dgardiner.markdown.flavours.github.GithubFlavour;
+import org.json.JSONObject;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class UpdatePanel extends JPanel {
 
-    private volatile boolean stop;
+    private volatile boolean stop = false;
     private boolean hasResponded = false;
 
     public UpdatePanel() {
@@ -51,14 +54,18 @@ public class UpdatePanel extends JPanel {
 
     public void update() {
         try {
-            Map<String, String> releases = DragonBot.getInstance().getGitHubAPI().getReleases();
+            Map<String, JSONObject> releases = DragonBot.getInstance().getGitHubAPI().getReleases();
 
-            for (Map.Entry<String, String> entry : releases.entrySet()) {
+            List<JSONObject> release = new ArrayList<>();
+
+            for (Map.Entry<String, JSONObject> entry : releases.entrySet()) {
+                String version = (release.size() == 0 ? Bot.getInstance().getVersion() : release.get(release.size() - 1).getString("tag_name"));
+
                 double newVersion = Double.valueOf(entry.getKey().substring(0, 4));
-                double botVersion = Double.valueOf(Bot.getInstance().getVersion().substring(1, 5));
+                double botVersion = Double.valueOf(version.substring(1, 5));
 
                 char newPatch = entry.getKey().charAt(4);
-                char botPatch = Bot.getInstance().getVersion().charAt(5);
+                char botPatch = version.charAt(5);
 
                 int newSnapshot = 0;
                 int oldSnapshot = 0;
@@ -68,23 +75,29 @@ public class UpdatePanel extends JPanel {
                         newSnapshot = Integer.valueOf(entry.getKey().split("-")[1]);
                     }
 
-                    if (Bot.getInstance().getVersion().contains("SNAPSHOT")) {
-                        oldSnapshot = Integer.valueOf(Bot.getInstance().getVersion().split("-")[1]);
+                    if (version.contains("SNAPSHOT")) {
+                        oldSnapshot = Integer.valueOf(version.split("-")[1]);
                     }
                 }
 
                 if (newVersion > botVersion) {
                     Bot.getInstance().getLogger().info("Detected newer version (v" + entry.getKey() + ")");
-                    askForUpdate(entry.getValue());
+                    release.add(entry.getValue());
                 } else if (newVersion == botVersion) {
                     if (newPatch > botPatch) {
                         Bot.getInstance().getLogger().info("Detected newer version (v" + entry.getKey() + ")");
-                        askForUpdate(entry.getValue());
-                    } else if (newSnapshot == 0 && (oldSnapshot != 0 && newSnapshot > oldSnapshot)) {
+                        release.add(entry.getValue());
+                    } else if ((newSnapshot == 0 && oldSnapshot != 0) || (oldSnapshot != 0 && newSnapshot > oldSnapshot)) {
                         Bot.getInstance().getLogger().info("Detected newer version (v" + entry.getKey() + ")");
-                        askForUpdate(entry.getValue());
+                        release.add(entry.getValue());
                     }
                 }
+            }
+
+            if (release.size() > 0) {
+                askForUpdate(release);
+            } else {
+                this.hasResponded = true;
             }
         } catch (Exception exception) {
             exception.printStackTrace();
@@ -103,14 +116,15 @@ public class UpdatePanel extends JPanel {
         return this.stop;
     }
 
-    private void askForUpdate(final String url) throws IOException {
-        Dimension areaSize = new Dimension(480, 140);
+    private void askForUpdate(final List<JSONObject> releases) throws IOException {
+        Dimension areaSize = new Dimension(480, 160);
         Dimension size = new Dimension(500, 200);
 
         setSize(size);
         setMaximumSize(size);
         setMinimumSize(size);
         setPreferredSize(size);
+        setLayout(new FlowLayout());
 
         removeAll();
 
@@ -123,9 +137,34 @@ public class UpdatePanel extends JPanel {
         area.setEditable(false);
         area.setBorder(null);
         area.setBackground(UIManager.getColor("InternalFrame.background"));
-        area.setText("<h1>" + DragonBot.getInstance().getGitHubAPI().getRelease("v1.05e").getString("name") + "</h1>" + Processor.process(DragonBot.getInstance().getGitHubAPI().getRelease("v1.05e").getString("body")));
+
+        StringBuilder builder = new StringBuilder();
+
+        MarkdownProcessor processor = new MarkdownProcessor();
+        processor.setFlavour(new GithubFlavour());
+
+        for (int x = releases.size() - 1; x >= 0; x--) {
+            builder.append("<font size=\"7\"><b>").append(releases.get(x).getString("tag_name")).append(" - ").append(releases.get(x).getString("name")).append("</b></font>");
+
+            if (x == releases.size() - 1) {
+                builder.append("<br>You are <b>").append(DragonBot.getInstance().getGitHubAPI().getNumCommitsBetween(Bot.getInstance().getVersion(), releases.get(x).getString("tag_name"))).append(" commits</b> behind!<br>");
+            }
+
+            builder.append(processor.process(releases.get(x).getString("body")));
+
+            if (x != 0) {
+                builder.append("<br><br>");
+            }
+
+        }
+
+        area.setText(builder.toString());
 
         JScrollPane scroll = new JScrollPane(area);
+        scroll.setSize(areaSize);
+        scroll.setMaximumSize(areaSize);
+        scroll.setMinimumSize(areaSize);
+        scroll.setPreferredSize(areaSize);
         scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scroll.setViewportBorder(null);
         scroll.setBorder(null);
@@ -138,7 +177,7 @@ public class UpdatePanel extends JPanel {
 
         update.addActionListener((ActionListener) -> {
             try {
-                launchUpdater(url);
+                launchUpdater(releases.get(releases.size() - 1).getJSONArray("assets").getJSONObject(0).getString("browser_download_url"));
                 this.stop = true;
                 this.hasResponded = true;
 
