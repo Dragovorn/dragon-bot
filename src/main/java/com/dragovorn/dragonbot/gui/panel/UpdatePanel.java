@@ -22,14 +22,21 @@ package com.dragovorn.dragonbot.gui.panel;
 import com.dragovorn.dragonbot.DragonBotMain;
 import com.dragovorn.dragonbot.FileLocations;
 import com.dragovorn.dragonbot.bot.Bot;
+import com.dragovorn.dragonbot.bot.DragonBot;
+import com.dragovorn.dragonbot.gui.MainWindow;
+import com.github.rjeschke.txtmark.Processor;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
 public class UpdatePanel extends JPanel {
+
+    private volatile boolean stop;
+    private boolean hasResponded = false;
 
     public UpdatePanel() {
         JLabel label = new JLabel("Checking for updates...");
@@ -42,9 +49,9 @@ public class UpdatePanel extends JPanel {
         setMaximumSize(size);
     }
 
-    public boolean update() {
+    public void update() {
         try {
-            Map<String, String> releases = com.dragovorn.dragonbot.bot.DragonBot.getInstance().getGitHubAPI().getReleases();
+            Map<String, String> releases = DragonBot.getInstance().getGitHubAPI().getReleases();
 
             for (Map.Entry<String, String> entry : releases.entrySet()) {
                 double newVersion = Double.valueOf(entry.getKey().substring(0, 4));
@@ -68,48 +75,111 @@ public class UpdatePanel extends JPanel {
 
                 if (newVersion > botVersion) {
                     Bot.getInstance().getLogger().info("Detected newer version (v" + entry.getKey() + ")");
-                    launchUpdater(entry.getValue());
-                    return true;
+                    askForUpdate(entry.getValue());
                 } else if (newVersion == botVersion) {
                     if (newPatch > botPatch) {
                         Bot.getInstance().getLogger().info("Detected newer version (v" + entry.getKey() + ")");
-                        launchUpdater(entry.getValue());
-                        return true;
+                        askForUpdate(entry.getValue());
                     } else if (newSnapshot == 0 && (oldSnapshot != 0 && newSnapshot > oldSnapshot)) {
                         Bot.getInstance().getLogger().info("Detected newer version (v" + entry.getKey() + ")");
-                        launchUpdater(entry.getValue());
-                        return true;
+                        askForUpdate(entry.getValue());
                     }
                 }
             }
         } catch (Exception exception) {
             exception.printStackTrace();
         }
+    }
 
-        return false;
+    public boolean shouldStop() {
+        while (!this.hasResponded) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException exception) {
+                exception.printStackTrace();
+            }
+        }
+
+        return this.stop;
+    }
+
+    private void askForUpdate(final String url) throws IOException {
+        Dimension areaSize = new Dimension(480, 140);
+        Dimension size = new Dimension(500, 200);
+
+        setSize(size);
+        setMaximumSize(size);
+        setMinimumSize(size);
+        setPreferredSize(size);
+
+        removeAll();
+
+        JTextPane area = new JTextPane();
+        area.setSize(areaSize);
+        area.setMaximumSize(areaSize);
+        area.setMinimumSize(areaSize);
+        area.setPreferredSize(areaSize);
+        area.setContentType("text/html");
+        area.setEditable(false);
+        area.setBorder(null);
+        area.setBackground(UIManager.getColor("InternalFrame.background"));
+        area.setText("<h1>" + DragonBot.getInstance().getGitHubAPI().getRelease("v1.05e").getString("name") + "</h1>" + Processor.process(DragonBot.getInstance().getGitHubAPI().getRelease("v1.05e").getString("body")));
+
+        JScrollPane scroll = new JScrollPane(area);
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scroll.setViewportBorder(null);
+        scroll.setBorder(null);
+
+        JLabel recommended = new JLabel("<html><b>Updating is always recommended!</b></html>");
+        recommended.setForeground(Color.RED);
+
+        JButton update = new JButton("Update!");
+        JButton no = new JButton("Not now");
+
+        update.addActionListener((ActionListener) -> {
+            try {
+                launchUpdater(url);
+                this.stop = true;
+                this.hasResponded = true;
+
+                Bot.getInstance().getLogger().info("Updating now...");
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+        });
+
+        no.addActionListener((ActionListener) -> {
+            this.stop = false;
+            this.hasResponded = true;
+
+            Bot.getInstance().getLogger().info("Not now chosen.");
+        });
+
+        add(scroll);
+        add(recommended);
+        add(no);
+        add(update);
+
+        MainWindow.getInstance().pack();
+        MainWindow.getInstance().center();
     }
 
     private void launchUpdater(String url) throws Exception {
-        removeAll();
-
-
-
-
-        final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
+        String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
 
         if (!FileLocations.updater.getName().endsWith(".jar")) {
             System.exit(0);
             return;
         }
 
-        final ArrayList<String> command = new ArrayList<>();
+        ArrayList<String> command = new ArrayList<>();
         command.add(javaBin);
         command.add("-jar");
         command.add(FileLocations.updater.getPath());
         command.add(DragonBotMain.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
         command.add(url);
 
-        final ProcessBuilder builder = new ProcessBuilder(command);
+        ProcessBuilder builder = new ProcessBuilder(command);
         builder.start();
     }
 }
