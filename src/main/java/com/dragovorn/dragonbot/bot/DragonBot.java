@@ -192,7 +192,9 @@ public class DragonBot extends Bot {
             download.waitForCompletion();
         }
 
-        if(update.update()) {
+        update.update();
+
+        if(update.shouldStop()) {
             stop();
             return;
         }
