@@ -61,21 +61,27 @@ public class GitHubAPI {
         return new JSONObject(EntityUtils.toString(response.getEntity(), "UTF-8"));
     }
 
-    public Map<String, String> getReleases() throws IOException {
-        HashMap<String, String> strs = new HashMap<>();
+    public int getNumCommitsBetween(String tag1, String tag2) throws IOException {
+        HttpResponse response = client.execute(makeGetRequest(BASE_URL + REPO + owner + "/" + repository + "/compare/" + tag1 + "..." + tag2));
 
-        HttpResponse response = client.execute(makeGetRequest(BASE_URL + REPO + owner + "/" + repository + "/releases"));
+        return new JSONObject(EntityUtils.toString(response.getEntity(), "UTF-8")).getInt("total_commits");
+    }
+
+    public Map<String, JSONObject> getReleases() throws IOException {
+        HashMap<String, JSONObject> strs = new HashMap<>();
+
+        HttpResponse response = this.client.execute(makeGetRequest(BASE_URL + REPO + owner + "/" + repository + "/releases"));
 
         JSONArray array = new JSONArray(EntityUtils.toString(response.getEntity(), "UTF-8"));
 
         for (Object object : array) {
             JSONObject jsonObject = new JSONObject(object.toString());
 
-            if (jsonObject.getBoolean("prerelease") && !prereleases) {
+            if (jsonObject.getBoolean("prerelease") && !this.prereleases) {
                 continue;
             }
 
-            strs.put(jsonObject.getString("tag_name").substring(1), jsonObject.getJSONArray("assets").getJSONObject(0).getString("browser_download_url"));
+            strs.put(jsonObject.getString("tag_name").substring(1), jsonObject);
         }
 
         return strs;
