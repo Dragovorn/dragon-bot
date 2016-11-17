@@ -17,52 +17,15 @@
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import com.dragovorn.dragonbot.api.github.GitHubAPI;
-import com.github.rjeschke.txtmark.Processor;
-
-import javax.swing.*;
-import java.awt.*;
+import net.dgardiner.markdown.MarkdownProcessor;
+import net.dgardiner.markdown.flavours.github.GithubFlavour;
 
 public class ScratchPad {
 
     public static void main(String[] args) throws Exception {
-        GitHubAPI api = new GitHubAPI("dragovorn", "dragon-bot-twitch", false);
+        MarkdownProcessor processor = new MarkdownProcessor();
+        processor.setFlavour(new GithubFlavour());
 
-        Dimension size = new Dimension(480, 140);
-        Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-
-        JTextPane area = new JTextPane();
-        area.setSize(size);
-        area.setMaximumSize(size);
-        area.setMinimumSize(size);
-        area.setPreferredSize(size);
-        area.setContentType("text/html");
-        area.setEditable(false);
-        area.setBorder(null);
-        area.setBackground(UIManager.getColor("InternalFrame.background"));
-        area.setText("<h1>" + api.getRelease("v1.05e").getString("name") + "</h1>" + Processor.process(api.getRelease("v1.05e").getString("body")));
-
-        JScrollPane scroll = new JScrollPane(area);
-        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scroll.setViewportBorder(null);
-        scroll.setBorder(null);
-
-        JLabel recommended = new JLabel("<html><b>Updating is always recommended!</b></html>");
-        recommended.setForeground(Color.RED);
-
-        JButton update = new JButton("Update!");
-        JButton no = new JButton("Not now");
-
-        JFrame frame = new JFrame("Update found!");
-        frame.setSize(500, 200);
-        frame.setResizable(false);
-        frame.setLayout(new FlowLayout());
-        frame.add(scroll);
-        frame.add(recommended);
-        frame.add(no);
-        frame.add(update);
-        frame.setLocation(dimension.width / 2 - frame.getWidth() / 2, dimension.height / 2 - frame.getHeight() / 2);
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        System.out.println(processor.process("\\+ test  line"));
     }
 }
