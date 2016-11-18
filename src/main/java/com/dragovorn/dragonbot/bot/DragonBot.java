@@ -129,14 +129,14 @@ public class DragonBot extends Bot {
             FileLocations.plugins.mkdirs();
         }
 
-        loader = new PluginLoader();
-        commandManager = new CommandManager();
-        gitHubAPI = new GitHubAPI("dragovorn", "dragon-bot-twitch", false);
-        twitchAPI = new TwitchAPI(Keys.twitchClientID);
+        this.loader = new PluginLoader();
+        this.commandManager = new CommandManager();
+        this.gitHubAPI = new GitHubAPI("dragovorn", "dragon-bot-twitch", false);
+        this.twitchAPI = new TwitchAPI(Keys.twitchClientID);
 
-        logger = new DragonLogger("Dragon Bot", FileLocations.logs + File.separator + format.format(new Date()) + "-%g.log");
-        System.setErr(new PrintStream(new LoggingOutputStream(logger, Level.SEVERE), true));
-        System.setOut(new PrintStream(new LoggingOutputStream(logger, Level.INFO), true));
+        this.logger = new DragonLogger("Dragon Bot", FileLocations.logs + File.separator + format.format(new Date()) + "-%g.log");
+        System.setErr(new PrintStream(new LoggingOutputStream(this.logger, Level.SEVERE), true));
+        System.setOut(new PrintStream(new LoggingOutputStream(this.logger, Level.INFO), true));
 
         start();
     }
@@ -150,7 +150,7 @@ public class DragonBot extends Bot {
         setState(BotState.STARTING);
 
         AmazonS3 client = new AmazonS3Client();
-        manager = new TransferManager(client);
+        this.manager = new TransferManager(client);
 
         UpdatePanel update = new UpdatePanel();
 
@@ -166,11 +166,11 @@ public class DragonBot extends Bot {
 
             GetObjectRequest request = new GetObjectRequest("dl.dragovorn.com", "DragonBot/updater.jar");
             request.setGeneralProgressListener((ProgressEvent event) -> {
-                if (download == null) {
+                if (this.download == null) {
                     return;
                 }
 
-                getLogger().info("Downloaded " + download.getProgress().getBytesTransferred() + " out of " + download.getProgress().getTotalBytesToTransfer() + " bytes!");
+                getLogger().info("Downloaded " + this.download.getProgress().getBytesTransferred() + " out of " + this.download.getProgress().getTotalBytesToTransfer() + " bytes!");
 
                 switch (event.getEventType()) {
                     case TRANSFER_COMPLETED_EVENT: {
@@ -178,7 +178,7 @@ public class DragonBot extends Bot {
                         break;
                     } case TRANSFER_FAILED_EVENT: {
                         try {
-                            AmazonClientException exception = download.waitForException();
+                            AmazonClientException exception = this.download.waitForException();
 
                             exception.printStackTrace();
                         } catch(InterruptedException exception) { /* Won't happen */ }
@@ -187,9 +187,9 @@ public class DragonBot extends Bot {
                 }
             });
 
-            download = manager.download(request, FileLocations.updater);
+            this.download = this.manager.download(request, FileLocations.updater);
 
-            download.waitForCompletion();
+            this.download.waitForCompletion();
         }
 
         update.update();
@@ -201,7 +201,7 @@ public class DragonBot extends Bot {
 
         getLogger().info("Initializing Dragon Bot " + getVersion() + "!");
 
-        name = config.getName();
+        this.name = this.config.getName();
 
         getLogger().info("Enabling plugins...");
 
@@ -217,9 +217,9 @@ public class DragonBot extends Bot {
 
                 executorService.execute(() -> {
                     try {
-                        builder.add(loader.loadPlugin(file));
+                        builder.add(this.loader.loadPlugin(file));
                     } catch (InvalidPluginException exception) {
-                        getLogger().severe("Failed to load plugin!");
+                        getLogger().severe("Failed to load plugin");
                         exception.printStackTrace();
                     }
                 });
@@ -228,10 +228,10 @@ public class DragonBot extends Bot {
             executorService.shutdown();
         }
 
-        commandManager.registerCommand(new Uptime());
-        commandManager.registerCommand(new Github());
+        this.commandManager.registerCommand(new Uptime());
+        this.commandManager.registerCommand(new Github());
 
-        plugins = builder.build();
+        this.plugins = builder.build();
 
         getLogger().info("Loaded " + plugins.size() + " " + (plugins.size() == 0 || plugins.size() > 1 ? "plugins" : "plugin") + "!");
         getLogger().info("Connecting to twitch!");

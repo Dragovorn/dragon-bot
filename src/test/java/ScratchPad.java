@@ -17,15 +17,28 @@
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import net.dgardiner.markdown.MarkdownProcessor;
-import net.dgardiner.markdown.flavours.github.GithubFlavour;
+import com.dragovorn.dragonbot.helper.FileHelper;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.util.Scanner;
 
 public class ScratchPad {
 
     public static void main(String[] args) throws Exception {
-        MarkdownProcessor processor = new MarkdownProcessor();
-        processor.setFlavour(new GithubFlavour());
+        File file = FileHelper.getResource("path");
 
-        System.out.println(processor.process("\\+ test  line"));
+        FileWriter fileWriter = new FileWriter(file);
+        BufferedWriter writer = new BufferedWriter(fileWriter);
+
+        writer.write("test");
+
+        writer.close();
+        fileWriter.close();
+
+        Scanner scanner = new Scanner(FileHelper.getResource("path"));
+
+        System.out.println(scanner.nextLine());
     }
 }
