@@ -27,7 +27,7 @@ import com.amazonaws.services.s3.model.GetObjectMetadataRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.transfer.Download;
 import com.amazonaws.services.s3.transfer.TransferManager;
-import com.dragovorn.dragonbot.FileLocations;
+import com.dragovorn.dragonbot.FileUtils;
 import com.dragovorn.dragonbot.Keys;
 import com.dragovorn.dragonbot.Utils;
 import com.dragovorn.dragonbot.api.bot.command.Command;
@@ -45,6 +45,7 @@ import com.dragovorn.dragonbot.exceptions.ConnectionException;
 import com.dragovorn.dragonbot.exceptions.InvalidPluginException;
 import com.dragovorn.dragonbot.gui.MainWindow;
 import com.dragovorn.dragonbot.gui.panel.UpdatePanel;
+import com.dragovorn.dragonbot.helper.FileHelper;
 import com.dragovorn.dragonbot.log.DragonLogger;
 import com.dragovorn.dragonbot.log.LoggingOutputStream;
 import com.google.common.base.CharMatcher;
@@ -61,6 +62,7 @@ import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Scanner;
 import java.util.StringTokenizer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -94,7 +96,7 @@ public class DragonBot extends Bot {
 
     private OutputThread outputThread;
 
-    private Queue outQueue = new Queue();
+    private Queue outQueue;
 
     private GitHubAPI gitHubAPI;
 
@@ -107,26 +109,39 @@ public class DragonBot extends Bot {
     public DragonBot() throws Exception {
         setInstance(this);
 
-        if (!FileLocations.directory.exists()) {
-            FileLocations.directory.mkdirs();
+        this.outQueue = new Queue();
+
+        Scanner scanner = new Scanner(FileHelper.getResource("path"));
+
+        String path = scanner.nextLine();
+
+        scanner.close();
+
+        if (!path.equals("null")) {
+            FileUtils.setDirectory(path);
+            FileUtils.reloadFiles();
         }
 
-        if (!FileLocations.config.exists()) {
-            FileLocations.config.createNewFile();
-            config = new BotConfiguration();
-            config.generate();
+        if (!FileUtils.getDirectory().exists()) {
+            FileUtils.getDirectory().mkdirs();
+        }
+
+        if (!FileUtils.getConfig().exists()) {
+            FileUtils.getConfig().createNewFile();
+            this.config = new BotConfiguration();
+            this.config.generate();
         } else {
-            config = new BotConfiguration();
-            config.load();
-            config.update();
+            this.config = new BotConfiguration();
+            this.config.load();
+            this.config.update();
         }
 
-        if (!FileLocations.logs.exists()) {
-            FileLocations.logs.mkdirs();
+        if (!FileUtils.getLogs().exists()) {
+            FileUtils.getLogs().mkdirs();
         }
 
-        if (!FileLocations.plugins.exists()) {
-            FileLocations.plugins.mkdirs();
+        if (!FileUtils.getPlugins().exists()) {
+            FileUtils.getPlugins().mkdirs();
         }
 
         this.loader = new PluginLoader();
@@ -134,7 +149,7 @@ public class DragonBot extends Bot {
         this.gitHubAPI = new GitHubAPI("dragovorn", "dragon-bot-twitch", false);
         this.twitchAPI = new TwitchAPI(Keys.twitchClientID);
 
-        this.logger = new DragonLogger("Dragon Bot", FileLocations.logs + File.separator + format.format(new Date()) + "-%g.log");
+        this.logger = new DragonLogger("Dragon Bot", FileUtils.getLogs() + File.separator + this.format.format(new Date()) + "-%g.log");
         System.setErr(new PrintStream(new LoggingOutputStream(this.logger, Level.SEVERE), true));
         System.setOut(new PrintStream(new LoggingOutputStream(this.logger, Level.INFO), true));
 
@@ -159,10 +174,10 @@ public class DragonBot extends Bot {
         getLogger().info("Checking for updates...");
         getLogger().info("Checking for newer version of the updater...");
 
-        if (client.getObjectMetadata(new GetObjectMetadataRequest("dl.dragovorn.com", "DragonBot/updater.jar")).getLastModified().getTime() > FileLocations.updater.lastModified()) {
+        if (client.getObjectMetadata(new GetObjectMetadataRequest("dl.dragovorn.com", "DragonBot/updater.jar")).getLastModified().getTime() > FileUtils.getUpdater().lastModified()) {
             getLogger().info("Found a newer version of the updater, downloading it now...");
 
-            FileLocations.updater.delete();
+            FileUtils.getUpdater().delete();
 
             GetObjectRequest request = new GetObjectRequest("dl.dragovorn.com", "DragonBot/updater.jar");
             request.setGeneralProgressListener((ProgressEvent event) -> {
@@ -182,12 +197,13 @@ public class DragonBot extends Bot {
 
                             exception.printStackTrace();
                         } catch(InterruptedException exception) { /* Won't happen */ }
+
                         break;
                     }
                 }
             });
 
-            this.download = this.manager.download(request, FileLocations.updater);
+            this.download = this.manager.download(request, FileUtils.getUpdater());
 
             this.download.waitForCompletion();
         }
@@ -207,10 +223,10 @@ public class DragonBot extends Bot {
 
         ImmutableList.Builder<BotPlugin> builder = new ImmutableList.Builder<>();
 
-        if (FileLocations.plugins.listFiles() != null) {
+        if (FileUtils.getPlugins().listFiles() != null) {
             ExecutorService executorService = Executors.newCachedThreadPool();
 
-            for (File file : FileLocations.plugins.listFiles()) {
+            for (File file : FileUtils.getPlugins().listFiles()) {
                 if (!file.getName().matches("(.+).(jar)$")) {
                     continue;
                 }
@@ -233,14 +249,14 @@ public class DragonBot extends Bot {
 
         this.plugins = builder.build();
 
-        getLogger().info("Loaded " + plugins.size() + " " + (plugins.size() == 0 || plugins.size() > 1 ? "plugins" : "plugin") + "!");
+        getLogger().info("Loaded " + this.plugins.size() + " " + (this.plugins.size() == 0 || this.plugins.size() > 1 ? "plugins" : "plugin") + "!");
         getLogger().info("Connecting to twitch!");
 
-        if (!name.equals("") && !config.getAuth().equals("")) {
-            connect("irc.twitch.tv", 6667, config.getAuth());
+        if (!this.name.equals("") && !this.config.getAuth().equals("")) {
+            connect("irc.twitch.tv", 6667, this.config.getAuth());
 
-            if (config.getAutoConnect() && !config.getChannel().equals("")) {
-                connectTo("#" + config.getChannel());
+            if (this.config.getAutoConnect() && !this.config.getChannel().equals("")) {
+                connectTo("#" + this.config.getChannel());
             }
         } else {
             MainWindow.getInstance().getChannelButton().setEnabled(false);
@@ -296,7 +312,7 @@ public class DragonBot extends Bot {
 
     @Override
     public String getName() {
-        return name;
+        return this.name;
     }
 
     @Override
@@ -326,12 +342,12 @@ public class DragonBot extends Bot {
 
     @Override
     public BotConfiguration getConfiguration() {
-        return config;
+        return this.config;
     }
 
     @Override
     public String getChannel() {
-        if (connection == null) {
+        if (this.connection == null) {
             return "";
         }
 
@@ -340,23 +356,23 @@ public class DragonBot extends Bot {
 
     @Override
     public synchronized void connectTo(String channel) {
-        connection.setChannel(channel.substring(1));
-        config.setChannel(channel.substring(1));
+        this.connection.setChannel(channel.substring(1));
+        this.config.setChannel(channel.substring(1));
 
-        this.sendRawLine("JOIN " + channel);
+        sendRawLine("JOIN " + channel);
 
         getEventBus().post(new ChannelEnterEvent(channel));
     }
 
     @Override
     public void leaveChannel() {
-        if (connection == null || connection.getChannel().equals("")) {
+        if (this.connection == null || this.connection.getChannel().equals("")) {
             return;
         }
 
-        this.sendRawLine("PART " + connection.getChannel());
+        sendRawLine("PART " + this.connection.getChannel());
 
-        connection.setChannel("");
+        this.connection.setChannel("");
     }
 
     @Override
@@ -369,28 +385,28 @@ public class DragonBot extends Bot {
 
         Socket socket;
 
-        if (connection.useSSL()) {
+        if (this.connection.useSSL()) {
             try {
                 SocketFactory factory;
 
-                if (connection.verifySSL()) {
+                if (this.connection.verifySSL()) {
                     factory = SSLSocketFactory.getDefault();
                 } else {
                     SSLContext context = UnverifiedSSL.getUnverifedSSLContext();
                     factory = context.getSocketFactory();
                 }
 
-                socket = factory.createSocket(connection.getServer(), connection.getPort());
+                socket = factory.createSocket(this.connection.getServer(), this.connection.getPort());
             } catch (Exception exception) {
                 throw new SSLException("SSL Failure");
             }
         } else {
-            socket = new Socket(connection.getServer(), connection.getPort());
+            socket = new Socket(this.connection.getServer(), this.connection.getPort());
         }
 
         getLogger().info("Connected to twitch!");
 
-        inetAddress = socket.getInetAddress();
+        this.inetAddress = socket.getInetAddress();
 
         InputStreamReader reader;
         OutputStreamWriter writer;
@@ -406,14 +422,14 @@ public class DragonBot extends Bot {
         BufferedReader bufferedReader = new BufferedReader(reader);
         BufferedWriter bufferedWriter = new BufferedWriter(writer);
 
-        if (connection.getPassword() != null && !connection.getPassword().equals("")) {
-            OutputThread.sendRawLine(this, bufferedWriter, "PASS " + connection.getPassword());
+        if (this.connection.getPassword() != null && !this.connection.getPassword().equals("")) {
+            OutputThread.sendRawLine(this, bufferedWriter, "PASS " + this.connection.getPassword());
         }
 
         OutputThread.sendRawLine(this, bufferedWriter, "NICK " + this.getName());
         OutputThread.sendRawLine(this, bufferedWriter, "USER " + this.getName() + " 8 * :" + this.getName());
 
-        inputThread = new InputThread(this, socket, bufferedReader, bufferedWriter);
+        this.inputThread = new InputThread(this, socket, bufferedReader, bufferedWriter);
 
         String line;
 
@@ -436,7 +452,7 @@ public class DragonBot extends Bot {
                 } else if (code.startsWith("5") || code.startsWith("4")) {
                     socket.close();
 
-                    inputThread = null;
+                    this.inputThread = null;
 
                     throw new ConnectionException("Could not log into the IRC Server: " + line);
                 }
@@ -447,11 +463,11 @@ public class DragonBot extends Bot {
 
         socket.setSoTimeout(5 * 60 * 1000);
 
-        inputThread.start();
+        this.inputThread.start();
 
-        if (outputThread == null) {
-            outputThread = new OutputThread(this, outQueue);
-            outputThread.start();
+        if (this.outputThread == null) {
+            this.outputThread = new OutputThread(this, this.outQueue);
+            this.outputThread.start();
         }
 
         sendRawLine("CAP REQ :twitch.tv/membership");
@@ -463,11 +479,11 @@ public class DragonBot extends Bot {
 
     @Override
     public void sendMessage(String message) {
-        if (connection.getChannel().equals("")) {
+        if (this.connection.getChannel().equals("")) {
             return; // We are no in a channel then
         }
 
-        outQueue.add("PRIVMSG #" + connection.getChannel() + " :" + message);
+        this.outQueue.add("PRIVMSG #" + this.connection.getChannel() + " :" + message);
     }
 
     @Override
@@ -477,7 +493,7 @@ public class DragonBot extends Bot {
 
     @Override
     public synchronized boolean isConnected() {
-        return inputThread != null && inputThread.isConnected();
+        return this.inputThread != null && this.inputThread.isConnected();
     }
 
     @Override
@@ -566,7 +582,7 @@ public class DragonBot extends Bot {
             String request = line.substring(line.indexOf(":\u0001") + 2, line.length() - 1);
 
             // TODO: Check for CTP Requests
-        } else if (command.equals("PRIVMSG") && channelPrefixes.indexOf(target.charAt(0)) >= 0) {
+        } else if (command.equals("PRIVMSG") && this.channelPrefixes.indexOf(target.charAt(0)) >= 0) {
             User user = new User(nick, login, hostname, tags.build());
 
             String message = line.substring(line.indexOf(" :") + 2);
@@ -594,7 +610,7 @@ public class DragonBot extends Bot {
     @Override
     public synchronized void sendRawLine(String line) {
         if (isConnected()) {
-            inputThread.sendRawLine(line);
+            this.inputThread.sendRawLine(line);
         }
     }
 
@@ -605,7 +621,7 @@ public class DragonBot extends Bot {
         }
 
         if (isConnected()) {
-            outQueue.add(line);
+            this.outQueue.add(line);
         }
     }
 
