@@ -1,5 +1,5 @@
 Dragon Bot
 ==========
 The Dragon Bot is a twitch bot that allows other developers to make plugins and expand it to make it better
-this bot was created with the ideas that Bukkit (link soon) was created under. To allow the users to make their
+this bot was created with the ideas that Spigot (link soon) was created under. To allow the users to make their
 own addons to it's software to fit their needs.
