@@ -19,7 +19,7 @@
 
 package com.dragovorn.dragonbot.bot;
 
-import com.dragovorn.dragonbot.FileLocations;
+import com.dragovorn.dragonbot.FileUtils;
 import com.dragovorn.dragonbot.api.bot.configuration.Configuration;
 
 import java.util.*;
@@ -27,7 +27,7 @@ import java.util.*;
 public class BotConfiguration extends Configuration {
 
     public BotConfiguration() {
-        super(FileLocations.config);
+        super(FileUtils.getConfig());
     }
 
     protected Map<String, Object> defaults = new HashMap<>();

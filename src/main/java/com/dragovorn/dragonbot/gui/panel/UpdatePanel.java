@@ -20,7 +20,7 @@
 package com.dragovorn.dragonbot.gui.panel;
 
 import com.dragovorn.dragonbot.DragonBotMain;
-import com.dragovorn.dragonbot.FileLocations;
+import com.dragovorn.dragonbot.FileUtils;
 import com.dragovorn.dragonbot.bot.Bot;
 import com.dragovorn.dragonbot.bot.DragonBot;
 import com.dragovorn.dragonbot.gui.MainWindow;
@@ -206,7 +206,7 @@ public class UpdatePanel extends JPanel {
     private void launchUpdater(String url) throws Exception {
         String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
 
-        if (!FileLocations.updater.getName().endsWith(".jar")) {
+        if (!FileUtils.updater.getName().endsWith(".jar")) {
             System.exit(0);
             return;
         }
@@ -214,7 +214,7 @@ public class UpdatePanel extends JPanel {
         ArrayList<String> command = new ArrayList<>();
         command.add(javaBin);
         command.add("-jar");
-        command.add(FileLocations.updater.getPath());
+        command.add(FileUtils.updater.getPath());
         command.add(DragonBotMain.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
         command.add(url);
 
