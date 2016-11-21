@@ -63,40 +63,40 @@ public class MainWindow {
 
         Dimension size = new Dimension(500, 250);
 
-        panel = new JPanel();
-        panel.setLayout(new FlowLayout());
-        panel.setSize(size);
-        panel.setPreferredSize(size);
-        panel.setMaximumSize(size);
-        panel.setMinimumSize(size);
+        this.panel = new JPanel();
+        this.panel.setLayout(new FlowLayout());
+        this.panel.setSize(size);
+        this.panel.setPreferredSize(size);
+        this.panel.setMaximumSize(size);
+        this.panel.setMinimumSize(size);
 
-        channel = new JTextField(9);
+        this.channel = new JTextField(9);
 
         DefaultStyledDocument document = new DefaultStyledDocument();
         document.setDocumentFilter(new DocumentSizeFilter(25));
 
-        channel.setDocument(document);
+        this.channel.setDocument(document);
 
-        channelPrompt = new TextPrompt((Bot.getInstance().getConfiguration().getChannel().equals("") ? "Channel Name" : Bot.getInstance().getConfiguration().getChannel()), channel);
+        this.channelPrompt = new TextPrompt((Bot.getInstance().getConfiguration().getChannel().equals("") ? "Channel Name" : Bot.getInstance().getConfiguration().getChannel()), this.channel);
 
         if (Bot.getInstance().getConfiguration().getAutoConnect()) {
-            channelButton = new JButton("Leave Channel");
-            channelButton.addActionListener(new LeaveListener());
-            channel.setEditable(false);
+            this.channelButton = new JButton("Leave Channel");
+            this.channelButton.addActionListener(new LeaveListener());
+            this.channel.setEditable(false);
         } else {
-            channelButton = new JButton("Join Channel");
-            channel.addActionListener(new JoinListener());
-            channelButton.addActionListener(new JoinListener());
+            this.channelButton = new JButton("Join Channel");
+            this.channel.addActionListener(new JoinListener());
+            this.channelButton.addActionListener(new JoinListener());
         }
 
-        options = new JButton("Options");
-        options.addActionListener(new OptionsListener());
+        this.options = new JButton("Options");
+        this.options.addActionListener(new OptionsListener());
 
-        panel.add(channel);
-        panel.add(channelButton);
-        panel.add(options);
+        this.panel.add(this.channel);
+        this.panel.add(this.channelButton);
+        this.panel.add(this.options);
 
-        return panel;
+        return this.panel;
     }
 
     private void init(Container container) {
@@ -107,13 +107,13 @@ public class MainWindow {
             this.panel = makePanel();
         }
 
-        frame = new JFrame(TITLE);
-        frame.setLocation(screen.width / 2 - container.getSize().width / 2, screen.height / 2 - container.getSize().height / 2);
-        frame.setResizable(false);
-        frame.setContentPane(container);
-        frame.pack();
-        frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-        frame.addWindowListener(new WindowAdapter() {
+        this.frame = new JFrame(TITLE);
+        this.frame.setLocation(this.screen.width / 2 - container.getSize().width / 2, this.screen.height / 2 - container.getSize().height / 2);
+        this.frame.setResizable(false);
+        this.frame.setContentPane(container);
+        this.frame.pack();
+        this.frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        this.frame.addWindowListener(new WindowAdapter() {
 
             @Override
             public void windowClosing(WindowEvent event) {
@@ -122,33 +122,33 @@ public class MainWindow {
                 Bot.getInstance().stop();
             }
         });
-        frame.setVisible(true);
+        this.frame.setVisible(true);
     }
 
     public JTextField getChannel() {
-        return channel;
+        return this.channel;
     }
 
     public TextPrompt getChannelPrompt() {
-        return channelPrompt;
+        return this.channelPrompt;
     }
 
     public JButton getChannelButton() {
-        return channelButton;
+        return this.channelButton;
     }
 
     public JButton getOptions() {
-        return options;
+        return this.options;
     }
 
     public JPanel getPanel() {
-        return panel;
+        return this.panel;
     }
 
     public void center() {
         Container container = this.frame.getContentPane();
 
-        setLocation(screen.width / 2 - container.getSize().width / 2, screen.height / 2 - container.getSize().height / 2);
+        setLocation(this.screen.width / 2 - container.getSize().width / 2, this.screen.height / 2 - container.getSize().height / 2);
     }
 
     public void setLocation(int x, int y) {

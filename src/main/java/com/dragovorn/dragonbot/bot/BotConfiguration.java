@@ -30,47 +30,47 @@ public class BotConfiguration extends Configuration {
         super(FileUtils.getConfig());
     }
 
-    protected Map<String, Object> defaults = new HashMap<>();
+    private Map<String, Object> defaults = new HashMap<>();
 
     private void addDefaults() {
-        defaults.clear();
+        this.defaults.clear();
 
-        defaults.put("name", "");
-        defaults.put("oauth", "");
-        defaults.put("channel", "");
-        defaults.put("console", false);
-        defaults.put("auto connect", false);
-        defaults.put("test versions", false);
-        defaults.put("ask for update", true);
-        defaults.put("check for updates", false);
-        defaults.put("twitch-api key", ""); // This might get removed.
+        this.defaults.put("name", "");
+        this.defaults.put("oauth", "");
+        this.defaults.put("channel", "");
+        this.defaults.put("console", true);
+        this.defaults.put("auto connect", false);
+        this.defaults.put("snapshot versions", false);
+        this.defaults.put("ask for update", true);
+        this.defaults.put("check for updates", false);
+        this.defaults.put("twitch-api key", ""); // This might get removed.
     }
 
     private void setDefaults() {
         addDefaults();
-        entries.clear();
-        entries.putAll(defaults);
+        this.entries.clear();
+        this.entries.putAll(this.defaults);
     }
 
     public void update() {
         addDefaults();
 
-        for (Map.Entry<String, Object> entry : defaults.entrySet()) {
-            if (!entries.containsKey(entry.getKey())) {
-                entries.put(entry.getKey(), entry.getValue());
+        for (Map.Entry<String, Object> entry : this.defaults.entrySet()) {
+            if (!this.entries.containsKey(entry.getKey())) {
+                this.entries.put(entry.getKey(), entry.getValue());
             }
         }
 
         ArrayList<String> remove = new ArrayList<>();
 
-        for (Map.Entry<String, Object> entry : entries.entrySet()) {
-            if (!defaults.containsKey(entry.getKey())) {
+        for (Map.Entry<String, Object> entry : this.entries.entrySet()) {
+            if (!this.defaults.containsKey(entry.getKey())) {
                 remove.add(entry.getKey());
             }
         }
 
         for (String str : remove) {
-            entries.remove(str);
+            this.entries.remove(str);
         }
     }
 
@@ -100,7 +100,7 @@ public class BotConfiguration extends Configuration {
     }
 
     public boolean getPreReleases() {
-        return getBoolean("test versions");
+        return getBoolean("snapshot versions");
     }
 
     public void setName(String name) {
@@ -124,6 +124,6 @@ public class BotConfiguration extends Configuration {
     }
 
     public void setPreReleases(boolean preReleases) {
-        set("test versions", preReleases);
+        set("snapshot versions", preReleases);
     }
 }

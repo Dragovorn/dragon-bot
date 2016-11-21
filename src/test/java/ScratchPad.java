@@ -17,28 +17,9 @@
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import com.dragovorn.dragonbot.helper.FileHelper;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.util.Scanner;
-
 public class ScratchPad {
 
     public static void main(String[] args) throws Exception {
-        File file = FileHelper.getResource("path");
 
-        FileWriter fileWriter = new FileWriter(file);
-        BufferedWriter writer = new BufferedWriter(fileWriter);
-
-        writer.write("test");
-
-        writer.close();
-        fileWriter.close();
-
-        Scanner scanner = new Scanner(FileHelper.getResource("path"));
-
-        System.out.println(scanner.nextLine());
     }
 }

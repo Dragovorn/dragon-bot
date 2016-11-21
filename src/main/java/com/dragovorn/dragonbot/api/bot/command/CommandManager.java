@@ -34,40 +34,40 @@ public class CommandManager {
     private List<ConsoleCommand> consoleCommands;
 
     public CommandManager() {
-        commands = new ArrayList<>();
-        consoleCommands = new ArrayList<>();
+        this.commands = new ArrayList<>();
+        this.consoleCommands = new ArrayList<>();
     }
 
-    public void registerCommand(Command command) {
+    public void registerCommand(@NotNull Command command) {
         if (Bot.getInstance().getState() != BotState.STARTING) {
             return;
         }
 
-        if (commands.contains(command)) {
+        if (this.commands.contains(command)) {
             return;
         }
 
-        commands.add(command);
+        this.commands.add(command);
     }
 
-    public void registerConsoleCommand(ConsoleCommand command) {
+    public void registerConsoleCommand(@NotNull ConsoleCommand command) {
         if (Bot.getInstance().getState() != BotState.STARTING) {
             return;
         }
 
-        if (consoleCommands.contains(command)) {
+        if (this.consoleCommands.contains(command)) {
             return;
         }
 
-        consoleCommands.add(command);
+        this.consoleCommands.add(command);
     }
 
     public ImmutableList<Command> getCommands() {
-        return ImmutableList.copyOf(commands);
+        return ImmutableList.copyOf(this.commands);
     }
 
     public ImmutableList<ConsoleCommand> getConsoleCommands() {
-        return ImmutableList.copyOf(consoleCommands);
+        return ImmutableList.copyOf(this.consoleCommands);
     }
 
     @Nullable
