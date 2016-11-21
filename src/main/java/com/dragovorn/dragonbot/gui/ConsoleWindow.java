@@ -45,41 +45,41 @@ public class ConsoleWindow {
 
         Dimension size = new Dimension(800, 300);
 
-        panel = new JPanel();
+        this.panel = new JPanel();
 
-        panel.setLayout(new FlowLayout());
-        panel.setPreferredSize(size);
-        panel.setMinimumSize(size);
-        panel.setMaximumSize(size);
-        panel.setSize(size);
+        this.panel.setLayout(new FlowLayout());
+        this.panel.setPreferredSize(size);
+        this.panel.setMinimumSize(size);
+        this.panel.setMaximumSize(size);
+        this.panel.setSize(size);
 
-        console = new JTextArea(16, 65);
-        console.setEditable(false);
-        console.setLineWrap(true);
+        this.console = new JTextArea(16, 65);
+        this.console.setEditable(false);
+        this.console.setLineWrap(true);
 
-        command = new JTextField(58);
-        command.addActionListener(new SendListener());
+        this.command = new JTextField(58);
+        this.command.addActionListener(new SendListener());
 
         DefaultStyledDocument document = new DefaultStyledDocument();
         document.setDocumentFilter(new DocumentSizeFilter(102));
 
-        command.setDocument(document);
+        this.command.setDocument(document);
 
-        button = new JButton("Send");
-        button.setSize(5, 5);
-        button.addActionListener(new SendListener());
+        this.button = new JButton("Send");
+        this.button.setSize(5, 5);
+        this.button.addActionListener(new SendListener());
 
-        panel.add(new JScrollPane(console));
-        panel.add(command);
-        panel.add(button);
+        this.panel.add(new JScrollPane(this.console));
+        this.panel.add(this.command);
+        this.panel.add(this.button);
 
-        jFrame = new JFrame("Console");
+        this.jFrame = new JFrame("Console");
 
-        jFrame.setResizable(false);
-        jFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-        jFrame.add(panel);
-        jFrame.pack();
-        jFrame.setVisible(true);
+        this.jFrame.setResizable(false);
+        this.jFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        this.jFrame.add(panel);
+        this.jFrame.pack();
+        this.jFrame.setVisible(true);
     }
 
     public JTextArea getConsole() {

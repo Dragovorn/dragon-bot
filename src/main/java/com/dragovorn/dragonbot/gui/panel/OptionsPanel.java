@@ -50,13 +50,13 @@ public class OptionsPanel extends JPanel {
 
         JPanel buttons = new JPanel();
 
-        console = new JCheckBox("Enable Development Console");
-        console.setToolTipText("Enable the development console to see the logs in real time, as well as run developer commands.");
-        console.setSelected(Bot.getInstance().getConfiguration().getConsole());
+        this.console = new JCheckBox("Enable Development Console");
+        this.console.setToolTipText("Enable the development console to see the logs in real time, as well as run developer commands.");
+        this.console.setSelected(Bot.getInstance().getConfiguration().getConsole());
 
-        autoConnect = new JCheckBox("Auto-connect to \'" + Bot.getInstance().getConfiguration().getChannel() + "\'");
-        autoConnect.setToolTipText("Allow the bot to automatically connect to \'" + Bot.getInstance().getConfiguration().getChannel() + "\' when it starts up.");
-        autoConnect.setSelected(Bot.getInstance().getConfiguration().getAutoConnect());
+        this.autoConnect = new JCheckBox("Auto-connect to \'" + Bot.getInstance().getConfiguration().getChannel() + "\'");
+        this.autoConnect.setToolTipText("Allow the bot to automatically connect to \'" + Bot.getInstance().getConfiguration().getChannel() + "\' when it starts up.");
+        this.autoConnect.setSelected(Bot.getInstance().getConfiguration().getAutoConnect());
 
         JButton back = new JButton("Back");
         back.addActionListener(new BackListener());
@@ -64,9 +64,10 @@ public class OptionsPanel extends JPanel {
         JButton apply = new JButton("Apply");
         apply.addActionListener(new ApplyListener());
 
-        options.add(console);
+        options.add(this.console);
+
         if (!Bot.getInstance().getConfiguration().getChannel().equals("")) {
-            options.add(autoConnect);
+            options.add(this.autoConnect);
         }
 
         buttons.add(back);
@@ -77,19 +78,19 @@ public class OptionsPanel extends JPanel {
     }
 
     public JCheckBox getConsole() {
-        return console;
+        return this.console;
     }
 
     public JCheckBox getAutoConnect() {
-        return autoConnect;
+        return this.autoConnect;
     }
 
     public boolean discrepancies() {
-        if (console.isSelected() != Bot.getInstance().getConfiguration().getConsole()) {
+        if (this.console.isSelected() != Bot.getInstance().getConfiguration().getConsole()) {
             return true;
         }
 
-        if (autoConnect.isSelected() != Bot.getInstance().getConfiguration().getAutoConnect()) {
+        if (this.autoConnect.isSelected() != Bot.getInstance().getConfiguration().getAutoConnect()) {
             return true;
         }
 

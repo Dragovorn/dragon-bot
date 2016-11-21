@@ -19,6 +19,8 @@
 
 package com.dragovorn.dragonbot.api.bot.command;
 
+import com.sun.istack.internal.NotNull;
+
 public abstract class ConsoleCommand {
     private final boolean argsRequired;
 
@@ -26,7 +28,7 @@ public abstract class ConsoleCommand {
 
     private final String name;
 
-    public ConsoleCommand(String name, int requiredArgs, boolean argsRequired) {
+    public ConsoleCommand(@NotNull String name, @NotNull int requiredArgs, @NotNull boolean argsRequired) {
         this.name = name;
         this.requiredArgs = requiredArgs;
         this.argsRequired = argsRequired;
@@ -44,5 +46,5 @@ public abstract class ConsoleCommand {
         return name;
     }
 
-    public abstract void execute(String[] args);
+    public abstract void execute(@NotNull String[] args);
 }

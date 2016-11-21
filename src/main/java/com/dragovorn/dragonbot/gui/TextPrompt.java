@@ -29,6 +29,7 @@ import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
+// Leave this as is, other developers might want to make use of this resource.
 public class TextPrompt extends JLabel implements FocusListener, DocumentListener {
 
     public enum Show {

@@ -20,6 +20,8 @@
 package com.dragovorn.dragonbot;
 
 import com.dragovorn.dragonbot.helper.FileHelper;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -28,6 +30,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+// Maybe move this into api.bot.file?
 public class FileUtils {
 
     private static File directory = new File("Dragon Bot");
@@ -43,18 +46,55 @@ public class FileUtils {
         logs = new File(directory, "logs");
         plugins = new File(directory, "plugins");
         updater = new File(directory, "updater.jar");
+
+        final List<File> files = new ArrayList<>();
+
+        pluginAddedFiles.forEach(file -> files.add(new File(directory, file.getName())));
+        pluginAddedFiles.clear();
+        pluginAddedFiles.addAll(files);
+
+        // TODO after reloading cut and paste them to the new location
     }
 
-    public static File getFile(String name) {
-        // todo
+    @Nullable
+    public static File getFile(@NotNull String name) {
+        for (File file : pluginAddedFiles) {
+            if (file.getName().indexOf(".") > 0) {
+                if (file.getName().substring(0, file.getName().lastIndexOf(".")).equals(name)) {
+                    return file;
+                }
+            }
+        }
+
+        return null;
     }
 
-    public static void addFile(File file) {
+    public static File addFile(@NotNull String name) {
+        File file = new File(directory, name);
+
+        if (!file.exists()) {
+            if (name.lastIndexOf(".") == -1) {
+                file.mkdirs();
+            } else {
+                try {
+                    file.createNewFile();
+                } catch (IOException exception) {
+                    exception.printStackTrace();
+                }
+            }
+        }
+
         pluginAddedFiles.add(file);
+
+        return file;
     }
 
     public static void setDirectory(String directory) {
         FileUtils.directory = new File(directory, "Dragon Bot");
+
+        if (!FileUtils.directory.exists()) {
+            FileUtils.directory.mkdirs();
+        }
 
         File file = FileHelper.getResource("path");
 
@@ -70,7 +110,6 @@ public class FileUtils {
         } catch (IOException exception) {
             exception.printStackTrace();
         }
-
 
         reloadFiles();
     }

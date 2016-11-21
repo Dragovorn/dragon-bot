@@ -150,6 +150,10 @@ public class UpdatePanel extends JPanel {
                 builder.append("<br>You are <b>").append(DragonBot.getInstance().getGitHubAPI().getNumCommitsBetween(Bot.getInstance().getVersion(), releases.get(x).getString("tag_name"))).append(" commits</b> behind!<br>");
             }
 
+            if (releases.get(x).getBoolean("prerelease")) {
+                builder.append("<font color=\"red\"><b>SNAPSHOT</b></font>");
+            }
+
             builder.append(processor.process(releases.get(x).getString("body")));
 
             if (x != 0) {
@@ -206,7 +210,7 @@ public class UpdatePanel extends JPanel {
     private void launchUpdater(String url) throws Exception {
         String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
 
-        if (!FileUtils.updater.getName().endsWith(".jar")) {
+        if (!FileUtils.getUpdater().getName().endsWith(".jar")) {
             System.exit(0);
             return;
         }
@@ -214,7 +218,7 @@ public class UpdatePanel extends JPanel {
         ArrayList<String> command = new ArrayList<>();
         command.add(javaBin);
         command.add("-jar");
-        command.add(FileUtils.updater.getPath());
+        command.add(FileUtils.getUpdater().getPath());
         command.add(DragonBotMain.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
         command.add(url);
 
