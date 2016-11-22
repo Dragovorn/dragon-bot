@@ -27,7 +27,6 @@ import com.amazonaws.services.s3.model.GetObjectMetadataRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.transfer.Download;
 import com.amazonaws.services.s3.transfer.TransferManager;
-import com.dragovorn.dragonbot.FileUtils;
 import com.dragovorn.dragonbot.Keys;
 import com.dragovorn.dragonbot.Utils;
 import com.dragovorn.dragonbot.api.bot.command.Command;
@@ -35,6 +34,7 @@ import com.dragovorn.dragonbot.api.bot.command.CommandManager;
 import com.dragovorn.dragonbot.api.bot.event.ChannelEnterEvent;
 import com.dragovorn.dragonbot.api.bot.event.ServerConnectEvent;
 import com.dragovorn.dragonbot.api.bot.event.UserMessageEvent;
+import com.dragovorn.dragonbot.api.bot.file.FileUtils;
 import com.dragovorn.dragonbot.api.bot.plugin.BotPlugin;
 import com.dragovorn.dragonbot.api.bot.plugin.PluginLoader;
 import com.dragovorn.dragonbot.api.github.GitHubAPI;
@@ -119,7 +119,6 @@ public class DragonBot extends Bot {
 
         if (!path.equals("null")) {
             FileUtils.setDirectory(path);
-            FileUtils.reloadFiles();
         }
 
         if (!FileUtils.getDirectory().exists()) {
@@ -146,12 +145,16 @@ public class DragonBot extends Bot {
 
         this.loader = new PluginLoader();
         this.commandManager = new CommandManager();
-        this.gitHubAPI = new GitHubAPI("dragovorn", "dragon-bot-twitch", false);
+        this.gitHubAPI = new GitHubAPI("dragovorn", "dragon-bot-twitch", this.config.getPreReleases());
         this.twitchAPI = new TwitchAPI(Keys.twitchClientID);
 
         this.logger = new DragonLogger("Dragon Bot", FileUtils.getLogs() + File.separator + this.format.format(new Date()) + "-%g.log");
         System.setErr(new PrintStream(new LoggingOutputStream(this.logger, Level.SEVERE), true));
         System.setOut(new PrintStream(new LoggingOutputStream(this.logger, Level.INFO), true));
+
+        if (!path.equals("null")) {
+            getLogger().info("Different file path found: " + FileUtils.getDirectory().getPath());
+        }
 
         start();
     }
@@ -637,7 +640,7 @@ public class DragonBot extends Bot {
 
     @Override
     public void setEncoding(String charset) throws UnsupportedEncodingException {
-        "".getBytes(charset); // Check if the charset is supported
+        "".getBytes(charset);
 
         this.charset = charset;
     }

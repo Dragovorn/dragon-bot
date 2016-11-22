@@ -19,7 +19,7 @@
 
 package com.dragovorn.dragonbot.bot;
 
-import com.dragovorn.dragonbot.FileUtils;
+import com.dragovorn.dragonbot.api.bot.file.FileUtils;
 import com.dragovorn.dragonbot.api.bot.configuration.Configuration;
 
 import java.util.*;
