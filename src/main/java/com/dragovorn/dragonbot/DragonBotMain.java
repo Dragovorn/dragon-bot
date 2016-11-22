@@ -19,6 +19,8 @@
 
 package com.dragovorn.dragonbot;
 
+import com.dragovorn.dragonbot.bot.DragonBot;
+
 import javax.swing.*;
 
 public class DragonBotMain {
@@ -26,6 +28,6 @@ public class DragonBotMain {
     public static void main(String[] args) throws Exception {
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
-        new com.dragovorn.dragonbot.bot.DragonBot();
+        new DragonBot();
     }
 }

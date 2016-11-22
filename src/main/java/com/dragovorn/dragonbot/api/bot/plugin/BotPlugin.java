@@ -25,6 +25,11 @@ public abstract class BotPlugin {
 
     private PluginInfo info;
 
+    /**
+     * This is called when the bot first loads (before GUI is displayed)
+     */
+    public void onLoad() { }
+
     public void onEnable() { }
 
     public void onDisable() { }
