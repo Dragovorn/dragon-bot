@@ -6,18 +6,18 @@
  *  sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
  *  furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all copies or
- * substantial portions of the Software.
+ *  The above copyright notice and this permission notice shall be included in all copies or
+ *  substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
- * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
- * PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
- * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ *  INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+ *  PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ *  COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ *  ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH
+ *  THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.dragovorn.dragonbot;
+package com.dragovorn.dragonbot.api.bot.file;
 
 import com.dragovorn.dragonbot.helper.FileHelper;
 import com.sun.istack.internal.NotNull;
@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-// Maybe move this into api.bot.file?
 public class FileUtils {
 
     private static File directory = new File("Dragon Bot");
@@ -42,18 +41,25 @@ public class FileUtils {
     private static List<File> pluginAddedFiles = new ArrayList<>();
 
     public static void reloadFiles() {
-        config = new File(directory, "config.yml");
-        logs = new File(directory, "logs");
-        plugins = new File(directory, "plugins");
-        updater = new File(directory, "updater.jar");
+        List<File> toCopy = new ArrayList<>();
 
-        final List<File> files = new ArrayList<>();
-
-        pluginAddedFiles.forEach(file -> files.add(new File(directory, file.getName())));
+        File file = new File(directory, config.getName());
+        
+        FileHelper.copy(config, file);
+        
+        config = file;
+        
+        file = new File(directory, logs.getName());
+        
+        FileHelper.copy(logs, file);
+        
+        file = new File(directory, plugins.getName());
+        
+        FileHelper.copy(logs, ); // FIXME: 11/22/16 real glitchy shit i'm sure
+        
+        toCopy.addAll(pluginAddedFiles);
+        
         pluginAddedFiles.clear();
-        pluginAddedFiles.addAll(files);
-
-        // TODO after reloading cut and paste them to the new location
     }
 
     @Nullable
