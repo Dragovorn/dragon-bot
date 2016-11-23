@@ -34,7 +34,7 @@ import com.dragovorn.dragonbot.api.bot.command.CommandManager;
 import com.dragovorn.dragonbot.api.bot.event.ChannelEnterEvent;
 import com.dragovorn.dragonbot.api.bot.event.ServerConnectEvent;
 import com.dragovorn.dragonbot.api.bot.event.UserMessageEvent;
-import com.dragovorn.dragonbot.api.bot.file.FileUtils;
+import com.dragovorn.dragonbot.api.bot.file.FileManager;
 import com.dragovorn.dragonbot.api.bot.plugin.BotPlugin;
 import com.dragovorn.dragonbot.api.bot.plugin.PluginLoader;
 import com.dragovorn.dragonbot.api.github.GitHubAPI;
@@ -118,15 +118,15 @@ public class DragonBot extends Bot {
         scanner.close();
 
         if (!path.equals("null")) {
-            FileUtils.setDirectory(path);
+            FileManager.setDirectory(path);
         }
 
-        if (!FileUtils.getDirectory().exists()) {
-            FileUtils.getDirectory().mkdirs();
+        if (!FileManager.getDirectory().exists()) {
+            FileManager.getDirectory().mkdirs();
         }
 
-        if (!FileUtils.getConfig().exists()) {
-            FileUtils.getConfig().createNewFile();
+        if (!FileManager.getConfig().exists()) {
+            FileManager.getConfig().createNewFile();
             this.config = new BotConfiguration();
             this.config.generate();
         } else {
@@ -135,12 +135,12 @@ public class DragonBot extends Bot {
             this.config.update();
         }
 
-        if (!FileUtils.getLogs().exists()) {
-            FileUtils.getLogs().mkdirs();
+        if (!FileManager.getLogs().exists()) {
+            FileManager.getLogs().mkdirs();
         }
 
-        if (!FileUtils.getPlugins().exists()) {
-            FileUtils.getPlugins().mkdirs();
+        if (!FileManager.getPlugins().exists()) {
+            FileManager.getPlugins().mkdirs();
         }
 
         this.loader = new PluginLoader();
@@ -148,12 +148,12 @@ public class DragonBot extends Bot {
         this.gitHubAPI = new GitHubAPI("dragovorn", "dragon-bot-twitch", this.config.getPreReleases());
         this.twitchAPI = new TwitchAPI(Keys.twitchClientID);
 
-        this.logger = new DragonLogger("Dragon Bot", FileUtils.getLogs() + File.separator + this.format.format(new Date()) + "-%g.log");
+        this.logger = new DragonLogger("Dragon Bot", FileManager.getLogs() + File.separator + this.format.format(new Date()) + "-%g.log");
         System.setErr(new PrintStream(new LoggingOutputStream(this.logger, Level.SEVERE), true));
         System.setOut(new PrintStream(new LoggingOutputStream(this.logger, Level.INFO), true));
 
         if (!path.equals("null")) {
-            getLogger().info("Different file path found: " + FileUtils.getDirectory().getPath());
+            getLogger().info("Different file path found: " + FileManager.getDirectory().getPath());
         }
 
         start();
@@ -177,10 +177,10 @@ public class DragonBot extends Bot {
         getLogger().info("Checking for updates...");
         getLogger().info("Checking for newer version of the updater...");
 
-        if (client.getObjectMetadata(new GetObjectMetadataRequest("dl.dragovorn.com", "DragonBot/updater.jar")).getLastModified().getTime() > FileUtils.getUpdater().lastModified()) {
+        if (client.getObjectMetadata(new GetObjectMetadataRequest("dl.dragovorn.com", "DragonBot/updater.jar")).getLastModified().getTime() > FileManager.getUpdater().lastModified()) {
             getLogger().info("Found a newer version of the updater, downloading it now...");
 
-            FileUtils.getUpdater().delete();
+            FileManager.getUpdater().delete();
 
             GetObjectRequest request = new GetObjectRequest("dl.dragovorn.com", "DragonBot/updater.jar");
             request.setGeneralProgressListener((ProgressEvent event) -> {
@@ -206,7 +206,7 @@ public class DragonBot extends Bot {
                 }
             });
 
-            this.download = this.manager.download(request, FileUtils.getUpdater());
+            this.download = this.manager.download(request, FileManager.getUpdater());
 
             this.download.waitForCompletion();
         }
@@ -226,10 +226,10 @@ public class DragonBot extends Bot {
 
         ImmutableList.Builder<BotPlugin> builder = new ImmutableList.Builder<>();
 
-        if (FileUtils.getPlugins().listFiles() != null) {
+        if (FileManager.getPlugins().listFiles() != null) {
             ExecutorService executorService = Executors.newCachedThreadPool();
 
-            for (File file : FileUtils.getPlugins().listFiles()) {
+            for (File file : FileManager.getPlugins().listFiles()) {
                 if (!file.getName().matches("(.+).(jar)$")) {
                     continue;
                 }

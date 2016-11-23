@@ -19,7 +19,7 @@
 
 package com.dragovorn.dragonbot.bot;
 
-import com.dragovorn.dragonbot.api.bot.file.FileUtils;
+import com.dragovorn.dragonbot.api.bot.file.FileManager;
 import com.dragovorn.dragonbot.api.bot.configuration.Configuration;
 
 import java.util.*;
@@ -27,7 +27,7 @@ import java.util.*;
 public class BotConfiguration extends Configuration {
 
     public BotConfiguration() {
-        super(FileUtils.getConfig());
+        super(FileManager.getConfig());
     }
 
     private Map<String, Object> defaults = new HashMap<>();

@@ -22,6 +22,7 @@ package com.dragovorn.dragonbot.api.bot.file;
 import com.dragovorn.dragonbot.helper.FileHelper;
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
+import org.apache.commons.io.FileUtils;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -30,7 +31,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileUtils {
+// TODO: Turn this into an object; only to reduce possibility of static abuse
+public class FileManager {
 
     private static File directory = new File("Dragon Bot");
     private static File config = new File(directory, "config.yml");
@@ -41,25 +43,18 @@ public class FileUtils {
     private static List<File> pluginAddedFiles = new ArrayList<>();
 
     public static void reloadFiles() {
+        FileManager.config = new File(directory, "config.yml");
+        FileManager.logs = new File(directory, "logs");
+        FileManager.plugins = new File(directory, "plugins");
+        FileManager.updater = new File(directory, "updater.jar");
+
         List<File> toCopy = new ArrayList<>();
 
-        File file = new File(directory, config.getName());
-        
-        FileHelper.copy(config, file);
-        
-        config = file;
-        
-        file = new File(directory, logs.getName());
-        
-        FileHelper.copy(logs, file);
-        
-        file = new File(directory, plugins.getName());
-        
-        FileHelper.copy(logs, ); // FIXME: 11/22/16 real glitchy shit i'm sure
-        
         toCopy.addAll(pluginAddedFiles);
-        
+
         pluginAddedFiles.clear();
+
+        toCopy.forEach(file -> pluginAddedFiles.add(new File(directory, file.getName()))); // TESTME
     }
 
     @Nullable
@@ -96,16 +91,32 @@ public class FileUtils {
     }
 
     public static void setDirectory(String directory) {
-        FileUtils.directory = new File(directory, "Dragon Bot");
+        File file = new File(directory, "Dragon Bot");
 
-        if (!FileUtils.directory.exists()) {
-            FileUtils.directory.mkdirs();
+        if (FileManager.directory.exists() && !file.exists()) {
+            if (file.mkdirs()) {
+                try {
+                    FileUtils.copyDirectory(FileManager.directory, file);
+                } catch (IOException exception) {
+                    exception.printStackTrace();
+                }
+            } else {
+                throw new RuntimeException("Unable to create file: " + file.getName()); // FIXME: 11/23/16 make custom exception
+            }
+
+            try {
+                FileUtils.deleteDirectory(FileManager.directory);
+            } catch (IOException exception) {
+                exception.printStackTrace();
+            }
         }
 
-        File file = FileHelper.getResource("path");
+        FileManager.directory = file;
+
+        File path = FileHelper.getResource("path");
 
         try {
-            FileWriter fileWriter = new FileWriter(file);
+            FileWriter fileWriter = new FileWriter(path);
 
             BufferedWriter writer = new BufferedWriter(fileWriter);
 
