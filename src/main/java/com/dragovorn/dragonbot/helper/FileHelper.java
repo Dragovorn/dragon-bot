@@ -20,9 +20,6 @@
 package com.dragovorn.dragonbot.helper;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.net.URISyntaxException;
 
 public class FileHelper {
@@ -35,25 +32,5 @@ public class FileHelper {
         }
 
         throw new IllegalArgumentException();
-    }
-
-    public static void copy(File file, File destination) {
-        try {
-            FileInputStream inputStream = new FileInputStream(file);
-            FileOutputStream outputStream = new FileOutputStream(destination);
-
-            byte[] buffer = new byte[1024];
-
-            int length;
-
-            while ((length = inputStream.read(buffer)) > 0) {
-                outputStream.write(buffer, 0, length);
-            }
-
-            inputStream.close();
-            outputStream.close();
-        } catch (IOException exception) {
-            exception.printStackTrace();
-        }
     }
 }

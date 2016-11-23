@@ -21,14 +21,6 @@ package com.dragovorn.dragonbot.exceptions;
 
 public class ConnectionException extends Exception {
 
-    public ConnectionException(String message, Throwable throwable) {
-        super(message, throwable);
-    }
-
-    public ConnectionException(Throwable throwable) {
-        super(throwable);
-    }
-
     public ConnectionException(String message) {
         super(message);
     }
