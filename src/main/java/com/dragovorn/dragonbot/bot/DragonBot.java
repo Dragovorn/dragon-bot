@@ -66,6 +66,7 @@ import java.util.Scanner;
 import java.util.StringTokenizer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -245,6 +246,8 @@ public class DragonBot extends Bot {
             }
 
             executorService.shutdown();
+
+            executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
         }
 
         this.commandManager.registerCommand(new Uptime());
