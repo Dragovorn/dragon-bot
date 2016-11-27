@@ -31,7 +31,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO: Turn this into an object; only to reduce possibility of static abuse
+// FIXME: 11/27/16 make this into an object in DragonBot
 public class FileManager {
 
     private static File directory = new File("Dragon Bot");
@@ -54,7 +54,21 @@ public class FileManager {
 
         pluginAddedFiles.clear();
 
-        toCopy.forEach(file -> pluginAddedFiles.add(new File(directory, file.getName()))); // TESTME
+        toCopy.forEach(file -> {
+            try {
+                if (file.isDirectory()) {
+                    FileUtils.copyDirectory(file, new File(directory, file.getName()));
+                } else {
+                    FileUtils.copyFile(file, new File(directory, file.getName()));
+                }
+
+                file.delete();
+
+                pluginAddedFiles.add(new File(directory, file.getName()));
+            } catch (IOException exception) {
+                exception.printStackTrace();
+            }
+        }); // TESTME
     }
 
     @Nullable
@@ -70,11 +84,9 @@ public class FileManager {
         return null;
     }
 
-    public static File addFile(@NotNull String name) {
-        File file = new File(directory, name);
-
+    public static File addFile(@NotNull File file) {
         if (!file.exists()) {
-            if (name.lastIndexOf(".") == -1) {
+            if (file.isDirectory()) {
                 file.mkdirs();
             } else {
                 try {

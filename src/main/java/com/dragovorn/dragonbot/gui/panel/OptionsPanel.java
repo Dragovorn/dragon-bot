@@ -26,6 +26,7 @@ import com.dragovorn.dragonbot.gui.listener.BackListener;
 import javax.swing.*;
 import java.awt.*;
 
+// TODO Add options for twitch account management, and file management
 public class OptionsPanel extends JPanel {
 
     private JCheckBox console;

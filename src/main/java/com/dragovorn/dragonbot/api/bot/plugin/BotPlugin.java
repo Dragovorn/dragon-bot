@@ -19,23 +19,30 @@
 
 package com.dragovorn.dragonbot.api.bot.plugin;
 
+import com.dragovorn.dragonbot.api.bot.file.FileManager;
+
+import java.io.File;
 import java.util.logging.Logger;
 
 public abstract class BotPlugin {
 
     private PluginInfo info;
 
-    /**
-     * This is called when the bot first loads (before GUI is displayed)
-     */
+    private File pluginFolder;
+
     public void onLoad() { }
 
     public void onEnable() { }
 
     public void onDisable() { }
 
+    public File getPluginFolder() {
+        return this.pluginFolder;
+    }
+
     final void setInfo(PluginInfo info) {
         this.info = info;
+        this.pluginFolder = new File(FileManager.getPlugins(), info.getName());
     }
 
     public final PluginInfo getInfo() {
@@ -44,5 +51,13 @@ public abstract class BotPlugin {
 
     public final Logger getLogger() {
         return null;
+    }
+
+    public final File registerFile(String file) {
+        if (!this.pluginFolder.exists()) {
+            this.pluginFolder.mkdirs();
+        }
+
+        return FileManager.addFile(new File(this.pluginFolder, file));
     }
 }
