@@ -31,5 +31,7 @@ public @interface Plugin {
     String name();
     String version() default "1.00a";
     String author() default "Unknown";
+
+    @Deprecated
     String[] dependancies() default { "" };
 }
