@@ -50,12 +50,12 @@ public class DragonLogger extends Logger {
             exception.printStackTrace();
         }
 
-        DISPATCHER.start();
+        this.DISPATCHER.start();
     }
 
     @Override
     public void log(LogRecord record) {
-        DISPATCHER.queue(record);
+        this.DISPATCHER.queue(record);
     }
 
     void doLog(LogRecord record) {

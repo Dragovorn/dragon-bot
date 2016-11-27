@@ -181,21 +181,58 @@ public class UpdatePanel extends JPanel {
 
         update.addActionListener((ActionListener) -> {
             try {
-                launchUpdater(releases.get(releases.size() - 1).getJSONArray("assets").getJSONObject(0).getString("browser_download_url"));
-                this.stop = true;
-                this.hasResponded = true;
+                int proceed = 1;
 
-                Bot.getInstance().getLogger().info("Updating now...");
+                if (releases.get(releases.size() - 1).getBoolean("prerelease")) {
+                    String buttons[] = { "No", "Yes, Update to a Pre-Release" };
+
+                    proceed = JOptionPane.showOptionDialog(null, "This update is a pre-release, and might break your plugins, are you sure you want to update?", "Update", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, buttons, buttons[0]);
+                }
+
+                if (proceed == 1) {
+                    launchUpdater(releases.get(releases.size() - 1).getJSONArray("assets").getJSONObject(0).getString("browser_download_url"));
+
+                    this.stop = true;
+                    this.hasResponded = true;
+
+                    Bot.getInstance().getLogger().info("Updating now...");
+                } else {
+                    this.stop = false;
+                    this.hasResponded = true;
+
+                    Bot.getInstance().getLogger().info("Not now chosen.");
+                }
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
         });
 
         no.addActionListener((ActionListener) -> {
-            this.stop = false;
-            this.hasResponded = true;
+            int proceed = 1;
 
-            Bot.getInstance().getLogger().info("Not now chosen.");
+            if (releases.get(releases.size() - 1).getBoolean("prerelease")) {
+                String buttons[] = { "No", "Yes, Update to a Pre-Release" };
+
+                proceed = JOptionPane.showOptionDialog(null, "Are you sure you don't want to update?", "Update", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, buttons, buttons[0]);
+            }
+
+            if (proceed == 1) {
+                Bot.getInstance().getLogger().info("Not now chosen.");
+
+                this.stop = false;
+                this.hasResponded = true;
+            } else {
+                try {
+                    launchUpdater(releases.get(releases.size() - 1).getJSONArray("assets").getJSONObject(0).getString("browser_download_url"));
+
+                    this.stop = true;
+                    this.hasResponded = true;
+
+                    Bot.getInstance().getLogger().info("Updating now...");
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                }
+            }
         });
 
         add(scroll);

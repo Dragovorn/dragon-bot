@@ -17,9 +17,13 @@
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import javax.swing.*;
+
 public class ScratchPad {
 
     public static void main(String[] args) throws Exception {
+        String buttons[] = { "No", "Yes, Update to a Pre-Release" };
 
+        System.out.println(JOptionPane.showOptionDialog(null, "This update is a pre-release, and might break your plugins, are you sure you want to update?", "Update", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, buttons, buttons[0]));
     }
 }

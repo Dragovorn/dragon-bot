@@ -145,11 +145,37 @@ public class DragonBot extends Bot {
         }
 
         this.loader = new PluginLoader();
+
+        ImmutableList.Builder<BotPlugin> builder = new ImmutableList.Builder<>();
+
+        if (FileManager.getPlugins().listFiles() != null) {
+            ExecutorService executorService = Executors.newCachedThreadPool();
+
+            for (File file : FileManager.getPlugins().listFiles()) {
+                if (!file.getName().matches("(.+).(jar)$")) {
+                    continue;
+                }
+
+                executorService.execute(() -> {
+                    try {
+                        builder.add(this.loader.loadPlugin(file));
+                    } catch (InvalidPluginException exception) {
+                        exception.printStackTrace();
+                    }
+                });
+            }
+
+            executorService.shutdown();
+
+            executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        }
+
+        this.plugins = builder.build();
         this.commandManager = new CommandManager();
+        this.logger = new DragonLogger("Dragon Bot", FileManager.getLogs() + File.separator + this.format.format(new Date()) + "-%g.log");
         this.gitHubAPI = new GitHubAPI("dragovorn", "dragon-bot-twitch", this.config.getPreReleases());
         this.twitchAPI = new TwitchAPI(Keys.twitchClientID);
 
-        this.logger = new DragonLogger("Dragon Bot", FileManager.getLogs() + File.separator + this.format.format(new Date()) + "-%g.log");
         System.setErr(new PrintStream(new LoggingOutputStream(this.logger, Level.SEVERE), true));
         System.setOut(new PrintStream(new LoggingOutputStream(this.logger, Level.INFO), true));
 
@@ -223,48 +249,32 @@ public class DragonBot extends Bot {
 
         this.name = this.config.getName();
 
-        getLogger().info("Enabling plugins...");
-
-        ImmutableList.Builder<BotPlugin> builder = new ImmutableList.Builder<>();
-
-        if (FileManager.getPlugins().listFiles() != null) {
-            ExecutorService executorService = Executors.newCachedThreadPool();
-
-            for (File file : FileManager.getPlugins().listFiles()) {
-                if (!file.getName().matches("(.+).(jar)$")) {
-                    continue;
-                }
-
-                executorService.execute(() -> {
-                    try {
-                        builder.add(this.loader.loadPlugin(file));
-                    } catch (InvalidPluginException exception) {
-                        getLogger().severe("Failed to load plugin");
-                        exception.printStackTrace();
-                    }
-                });
-            }
-
-            executorService.shutdown();
-
-            executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-        }
-
         this.commandManager.registerCommand(new Uptime());
         this.commandManager.registerCommand(new Github());
 
-        this.plugins = builder.build();
+        getLogger().info("Enabling " + this.plugins.size() + " " + (this.plugins.size() == 1 ? "plugin" : "plugins") +"...");
 
-        getLogger().info("Loaded " + this.plugins.size() + " " + (this.plugins.size() == 0 || this.plugins.size() > 1 ? "plugins" : "plugin") + "!");
-        getLogger().info("Connecting to twitch!");
+        this.plugins.forEach(plugin -> {
+            getLogger().info("Enabling " + plugin.getInfo().getName() + "...");
+
+            plugin.onEnable();
+
+            getLogger().info("Enabled " + plugin.getInfo().getName() + " v" + plugin.getInfo().getVersion() + "!");
+        });
+
+        getLogger().info(this.plugins.size() + " plugins enabled!");
 
         if (!this.name.equals("") && !this.config.getAuth().equals("")) {
+            getLogger().info("Connecting to twitch!");
+
             connect("irc.twitch.tv", 6667, this.config.getAuth());
 
             if (this.config.getAutoConnect() && !this.config.getChannel().equals("")) {
                 connectTo("#" + this.config.getChannel());
             }
         } else {
+            getLogger().info("No twitch account detected.");
+
             MainWindow.getInstance().getChannelButton().setEnabled(false);
             MainWindow.getInstance().getChannelButton().setToolTipText("Please make sure your bot has user information before attempting to connect!");
         }
