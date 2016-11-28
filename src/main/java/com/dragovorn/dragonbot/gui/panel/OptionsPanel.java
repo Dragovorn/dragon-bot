@@ -20,6 +20,8 @@
 package com.dragovorn.dragonbot.gui.panel;
 
 import com.dragovorn.dragonbot.bot.Bot;
+import com.dragovorn.dragonbot.gui.MainWindow;
+import com.dragovorn.dragonbot.gui.TextPrompt;
 import com.dragovorn.dragonbot.gui.listener.ApplyListener;
 import com.dragovorn.dragonbot.gui.listener.BackListener;
 
@@ -31,6 +33,10 @@ public class OptionsPanel extends JPanel {
 
     private JCheckBox console;
     private JCheckBox autoConnect;
+
+    private JTextField username;
+
+    private JPasswordField oauth;
 
     private static OptionsPanel instance;
 
@@ -59,6 +65,61 @@ public class OptionsPanel extends JPanel {
         this.autoConnect.setToolTipText("Allow the bot to automatically connect to \'" + Bot.getInstance().getConfiguration().getChannel() + "\' when it starts up.");
         this.autoConnect.setSelected(Bot.getInstance().getConfiguration().getAutoConnect());
 
+        this.username = new JTextField(10);
+        this.username.setToolTipText("The username for the bot");
+        this.username.setMaximumSize(this.username.getPreferredSize());
+        this.username.setText(Bot.getInstance().getConfiguration().getName());
+        new TextPrompt("Username", this.username);
+
+        this.oauth = new JPasswordField(15);
+        this.oauth.setToolTipText("The OAuth key for the twitch account you are binding to the bot");
+        this.oauth.setMaximumSize(this.oauth.getPreferredSize());
+        this.oauth.setText(Bot.getInstance().getConfiguration().getAuth());
+        new TextPrompt("OAuth", this.oauth);
+
+        JLabel testStatus = new JLabel();
+
+        JButton testTwitch = new JButton("Test");
+        testTwitch.addActionListener(event -> {
+            testStatus.setText("Testing...");
+            MainWindow.getInstance().pack();
+
+            if (this.username.getText().equals("")) {
+                Bot.getInstance().getLogger().info("You require a username to connect to twitch!");
+
+                testStatus.setText("Failed, no username");
+                testStatus.setForeground(Color.red);
+                MainWindow.getInstance().pack();
+
+                return;
+            }
+
+            if (this.oauth.getPassword().length == 0) {
+                Bot.getInstance().getLogger().info("You require an oauth key to connect to twitch!");
+
+                testStatus.setText("Failed, no oauth key");
+                testStatus.setForeground(Color.red);
+                MainWindow.getInstance().pack();
+
+                return;
+            }
+
+            // TODO connect to twitch
+        });
+
+        JButton lockTwitch = new JButton("Lock");
+
+        JPanel twitchSettings = new JPanel();
+        twitchSettings.setLayout(new BoxLayout(twitchSettings, BoxLayout.X_AXIS));
+
+        JButton unlockTwitch = new JButton("Unlock Twitch Account Settings");
+        unlockTwitch.addActionListener(event -> {
+            options.remove(unlockTwitch);
+            options.add(twitchSettings);
+
+            MainWindow.getInstance().pack();
+        });
+
         JButton back = new JButton("Back");
         back.addActionListener(new BackListener());
 
@@ -70,6 +131,14 @@ public class OptionsPanel extends JPanel {
         if (!Bot.getInstance().getConfiguration().getChannel().equals("")) {
             options.add(this.autoConnect);
         }
+
+        twitchSettings.add(this.username);
+        twitchSettings.add(this.oauth);
+        twitchSettings.add(testTwitch);
+        twitchSettings.add(lockTwitch);
+        twitchSettings.add(testStatus);
+
+        options.add(unlockTwitch);
 
         buttons.add(back);
         buttons.add(apply);
