@@ -45,7 +45,6 @@ import com.dragovorn.dragonbot.exceptions.ConnectionException;
 import com.dragovorn.dragonbot.exceptions.InvalidPluginException;
 import com.dragovorn.dragonbot.gui.MainWindow;
 import com.dragovorn.dragonbot.gui.panel.UpdatePanel;
-import com.dragovorn.dragonbot.helper.FileHelper;
 import com.dragovorn.dragonbot.log.DragonLogger;
 import com.dragovorn.dragonbot.log.LoggingOutputStream;
 import com.google.common.base.CharMatcher;
@@ -112,7 +111,23 @@ public class DragonBot extends Bot {
 
         this.outQueue = new Queue();
 
-        Scanner scanner = new Scanner(FileHelper.getResource("path"));
+        if (!FileManager.dir.exists()) {
+            FileManager.dir.mkdirs();
+        }
+
+        File pathFile = new File(FileManager.dir, "path");
+
+        if (!pathFile.exists()) {
+            pathFile.createNewFile();
+
+            FileWriter writer = new FileWriter(pathFile);
+
+            writer.write("null");
+
+            writer.close();
+        }
+
+        Scanner scanner = new Scanner(pathFile);
 
         String path = scanner.nextLine();
 
