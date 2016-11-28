@@ -144,6 +144,11 @@ public class DragonBot extends Bot {
             FileManager.getPlugins().mkdirs();
         }
 
+        this.commandManager = new CommandManager();
+        this.logger = new DragonLogger("Dragon Bot", FileManager.getLogs() + File.separator + this.format.format(new Date()) + "-%g.log");
+        this.gitHubAPI = new GitHubAPI("dragovorn", "dragon-bot-twitch", this.config.getPreReleases());
+        this.twitchAPI = new TwitchAPI(Keys.twitchClientID);
+
         this.loader = new PluginLoader();
 
         ImmutableList.Builder<BotPlugin> builder = new ImmutableList.Builder<>();
@@ -171,10 +176,6 @@ public class DragonBot extends Bot {
         }
 
         this.plugins = builder.build();
-        this.commandManager = new CommandManager();
-        this.logger = new DragonLogger("Dragon Bot", FileManager.getLogs() + File.separator + this.format.format(new Date()) + "-%g.log");
-        this.gitHubAPI = new GitHubAPI("dragovorn", "dragon-bot-twitch", this.config.getPreReleases());
-        this.twitchAPI = new TwitchAPI(Keys.twitchClientID);
 
         System.setErr(new PrintStream(new LoggingOutputStream(this.logger, Level.SEVERE), true));
         System.setOut(new PrintStream(new LoggingOutputStream(this.logger, Level.INFO), true));

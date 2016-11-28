@@ -29,7 +29,7 @@ public class OptionsListener implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent event) {
-        MainWindow.getInstance().setContentPane(new OptionsPanel());
+        MainWindow.getInstance().setContentPane(new OptionsPanel()); // FIXME: 11/28/16 Could cause memory leaks
         MainWindow.getInstance().setTitle(MainWindow.TITLE + " - Options");
         MainWindow.getInstance().pack();
     }
