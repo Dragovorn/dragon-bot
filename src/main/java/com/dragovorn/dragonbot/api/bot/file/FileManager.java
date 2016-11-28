@@ -19,7 +19,6 @@
 
 package com.dragovorn.dragonbot.api.bot.file;
 
-import com.dragovorn.dragonbot.helper.FileHelper;
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
 import org.apache.commons.io.FileUtils;
@@ -39,6 +38,7 @@ public class FileManager {
     private static File logs = new File(directory, "logs");
     private static File plugins = new File(directory, "plugins");
     private static File updater = new File(directory, "updater.jar");
+    public static final File dir = new File(System.getProperty("user.home"), ".dragonbot");
 
     private static List<File> pluginAddedFiles = new ArrayList<>();
 
@@ -125,7 +125,7 @@ public class FileManager {
 
         FileManager.directory = file;
 
-        File path = FileHelper.getResource("path");
+        File path = new File(FileManager.dir, "path");
 
         try {
             FileWriter fileWriter = new FileWriter(path);
