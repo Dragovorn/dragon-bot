@@ -41,6 +41,7 @@ import com.dragovorn.dragonbot.api.github.GitHubAPI;
 import com.dragovorn.dragonbot.api.twitch.TwitchAPI;
 import com.dragovorn.dragonbot.command.Github;
 import com.dragovorn.dragonbot.command.Uptime;
+import com.dragovorn.dragonbot.command.VersionCmd;
 import com.dragovorn.dragonbot.exceptions.ConnectionException;
 import com.dragovorn.dragonbot.exceptions.InvalidPluginException;
 import com.dragovorn.dragonbot.gui.MainWindow;
@@ -267,6 +268,7 @@ public class DragonBot extends Bot {
 
         this.commandManager.registerCommand(new Uptime());
         this.commandManager.registerCommand(new Github());
+        this.commandManager.registerCommand(new VersionCmd());
 
         getLogger().info("Enabling " + this.plugins.size() + " " + (this.plugins.size() == 1 ? "plugin" : "plugins") +"...");
 
@@ -695,5 +697,9 @@ public class DragonBot extends Bot {
 
     public TwitchAPI getTwitchAPI() {
         return twitchAPI;
+    }
+
+    public ImmutableList<BotPlugin> getPlugins() {
+        return this.plugins;
     }
 }
