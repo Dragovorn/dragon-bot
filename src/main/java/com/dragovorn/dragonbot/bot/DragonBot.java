@@ -187,7 +187,6 @@ public class DragonBot extends Bot {
             }
 
             executorService.shutdown();
-
             executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
         }
 
@@ -271,13 +270,18 @@ public class DragonBot extends Bot {
 
         getLogger().info("Enabling " + this.plugins.size() + " " + (this.plugins.size() == 1 ? "plugin" : "plugins") +"...");
 
+        ExecutorService executorService = Executors.newCachedThreadPool();
+
         this.plugins.forEach(plugin -> {
             getLogger().info("Enabling " + plugin.getInfo().getName() + "...");
 
-            plugin.onEnable();
+            executorService.execute(plugin::onEnable);
 
             getLogger().info("Enabled " + plugin.getInfo().getName() + " v" + plugin.getInfo().getVersion() + "!");
         });
+
+        executorService.shutdown();
+        executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 
         getLogger().info(this.plugins.size() + " plugins enabled!");
 
@@ -316,17 +320,24 @@ public class DragonBot extends Bot {
 
                 leaveChannel();
 
-                getLogger().info("Disabling plugins...");
+                getLogger().info("Disabling " + plugins.size() + " " + (plugins.size() == 1 ? "plugin" : "plugins") + "...");
 
                 if (plugins != null) {
-                    for (BotPlugin plugin : plugins) {
-                        if (plugin == null) {
-                            continue;
-                        }
+                    ExecutorService executorService = Executors.newCachedThreadPool();
 
+                    plugins.forEach(plugin -> {
                         getLogger().info("Disabling " + plugin.getInfo().getName() + " " + plugin.getInfo().getVersion() + "!");
-                        plugin.onDisable();
+
+                        executorService.execute(plugin::onDisable);
+
                         getLogger().info(plugin.getInfo().getName() + " " + plugin.getInfo().getVersion() + " disabled!");
+                    });
+
+                    executorService.shutdown();
+                    try {
+                        executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+                    } catch (InterruptedException exception) {
+                        exception.printStackTrace();
                     }
                 }
 
