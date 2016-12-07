@@ -23,18 +23,21 @@ import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Configuration {
+public abstract class Configuration {
 
-    protected Map<String, Object> entries = new HashMap<>();
+    protected Map<String, Object> entries;
+    protected Map<String, Object> defaults;
 
     private File file;
 
     public Configuration(File file) {
         this.file = file;
+        this.defaults = new HashMap<>();
     }
 
     public void save() {
@@ -61,6 +64,56 @@ public class Configuration {
         } catch (FileNotFoundException exception) {
             exception.printStackTrace();
         }
+
+        if (this.entries == null) {
+            generate();
+            load();
+
+            return;
+        }
+
+        update();
+    }
+
+    public void update() {
+        this.defaults.clear();
+        addDefaults();
+
+        this.defaults.entrySet().forEach(entry -> {
+            if (!this.entries.containsKey(entry.getKey())) {
+                this.entries.put(entry.getKey(), entry.getValue());
+            }
+        });
+
+        ArrayList<String> remove = new ArrayList<>();
+
+        this.entries.entrySet().forEach(entry -> {
+            if (!this.defaults.containsKey(entry.getKey())) {
+                remove.add(entry.getKey());
+            }
+        });
+
+        remove.forEach(string -> this.entries.remove(string));
+    }
+
+    public void generate() {
+        this.entries = new HashMap<>();
+
+        setDefaults();
+        save();
+    }
+
+    public void setDefaults() {
+        this.defaults.clear();
+        addDefaults();
+        this.entries.clear();
+        this.entries.putAll(this.defaults);
+    }
+
+    protected abstract void addDefaults();
+
+    protected void add(String key, Object value) {
+        this.defaults.put(key, value);
     }
 
     public void clear() {
@@ -79,8 +132,8 @@ public class Configuration {
         return (boolean) this.entries.get(key);
     }
 
-    public List<?> getList(String key) {
-        return (List<?>) this.entries.get(key);
+    public <T> List<T> getList(String key) {
+        return (List<T>) this.entries.get(key);
     }
 
     public Map<String, Object> getEntries() {

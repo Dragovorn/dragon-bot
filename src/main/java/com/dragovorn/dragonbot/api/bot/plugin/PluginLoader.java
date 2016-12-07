@@ -19,6 +19,7 @@
 
 package com.dragovorn.dragonbot.api.bot.plugin;
 
+import com.dragovorn.dragonbot.bot.Bot;
 import com.dragovorn.dragonbot.exceptions.InvalidPluginException;
 
 import java.io.File;
@@ -73,7 +74,11 @@ public class PluginLoader {
 
                 botPlugin.setInfo(new PluginInfo(plugin));
 
+                Bot.getInstance().getLogger().info("Loading " + botPlugin.getInfo().getName() + " v" + botPlugin.getInfo().getVersion());
+
                 botPlugin.onLoad();
+
+                Bot.getInstance().getLogger().info("Loaded " + botPlugin.getInfo().getName() + " v" + botPlugin.getInfo().getVersion() + "!");
 
                 return botPlugin;
             } catch (Exception exception) {
