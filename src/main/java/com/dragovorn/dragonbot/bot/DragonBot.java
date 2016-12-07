@@ -688,25 +688,25 @@ public class DragonBot extends Bot {
 
     @Override
     public String getEncoding() {
-        return charset;
+        return this.charset;
     }
 
     @Override
     public InetAddress getAddress() {
-        return inetAddress;
+        return this.inetAddress;
     }
 
     @Override
     public CommandManager getCommandManager() {
-        return commandManager;
+        return this.commandManager;
     }
 
     public GitHubAPI getGitHubAPI() {
-        return gitHubAPI;
+        return this.gitHubAPI;
     }
 
     public TwitchAPI getTwitchAPI() {
-        return twitchAPI;
+        return this.twitchAPI;
     }
 
     public ImmutableList<BotPlugin> getPlugins() {
