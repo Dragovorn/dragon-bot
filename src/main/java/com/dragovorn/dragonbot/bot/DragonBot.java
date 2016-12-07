@@ -168,6 +168,7 @@ public class DragonBot extends Bot {
 
         ImmutableList.Builder<BotPlugin> builder = new ImmutableList.Builder<>();
 
+        getLogger().info("Loading plugins...");
         if (FileManager.getPlugins().listFiles() != null) {
             ExecutorService executorService = Executors.newCachedThreadPool();
 
@@ -191,6 +192,8 @@ public class DragonBot extends Bot {
         }
 
         this.plugins = builder.build();
+
+        getLogger().info("Loaded " + this.plugins.size() + " " + (this.plugins.size() == 1 ? "plugin" : "plugins") + "!");
 
         if (!path.equals("null")) {
             getLogger().info("Different file path found: " + FileManager.getDirectory().getPath());
