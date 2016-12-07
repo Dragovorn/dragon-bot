@@ -144,13 +144,10 @@ public class DragonBot extends Bot {
 
         if (!FileManager.getConfig().exists()) {
             FileManager.getConfig().createNewFile();
-            this.config = new BotConfiguration();
-            this.config.generate();
-        } else {
-            this.config = new BotConfiguration();
-            this.config.load();
-            this.config.update();
         }
+
+        this.config = new BotConfiguration();
+        this.config.load();
 
         if (!FileManager.getLogs().exists()) {
             FileManager.getLogs().mkdirs();
@@ -164,8 +161,10 @@ public class DragonBot extends Bot {
         this.logger = new DragonLogger("Dragon Bot", FileManager.getLogs() + File.separator + this.format.format(new Date()) + "-%g.log");
         this.gitHubAPI = new GitHubAPI("dragovorn", "dragon-bot-twitch", this.config.getPreReleases());
         this.twitchAPI = new TwitchAPI(Keys.twitchClientID);
-
         this.loader = new PluginLoader();
+
+        System.setErr(new PrintStream(new LoggingOutputStream(this.logger, Level.SEVERE), true));
+        System.setOut(new PrintStream(new LoggingOutputStream(this.logger, Level.INFO), true));
 
         ImmutableList.Builder<BotPlugin> builder = new ImmutableList.Builder<>();
 
@@ -192,9 +191,6 @@ public class DragonBot extends Bot {
         }
 
         this.plugins = builder.build();
-
-        System.setErr(new PrintStream(new LoggingOutputStream(this.logger, Level.SEVERE), true));
-        System.setOut(new PrintStream(new LoggingOutputStream(this.logger, Level.INFO), true));
 
         if (!path.equals("null")) {
             getLogger().info("Different file path found: " + FileManager.getDirectory().getPath());
