@@ -104,7 +104,13 @@ public class OptionsPanel extends JPanel {
                 return;
             }
 
-            // TODO connect to twitch
+            if (!testCredentials()) {
+                Bot.getInstance().getLogger().info("You require an oauth key to connect to twitch!");
+
+                testStatus.setText("Failed, incorrect credentials");
+                testStatus.setForeground(Color.red);
+                MainWindow.getInstance().pack();
+            }
         });
 
         JButton lockTwitch = new JButton("Lock");
@@ -145,6 +151,12 @@ public class OptionsPanel extends JPanel {
 
         add(options);
         add(buttons);
+    }
+
+    private boolean testCredentials() {
+        // TODO
+
+        return false;
     }
 
     public JCheckBox getConsole() {
