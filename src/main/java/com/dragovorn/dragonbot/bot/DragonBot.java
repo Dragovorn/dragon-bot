@@ -74,6 +74,7 @@ import java.util.logging.Logger;
 public class DragonBot extends Bot {
 
     private String name;
+    private String auth;
     private String charset;
     private String channelPrefixes = "#&+!";
 
@@ -263,6 +264,7 @@ public class DragonBot extends Bot {
         getLogger().info("Initializing Dragon Bot " + getVersion() + "!");
 
         this.name = this.config.getName();
+        this.auth = this.config.getAuth();
 
         this.commandManager.registerCommand(new Uptime());
         this.commandManager.registerCommand(new Github());
@@ -288,7 +290,7 @@ public class DragonBot extends Bot {
         if (!this.name.equals("") && !this.config.getAuth().equals("")) {
             getLogger().info("Connecting to twitch!");
 
-            connect("irc.twitch.tv", 6667, this.config.getAuth());
+            connect();
 
             if (this.config.getAutoConnect() && !this.config.getChannel().equals("")) {
                 connectTo("#" + this.config.getChannel());
@@ -354,14 +356,30 @@ public class DragonBot extends Bot {
         }.start();
     }
 
+    public void connect() throws ConnectionException, IOException {
+        connect("irc.twitch.tv", 6667, this.auth);
+    }
+
     @Override
     public String getName() {
         return this.name;
     }
 
     @Override
+    public String getPassword() {
+        return this.auth;
+    }
+
+    @Override
     public void setName(String name) {
         this.name = name;
+        this.config.setName(name);
+    }
+
+    @Override
+    public void setPassword(String password) {
+        this.auth = password;
+        this.config.setAuth(password);
     }
 
     @Override
