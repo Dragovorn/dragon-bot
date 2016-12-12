@@ -102,9 +102,16 @@ public abstract class Bot {
     /**
      * Gets the name of the irc bot.
      *
-     * @return the name of irc bot
+     * @return the name of the irc bot
      */
     public abstract String getName();
+
+    /**
+     * Gets the password of the irc bot
+     *
+     * @return the password of the irc
+     */
+    public abstract String getPassword();
 
     /**
      * Sets the name of the irc bot.
@@ -112,6 +119,13 @@ public abstract class Bot {
      * @param name the new name of the bot
      */
     public abstract void setName(String name);
+
+    /**
+     * Sets teh password of the irc bot
+     *
+     * @param password the new password of the bot
+     */
+    public abstract void setPassword(String password);
 
     /**
      * Gets the version of the currently running irc bot.
