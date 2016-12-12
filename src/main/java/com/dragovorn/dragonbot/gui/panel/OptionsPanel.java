@@ -20,6 +20,8 @@
 package com.dragovorn.dragonbot.gui.panel;
 
 import com.dragovorn.dragonbot.bot.Bot;
+import com.dragovorn.dragonbot.bot.DragonBot;
+import com.dragovorn.dragonbot.exceptions.ConnectionException;
 import com.dragovorn.dragonbot.gui.MainWindow;
 import com.dragovorn.dragonbot.gui.TextPrompt;
 import com.dragovorn.dragonbot.gui.listener.ApplyListener;
@@ -27,8 +29,9 @@ import com.dragovorn.dragonbot.gui.listener.BackListener;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 
-// TODO Add options for twitch account management, and file management
+// TODO Add options for file management and other config options
 public class OptionsPanel extends JPanel {
 
     private JCheckBox console;
@@ -40,8 +43,11 @@ public class OptionsPanel extends JPanel {
 
     private static OptionsPanel instance;
 
+    private boolean tested;
+
     public OptionsPanel() {
         instance = this;
+        this.tested = false;
 
         Dimension size = new Dimension(500, 500);
 
@@ -104,10 +110,10 @@ public class OptionsPanel extends JPanel {
                 return;
             }
 
-            if (!testCredentials()) {
-                Bot.getInstance().getLogger().info("You require an oauth key to connect to twitch!");
+            if (!(this.tested = testCredentials())) {
+                Bot.getInstance().getLogger().info("Failed to connect to twitch!");
 
-                testStatus.setText("Failed, incorrect credentials");
+                testStatus.setText("Failed to connect!");
                 testStatus.setForeground(Color.red);
                 MainWindow.getInstance().pack();
             }
@@ -154,9 +160,16 @@ public class OptionsPanel extends JPanel {
     }
 
     private boolean testCredentials() {
-        // TODO
+        Bot.getInstance().setName(this.username.getText());
+        Bot.getInstance().setPassword(String.valueOf(this.oauth.getPassword()));
 
-        return false;
+        try {
+            DragonBot.getInstance().connect();
+        } catch (IOException | ConnectionException exception) {
+            return false;
+        }
+
+        return true;
     }
 
     public JCheckBox getConsole() {
@@ -173,6 +186,14 @@ public class OptionsPanel extends JPanel {
         }
 
         if (this.autoConnect.isSelected() != Bot.getInstance().getConfiguration().getAutoConnect()) {
+            return true;
+        }
+
+        if (!String.valueOf(this.oauth.getPassword()).equals(Bot.getInstance().getPassword()) && !this.username.getText().equalsIgnoreCase(Bot.getInstance().getName())) {
+            if (!this.tested) {
+                testCredentials();
+            }
+
             return true;
         }
 
