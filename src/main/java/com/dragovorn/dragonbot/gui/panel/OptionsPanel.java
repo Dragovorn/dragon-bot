@@ -43,11 +43,8 @@ public class OptionsPanel extends JPanel {
 
     private static OptionsPanel instance;
 
-    private boolean tested;
-
     public OptionsPanel() {
         instance = this;
-        this.tested = false;
 
         Dimension size = new Dimension(500, 500);
 
@@ -110,7 +107,7 @@ public class OptionsPanel extends JPanel {
                 return;
             }
 
-            if (!(this.tested = testCredentials())) {
+            if (testCredentials()) {
                 Bot.getInstance().getLogger().info("Failed to connect to twitch!");
 
                 testStatus.setText("Failed to connect!");
@@ -119,8 +116,6 @@ public class OptionsPanel extends JPanel {
             }
         });
 
-        JButton lockTwitch = new JButton("Lock");
-
         JPanel twitchSettings = new JPanel();
         twitchSettings.setLayout(new BoxLayout(twitchSettings, BoxLayout.X_AXIS));
 
@@ -128,6 +123,14 @@ public class OptionsPanel extends JPanel {
         unlockTwitch.addActionListener(event -> {
             options.remove(unlockTwitch);
             options.add(twitchSettings);
+
+            MainWindow.getInstance().pack();
+        });
+
+        JButton lockTwitch = new JButton("Lock");
+        lockTwitch.addActionListener(event -> {
+            options.remove(twitchSettings);
+            options.add(unlockTwitch);
 
             MainWindow.getInstance().pack();
         });
@@ -190,10 +193,6 @@ public class OptionsPanel extends JPanel {
         }
 
         if (!String.valueOf(this.oauth.getPassword()).equals(Bot.getInstance().getPassword()) && !this.username.getText().equalsIgnoreCase(Bot.getInstance().getName())) {
-            if (!this.tested) {
-                testCredentials();
-            }
-
             return true;
         }
 
