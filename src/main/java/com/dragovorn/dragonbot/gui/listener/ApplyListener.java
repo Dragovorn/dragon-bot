@@ -20,6 +20,8 @@
 package com.dragovorn.dragonbot.gui.listener;
 
 import com.dragovorn.dragonbot.bot.Bot;
+import com.dragovorn.dragonbot.bot.DragonBot;
+import com.dragovorn.dragonbot.exceptions.ConnectionException;
 import com.dragovorn.dragonbot.gui.ConsoleWindow;
 import com.dragovorn.dragonbot.gui.MainWindow;
 import com.dragovorn.dragonbot.gui.panel.OptionsPanel;
@@ -28,6 +30,7 @@ import com.dragovorn.dragonbot.log.ConsoleHandler;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.logging.Handler;
 
 public class ApplyListener implements ActionListener {
@@ -55,6 +58,18 @@ public class ApplyListener implements ActionListener {
 
         if (OptionsPanel.getInstance().getAutoConnect().isSelected() != Bot.getInstance().getConfiguration().getAutoConnect()) {
             Bot.getInstance().getConfiguration().setAutoConnect(OptionsPanel.getInstance().getAutoConnect().isSelected());
+        }
+
+        try {
+            DragonBot.getInstance().connect();
+
+            MainWindow.getInstance().getChannelButton().setEnabled(true);
+            MainWindow.getInstance().getChannelButton().setToolTipText("");
+        } catch (ConnectionException | IOException exception) {
+            Bot.getInstance().getLogger().info("Failed to connect to twitch!");
+
+            MainWindow.getInstance().getChannelButton().setEnabled(false);
+            MainWindow.getInstance().getChannelButton().setToolTipText("The current account was unable to connect!");
         }
 
         MainWindow.getInstance().setContentPane(MainWindow.getInstance().getPanel());

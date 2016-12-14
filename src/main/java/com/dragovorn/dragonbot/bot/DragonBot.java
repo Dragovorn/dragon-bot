@@ -290,16 +290,22 @@ public class DragonBot extends Bot {
         if (!this.name.equals("") && !this.config.getAuth().equals("")) {
             getLogger().info("Connecting to twitch!");
 
-            connect();
+            try {
+                connect();
+            } catch (ConnectionException | IOException exception) {
+                getLogger().info("Unable to connect!");
+            }
 
             if (this.config.getAutoConnect() && !this.config.getChannel().equals("")) {
                 connectTo("#" + this.config.getChannel());
             }
         } else {
             getLogger().info("No twitch account detected.");
+        }
 
+        if (!this.isConnected()) {
             MainWindow.getInstance().getChannelButton().setEnabled(false);
-            MainWindow.getInstance().getChannelButton().setToolTipText("Please make sure your bot has user information before attempting to connect!");
+            MainWindow.getInstance().getChannelButton().setToolTipText("The current account was unable to connect!");
         }
 
         setState(BotState.RUNNING);
@@ -356,8 +362,17 @@ public class DragonBot extends Bot {
         }.start();
     }
 
-    public void connect() throws ConnectionException, IOException {
+    public synchronized void connect() throws ConnectionException, IOException {
+        disconnect();
         connect("irc.twitch.tv", 6667, this.auth);
+    }
+
+    private synchronized void disconnect() {
+        if (!this.isConnected()) {
+            return;
+        }
+
+        this.sendRawLine("QUIT :");
     }
 
     @Override
