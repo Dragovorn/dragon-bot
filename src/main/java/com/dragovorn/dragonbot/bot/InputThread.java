@@ -54,9 +54,9 @@ class InputThread extends Thread {
             while (running) {
                 try {
                     String line;
-                    while ((line = reader.readLine()) != null) {
+                    while ((line = this.reader.readLine()) != null) {
                         try {
-                            bot.handleLine(line);
+                            this.bot.handleLine(line);
                         } catch (Throwable throwable) {
                             throwable.printStackTrace();
                         }
@@ -65,38 +65,38 @@ class InputThread extends Thread {
                     if (line == null) { // Server disconnected on us.
                         running = false;
                     }
-                } catch (InterruptedIOException iioe) {
+                } catch (InterruptedIOException exception) {
                     this.sendRawLine("PING " + (System.currentTimeMillis() / 1000));
                 }
             }
         } catch (IOException exception) { /* Nothing */ }
 
         try {
-            socket.close();
+            this.socket.close();
         } catch (IOException exception) {
             // Just assume the socket was already closed.
         }
 
-        if (!dispose) {
-            bot.getLogger().info("Disconnected!");
-            connected = false;
+        if (!this.dispose) {
+            this.bot.getLogger().info("Disconnected!");
+            this.connected = false;
         }
     }
 
     public void dispose() {
         try {
-            dispose = true;
-            socket.close();
+            this.dispose = true;
+            this.socket.close();
         } catch (IOException exception) {
             // Do nothing
         }
     }
 
     void sendRawLine(String line) {
-        OutputThread.sendRawLine(bot, writer, line);
+        OutputThread.sendRawLine(this.bot, this.writer, line);
     }
 
     boolean isConnected() {
-        return connected;
+        return this.connected;
     }
 }
