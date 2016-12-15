@@ -85,14 +85,13 @@ public class OptionsPanel extends JPanel {
         JButton testTwitch = new JButton("Test");
         testTwitch.addActionListener(event -> {
             testStatus.setText("Testing...");
-            MainWindow.getInstance().pack();
+            testStatus.setForeground(Color.yellow);
 
             if (this.username.getText().equals("")) {
                 Bot.getInstance().getLogger().info("You require a username to connect to twitch!");
 
-                testStatus.setText("Failed, no username");
+                testStatus.setText("No Username!");
                 testStatus.setForeground(Color.red);
-                MainWindow.getInstance().pack();
 
                 return;
             }
@@ -100,9 +99,8 @@ public class OptionsPanel extends JPanel {
             if (this.oauth.getPassword().length == 0) {
                 Bot.getInstance().getLogger().info("You require an oauth key to connect to twitch!");
 
-                testStatus.setText("Failed, no oauth key");
+                testStatus.setText("No Auth Key!");
                 testStatus.setForeground(Color.red);
-                MainWindow.getInstance().pack();
 
                 return;
             }
@@ -112,8 +110,11 @@ public class OptionsPanel extends JPanel {
 
                 testStatus.setText("Failed to connect!");
                 testStatus.setForeground(Color.red);
-                MainWindow.getInstance().pack();
+                return;
             }
+
+            testStatus.setText("Success!");
+            testStatus.setForeground(Color.green);
         });
 
         JPanel twitchSettings = new JPanel();
