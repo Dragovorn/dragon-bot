@@ -43,8 +43,11 @@ public class OptionsPanel extends JPanel {
 
     private static OptionsPanel instance;
 
+    private boolean tested;
+
     public OptionsPanel() {
         instance = this;
+        this.tested = false;
 
         Dimension size = new Dimension(500, 500);
 
@@ -83,39 +86,6 @@ public class OptionsPanel extends JPanel {
         JLabel testStatus = new JLabel();
 
         JButton testTwitch = new JButton("Test");
-        testTwitch.addActionListener(event -> {
-            testStatus.setText("Testing...");
-            testStatus.setForeground(Color.yellow);
-
-            if (this.username.getText().equals("")) {
-                Bot.getInstance().getLogger().info("You require a username to connect to twitch!");
-
-                testStatus.setText("No Username!");
-                testStatus.setForeground(Color.red);
-
-                return;
-            }
-
-            if (this.oauth.getPassword().length == 0) {
-                Bot.getInstance().getLogger().info("You require an oauth key to connect to twitch!");
-
-                testStatus.setText("No Auth Key!");
-                testStatus.setForeground(Color.red);
-
-                return;
-            }
-
-            if (testCredentials()) {
-                Bot.getInstance().getLogger().info("Failed to connect to twitch!");
-
-                testStatus.setText("Failed to connect!");
-                testStatus.setForeground(Color.red);
-                return;
-            }
-
-            testStatus.setText("Success!");
-            testStatus.setForeground(Color.green);
-        });
 
         JPanel twitchSettings = new JPanel();
         twitchSettings.setLayout(new BoxLayout(twitchSettings, BoxLayout.X_AXIS));
@@ -132,14 +102,65 @@ public class OptionsPanel extends JPanel {
         lockTwitch.addActionListener(event -> {
             options.remove(twitchSettings);
             options.add(unlockTwitch);
+            testStatus.setText("");
 
             MainWindow.getInstance().pack();
+        });
+
+        testTwitch.addActionListener(event -> {
+            testStatus.setText("Testing...");
+            testStatus.setForeground(Color.yellow);
+            lockTwitch.setEnabled(false);
+            testTwitch.setEnabled(false);
+            MainWindow.getInstance().pack();
+
+            if (this.username.getText().equals("")) {
+                Bot.getInstance().getLogger().info("You require a username to connect to twitch!");
+
+                testStatus.setText("No Username!");
+                testStatus.setForeground(Color.red);
+                lockTwitch.setEnabled(true);
+                testTwitch.setEnabled(true);
+
+                return;
+            }
+
+            if (this.oauth.getPassword().length == 0) {
+                Bot.getInstance().getLogger().info("You require an oauth key to connect to twitch!");
+
+                testStatus.setText("No Auth Key!");
+                testStatus.setForeground(Color.red);
+                lockTwitch.setEnabled(true);
+                testTwitch.setEnabled(true);
+
+                return;
+            }
+
+            if (!(this.tested = testCredentials())) {
+                Bot.getInstance().getLogger().info("Failed to connect to twitch!");
+
+                testStatus.setText("Failed to connect!");
+                testStatus.setForeground(Color.red);
+                lockTwitch.setEnabled(true);
+                testTwitch.setEnabled(true);
+
+                return;
+            }
+
+            testStatus.setText("Success!");
+            testStatus.setForeground(Color.green);
+            lockTwitch.setEnabled(true);
+            testTwitch.setEnabled(true);
         });
 
         JButton back = new JButton("Back");
         back.addActionListener(new BackListener());
 
         JButton apply = new JButton("Apply");
+        apply.addActionListener(event -> {
+            Bot.getInstance().setName(this.username.getText());
+            Bot.getInstance().setPassword(String.valueOf(this.oauth.getPassword()));
+        });
         apply.addActionListener(new ApplyListener());
 
         options.add(this.console);
@@ -193,11 +214,15 @@ public class OptionsPanel extends JPanel {
             return true;
         }
 
-        if (!String.valueOf(this.oauth.getPassword()).equals(Bot.getInstance().getPassword()) && !this.username.getText().equalsIgnoreCase(Bot.getInstance().getName())) {
-            return true;
-        }
+        return hasAccountInfoChanged();
+    }
 
-        return false;
+    public boolean hasAccountInfoChanged() {
+        return (!Bot.getInstance().getName().equals(this.username.getText()) || !Bot.getInstance().getPassword().equals(String.valueOf(this.oauth.getPassword())));
+    }
+
+    public boolean accountInfoTested() {
+        return this.tested;
     }
 
     public static OptionsPanel getInstance() {
