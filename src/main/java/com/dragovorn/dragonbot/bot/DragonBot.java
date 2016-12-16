@@ -363,6 +363,10 @@ public class DragonBot extends Bot {
     }
 
     public synchronized void connect() throws ConnectionException, IOException {
+        if (this.name.equals("") || this.getPassword().equals("")) {
+            return;
+        }
+
         disconnect();
         connect("irc.twitch.tv", 6667, this.auth);
     }

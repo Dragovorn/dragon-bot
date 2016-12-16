@@ -61,10 +61,14 @@ public class ApplyListener implements ActionListener {
         }
 
         try {
-            DragonBot.getInstance().connect();
+            if (OptionsPanel.getInstance().hasAccountInfoChanged()) {
+                if (!OptionsPanel.getInstance().accountInfoTested()) {
+                    DragonBot.getInstance().connect();
 
-            MainWindow.getInstance().getChannelButton().setEnabled(true);
-            MainWindow.getInstance().getChannelButton().setToolTipText("");
+                    MainWindow.getInstance().getChannelButton().setEnabled(true);
+                    MainWindow.getInstance().getChannelButton().setToolTipText("");
+                }
+            }
         } catch (ConnectionException | IOException exception) {
             Bot.getInstance().getLogger().info("Failed to connect to twitch!");
 
