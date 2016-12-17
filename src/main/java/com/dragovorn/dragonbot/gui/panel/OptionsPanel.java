@@ -157,7 +157,7 @@ public class OptionsPanel extends JPanel {
         back.addActionListener(new BackListener());
 
         JButton apply = new JButton("Apply");
-        apply.addActionListener(event -> {
+        apply.addActionListener(event -> { // TODO make gooder, something needs to be done about this trainwrek
             Bot.getInstance().setName(this.username.getText());
             Bot.getInstance().setPassword(String.valueOf(this.oauth.getPassword()));
         });
