@@ -189,7 +189,7 @@ public class OptionsPanel extends JPanel {
         Bot.getInstance().setPassword(String.valueOf(this.oauth.getPassword()));
 
         try {
-            DragonBot.getInstance().connect();
+            DragonBot.getInstance().connect(); // TODO make connect method that takes username + password make it boolean return true if connection successful immediately disconnect after connection though
         } catch (IOException | ConnectionException exception) {
             return false;
         }
