@@ -61,7 +61,7 @@ public class ApplyListener implements ActionListener {
         }
 
         try {
-            if (OptionsPanel.getInstance().hasAccountInfoChanged()) {
+            if (OptionsPanel.getInstance().hasAccountInfoChanged()) { // TODO make this better
                 if (!OptionsPanel.getInstance().accountInfoTested()) {
                     DragonBot.getInstance().connect();
 
