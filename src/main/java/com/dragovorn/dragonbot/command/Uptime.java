@@ -29,6 +29,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
+/**
+ * @deprecated moving over to essentials.
+ */
+@Deprecated
 public class Uptime extends Command {
 
     public Uptime() {
