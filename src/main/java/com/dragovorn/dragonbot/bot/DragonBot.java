@@ -19,7 +19,6 @@
 
 package com.dragovorn.dragonbot.bot;
 
-import com.amazonaws.AmazonClientException;
 import com.amazonaws.event.ProgressEvent;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
@@ -109,7 +108,7 @@ public class DragonBot extends Bot {
 
     private final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
-    public DragonBot() throws Exception {
+    public DragonBot() throws IOException {
         setInstance(this);
 
         this.outQueue = new Queue();
@@ -189,7 +188,12 @@ public class DragonBot extends Bot {
             }
 
             executorService.shutdown();
-            executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+
+            try {
+                executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+            } catch (InterruptedException exception) {
+                exception.printStackTrace();
+            }
         }
 
         this.plugins = builder.build();
@@ -208,7 +212,7 @@ public class DragonBot extends Bot {
     }
 
     @Override
-    public void start() throws Exception {
+    public void start() {
         setState(BotState.STARTING);
 
         AmazonS3 client = new AmazonS3Client();
@@ -221,38 +225,40 @@ public class DragonBot extends Bot {
         getLogger().info("Checking for updates...");
         getLogger().info("Checking for newer version of the updater...");
 
-        if (client.getObjectMetadata(new GetObjectMetadataRequest("dl.dragovorn.com", "DragonBot/updater.jar")).getLastModified().getTime() > FileManager.getUpdater().lastModified()) {
-            getLogger().info("Found a newer version of the updater, downloading it now...");
+        try {
+            if (client.getObjectMetadata(new GetObjectMetadataRequest("dl.dragovorn.com", "DragonBot/updater.jar")).getLastModified().getTime() > FileManager.getUpdater().lastModified()) {
+                getLogger().info("Found a newer version of the updater, downloading it now...");
 
-            FileManager.getUpdater().delete();
+                FileManager.getUpdater().delete();
 
-            GetObjectRequest request = new GetObjectRequest("dl.dragovorn.com", "DragonBot/updater.jar");
-            request.setGeneralProgressListener((ProgressEvent event) -> {
-                if (this.download == null) {
-                    return;
-                }
-
-                getLogger().info("Downloaded " + this.download.getProgress().getBytesTransferred() + " out of " + this.download.getProgress().getTotalBytesToTransfer() + " bytes!");
-
-                switch (event.getEventType()) {
-                    case TRANSFER_COMPLETED_EVENT: {
-                        getLogger().info("Download completed!");
-                        break;
-                    } case TRANSFER_FAILED_EVENT: {
-                        try {
-                            AmazonClientException exception = this.download.waitForException();
-
-                            exception.printStackTrace();
-                        } catch(InterruptedException exception) { /* Won't happen */ }
-
-                        break;
+                GetObjectRequest request = new GetObjectRequest("dl.dragovorn.com", "DragonBot/updater.jar");
+                request.setGeneralProgressListener((ProgressEvent event) -> {
+                    if (this.download == null) {
+                        return;
                     }
-                }
-            });
 
-            this.download = this.manager.download(request, FileManager.getUpdater());
+                    getLogger().info("Downloaded " + this.download.getProgress().getBytesTransferred() + " out of " + this.download.getProgress().getTotalBytesToTransfer() + " bytes!");
 
-            this.download.waitForCompletion();
+                    switch (event.getEventType()) {
+                        case TRANSFER_COMPLETED_EVENT: {
+                            getLogger().info("Download completed!");
+                            break;
+                        } case TRANSFER_FAILED_EVENT: {
+                            getLogger().info("Unable to connect to the internet!");
+
+                            break;
+                        }
+                    }
+                });
+
+                this.download = this.manager.download(request, FileManager.getUpdater());
+
+                try {
+                    this.download.waitForCompletion();
+                } catch (InterruptedException exception) { /* Shouldn't happen */ }
+            }
+        } catch (Throwable throwable) {
+            getLogger().info("Unable to connect to the internet!");
         }
 
         update.update();
@@ -284,7 +290,12 @@ public class DragonBot extends Bot {
         });
 
         executorService.shutdown();
-        executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+
+        try {
+            executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        } catch (InterruptedException exception) {
+            exception.printStackTrace();
+        }
 
         getLogger().info(this.plugins.size() + " plugins enabled!");
 
