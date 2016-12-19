@@ -21,3 +21,8 @@ official documentation because 1.06 looks like a lot of api changes (With some m
 
 **There currently isn't a maven repo for the Dragon Bot's api**  
 The above being said, that means that you have to download the Dragon Bot inorder to write plugins for it.
+
+History
+-------
+This bot is a fork of PIRCBot.  
+Given it's a bare minimum copy of PIRC considering that I only took the Bot, InputThread, OutputThread, Queue, and UnverifiedSSL classes from it
