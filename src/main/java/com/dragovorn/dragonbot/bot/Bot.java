@@ -191,7 +191,7 @@ public abstract class Bot {
      * @param port the port of the irc server
      * @param password the password for the account the bot is using
      */
-    public abstract void connect(String ip, int port, String password) throws ConnectionException, IOException;
+    public abstract void connect(String ip, int port, String username, String password) throws ConnectionException, IOException;
 
     /**
      * Send the specified message to the connected channel.

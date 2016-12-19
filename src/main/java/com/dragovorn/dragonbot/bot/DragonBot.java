@@ -362,13 +362,29 @@ public class DragonBot extends Bot {
         }.start();
     }
 
+    public synchronized boolean testConnection(String username, String password) {
+        try {
+            connect(username, password);
+        } catch (ConnectionException | IOException exception) {
+            return false;
+        }
+
+        disconnect();
+
+        return true;
+    }
+
+    public synchronized void connect(String username, String password) throws ConnectionException, IOException {
+        connect("irc.twitch.tv", 6667, username, password);
+    }
+
     public synchronized void connect() throws ConnectionException, IOException {
         if (this.name.equals("") || this.getPassword().equals("")) {
             return;
         }
 
         disconnect();
-        connect("irc.twitch.tv", 6667, this.auth);
+        connect("irc.twitch.tv", 6667, this.name, this.auth);
     }
 
     private synchronized void disconnect() {
@@ -376,7 +392,7 @@ public class DragonBot extends Bot {
             return;
         }
 
-        this.sendRawLine("QUIT :");
+        this.sendRawLine("QUIT : Disconnected");
     }
 
     @Override
@@ -457,7 +473,7 @@ public class DragonBot extends Bot {
     }
 
     @Override
-    public synchronized void connect(String ip, int port, String password) throws ConnectionException, IOException {
+    public synchronized void connect(String ip, int port, String username, String password) throws ConnectionException, IOException {
         if (isConnected()) {
             throw new ConnectionException("You are already connected to twitch!");
         }
@@ -507,8 +523,8 @@ public class DragonBot extends Bot {
             OutputThread.sendRawLine(this, bufferedWriter, "PASS " + this.connection.getPassword());
         }
 
-        OutputThread.sendRawLine(this, bufferedWriter, "NICK " + this.getName());
-        OutputThread.sendRawLine(this, bufferedWriter, "USER " + this.getName() + " 8 * :" + this.getName());
+        OutputThread.sendRawLine(this, bufferedWriter, "NICK " + username);
+        OutputThread.sendRawLine(this, bufferedWriter, "USER " + username + " 8 * :" + username);
 
         this.inputThread = new InputThread(this, socket, bufferedReader, bufferedWriter);
 
