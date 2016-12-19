@@ -36,6 +36,8 @@ import com.dragovorn.dragonbot.api.bot.event.UserMessageEvent;
 import com.dragovorn.dragonbot.api.bot.file.FileManager;
 import com.dragovorn.dragonbot.api.bot.plugin.BotPlugin;
 import com.dragovorn.dragonbot.api.bot.plugin.PluginLoader;
+import com.dragovorn.dragonbot.api.bot.scheduler.BotScheduler;
+import com.dragovorn.dragonbot.api.bot.scheduler.Scheduler;
 import com.dragovorn.dragonbot.api.github.GitHubAPI;
 import com.dragovorn.dragonbot.api.twitch.TwitchAPI;
 import com.dragovorn.dragonbot.command.Github;
@@ -85,6 +87,8 @@ public class DragonBot extends Bot {
     private Download download;
 
     private CommandManager commandManager;
+
+    private Scheduler scheduler;
 
     private TransferManager manager;
 
@@ -163,6 +167,7 @@ public class DragonBot extends Bot {
         this.gitHubAPI = new GitHubAPI("dragovorn", "dragon-bot-twitch", this.config.getPreReleases());
         this.twitchAPI = new TwitchAPI(Keys.twitchClientID);
         this.loader = new PluginLoader();
+        this.scheduler = new BotScheduler();
 
         System.setErr(new PrintStream(new LoggingOutputStream(this.logger, Level.SEVERE), true));
         System.setOut(new PrintStream(new LoggingOutputStream(this.logger, Level.INFO), true));
@@ -782,5 +787,9 @@ public class DragonBot extends Bot {
 
     public ImmutableList<BotPlugin> getPlugins() {
         return this.plugins;
+    }
+
+    public Scheduler getScheduler() {
+        return this.scheduler;
     }
 }
