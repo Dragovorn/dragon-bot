@@ -100,7 +100,10 @@ public class UpdatePanel extends JPanel {
                 this.hasResponded = true;
             }
         } catch (Exception exception) {
-            exception.printStackTrace();
+            Bot.getInstance().getLogger().info("Unable to connect to the internet!");
+
+            this.stop = false;
+            this.hasResponded = true;
         }
     }
 
