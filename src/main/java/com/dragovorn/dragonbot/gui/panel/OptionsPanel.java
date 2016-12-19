@@ -21,7 +21,6 @@ package com.dragovorn.dragonbot.gui.panel;
 
 import com.dragovorn.dragonbot.bot.Bot;
 import com.dragovorn.dragonbot.bot.DragonBot;
-import com.dragovorn.dragonbot.exceptions.ConnectionException;
 import com.dragovorn.dragonbot.gui.MainWindow;
 import com.dragovorn.dragonbot.gui.TextPrompt;
 import com.dragovorn.dragonbot.gui.listener.ApplyListener;
@@ -29,7 +28,6 @@ import com.dragovorn.dragonbot.gui.listener.BackListener;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
 
 // TODO Add options for file management and other config options
 public class OptionsPanel extends JPanel {
@@ -136,7 +134,7 @@ public class OptionsPanel extends JPanel {
                 return;
             }
 
-            if (!(this.tested = testCredentials())) {
+            if (!(this.tested = DragonBot.getInstance().testConnection(this.username.getText(), String.valueOf(this.oauth.getPassword())))) {
                 Bot.getInstance().getLogger().info("Failed to connect to twitch!");
 
                 testStatus.setText("Failed to connect!");
@@ -184,19 +182,6 @@ public class OptionsPanel extends JPanel {
         add(buttons);
     }
 
-    private boolean testCredentials() {
-        Bot.getInstance().setName(this.username.getText());
-        Bot.getInstance().setPassword(String.valueOf(this.oauth.getPassword()));
-
-        try {
-            DragonBot.getInstance().connect(); // TODO make connect method that takes username + password make it boolean return true if connection successful immediately disconnect after connection though
-        } catch (IOException | ConnectionException exception) {
-            return false;
-        }
-
-        return true;
-    }
-
     public JCheckBox getConsole() {
         return this.console;
     }
@@ -223,10 +208,6 @@ public class OptionsPanel extends JPanel {
 
     public boolean accountInfoTested() {
         return this.tested;
-    }
-
-    public String getUsername() {
-        return this.username.getText();
     }
 
     public static OptionsPanel getInstance() {
