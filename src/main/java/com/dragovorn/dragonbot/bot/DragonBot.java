@@ -56,6 +56,7 @@ import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSocketFactory;
+import javax.swing.*;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -297,9 +298,15 @@ public class DragonBot extends Bot {
             }
 
             if (this.config.getAutoConnect() && !this.config.getChannel().equals("")) {
+                getLogger().info("Automatically connected to " + this.config.getChannel());
+
                 connectTo("#" + this.config.getChannel());
             }
         } else {
+            String buttons[] = { "Ok" };
+
+            JOptionPane.showOptionDialog(null, "You don't have a twitch account configured! Please set the bot's twitch account in the options menu!", "Twitch Account", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, buttons, buttons[0]);
+
             getLogger().info("No twitch account detected.");
         }
 

@@ -28,6 +28,8 @@ import com.dragovorn.dragonbot.gui.panel.OptionsPanel;
 import com.dragovorn.dragonbot.log.ConciseFormatter;
 import com.dragovorn.dragonbot.log.ConsoleHandler;
 
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -61,16 +63,24 @@ public class ApplyListener implements ActionListener {
         }
 
         try {
-            if (OptionsPanel.getInstance().hasAccountInfoChanged()) { // TODO make this better
-                if (!OptionsPanel.getInstance().accountInfoTested()) {
+            if (OptionsPanel.getInstance().hasAccountInfoChanged()) {
+                if (OptionsPanel.getInstance().accountInfoTested()) {
+                    OptionsPanel.getInstance().updateInfo();
                     DragonBot.getInstance().connect();
 
                     MainWindow.getInstance().getChannelButton().setEnabled(true);
                     MainWindow.getInstance().getChannelButton().setToolTipText("");
+                } else {
+                    OptionsPanel.getInstance().getTestStatus().setText("Test account!");
+                    OptionsPanel.getInstance().getTestStatus().setForeground(Color.red);
+
+                    String buttons[] = { "Ok" };
+
+                    JOptionPane.showOptionDialog(null, "Please make sure to test your account connectivity before applying changes!", "Twitch Account", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, buttons, buttons[0]);
                 }
             }
         } catch (ConnectionException | IOException exception) {
-            Bot.getInstance().getLogger().info("Failed to connect to twitch!");
+            Bot.getInstance().getLogger().info("Failed to connect to twitch! (Post connection)");
 
             MainWindow.getInstance().getChannelButton().setEnabled(false);
             MainWindow.getInstance().getChannelButton().setToolTipText("The current account was unable to connect!");

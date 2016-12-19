@@ -37,6 +37,8 @@ public class OptionsPanel extends JPanel {
 
     private JTextField username;
 
+    private final JLabel testStatus;
+
     private JPasswordField oauth;
 
     private static OptionsPanel instance;
@@ -46,6 +48,7 @@ public class OptionsPanel extends JPanel {
     public OptionsPanel() {
         instance = this;
         this.tested = false;
+        this.testStatus = new JLabel();
 
         Dimension size = new Dimension(500, 500);
 
@@ -80,8 +83,6 @@ public class OptionsPanel extends JPanel {
         this.oauth.setMaximumSize(this.oauth.getPreferredSize());
         this.oauth.setText(Bot.getInstance().getConfiguration().getAuth());
         new TextPrompt("OAuth", this.oauth);
-
-        JLabel testStatus = new JLabel();
 
         JButton testTwitch = new JButton("Test");
 
@@ -208,6 +209,15 @@ public class OptionsPanel extends JPanel {
 
     public boolean accountInfoTested() {
         return this.tested;
+    }
+
+    public void updateInfo() {
+        Bot.getInstance().setName(this.username.getText());
+        Bot.getInstance().setPassword(String.valueOf(this.oauth.getPassword()));
+    }
+
+    public JLabel getTestStatus() {
+        return this.testStatus;
     }
 
     public static OptionsPanel getInstance() {
