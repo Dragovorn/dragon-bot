@@ -23,7 +23,7 @@ class Version {
 
     private static final char PATCH = 'a';
 
-    private static final int SNAPSHOT = 8;
+    private static final int SNAPSHOT = 9;
 
     private static final String VERSION = "1.06";
     static final String PRETTY_VERSION = "v" + VERSION + PATCH + (SNAPSHOT > 0 ? "_SNAPSHOT-" + SNAPSHOT : "");
