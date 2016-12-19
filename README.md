@@ -25,4 +25,4 @@ The above being said, that means that you have to download the Dragon Bot inorde
 History
 -------
 This bot is a fork of PIRCBot.  
-Given it's a bare minimum copy of PIRC considering that I only took the Bot, InputThread, OutputThread, Queue, and UnverifiedSSL classes from it
+Given it's a bare minimum copy of PIRC considering that I only took the Bot, InputThread, OutputThread, Queue, and UnverifiedSSL classes from it.
