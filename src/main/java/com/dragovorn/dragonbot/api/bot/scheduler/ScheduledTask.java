@@ -39,7 +39,7 @@ public abstract class ScheduledTask implements Runnable {
             return this;
         }
 
-
+        // TODO register task to the plugin, then wait it's delay, then repeat it's interval.
 
         return this;
     }
