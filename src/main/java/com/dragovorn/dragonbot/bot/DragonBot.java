@@ -41,7 +41,6 @@ import com.dragovorn.dragonbot.api.bot.scheduler.Scheduler;
 import com.dragovorn.dragonbot.api.github.GitHubAPI;
 import com.dragovorn.dragonbot.api.twitch.TwitchAPI;
 import com.dragovorn.dragonbot.command.Github;
-import com.dragovorn.dragonbot.command.Uptime;
 import com.dragovorn.dragonbot.command.VersionCmd;
 import com.dragovorn.dragonbot.exceptions.ConnectionException;
 import com.dragovorn.dragonbot.exceptions.InvalidPluginException;
@@ -278,7 +277,6 @@ public class DragonBot extends Bot {
         this.name = this.config.getName();
         this.auth = this.config.getAuth();
 
-        this.commandManager.registerCommand(new Uptime());
         this.commandManager.registerCommand(new Github());
         this.commandManager.registerCommand(new VersionCmd());
 
