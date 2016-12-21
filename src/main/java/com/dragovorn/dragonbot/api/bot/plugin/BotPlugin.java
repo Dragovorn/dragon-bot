@@ -20,13 +20,19 @@
 package com.dragovorn.dragonbot.api.bot.plugin;
 
 import com.dragovorn.dragonbot.api.bot.file.FileManager;
+import com.dragovorn.dragonbot.api.bot.scheduler.GroupedThreadFactory;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.io.File;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 public abstract class BotPlugin {
 
     private PluginInfo info;
+
+    private ExecutorService executorService;
 
     private File pluginFolder;
 
@@ -59,5 +65,14 @@ public abstract class BotPlugin {
         }
 
         return FileManager.addFile(new File(this.pluginFolder, file));
+    }
+
+    public ExecutorService getExecutorService() {
+        if (this.executorService == null) {
+            String name = (this.info == null) ? "unknown" : this.info.getName();
+            this.executorService = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setNameFormat(name + " Pool Thread #%1$d").setThreadFactory(new GroupedThreadFactory(this, name)).build());
+        }
+
+        return this.executorService;
     }
 }

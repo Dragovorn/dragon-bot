@@ -21,26 +21,13 @@ package com.dragovorn.dragonbot.api.bot.scheduler;
 
 import com.dragovorn.dragonbot.api.bot.plugin.BotPlugin;
 
-import java.util.Timer;
-import java.util.concurrent.TimeUnit;
+public interface ScheduledTask {
 
-public abstract class ScheduledTask implements Runnable {
+    int getId();
 
-    private Timer timer;
+    BotPlugin getOwner();
 
-    private boolean running;
+    Runnable getTask();
 
-    public boolean isRunning() {
-        return this.running;
-    }
-
-    public ScheduledTask repeat(BotPlugin plugin, int delay, int interval, TimeUnit unit) {
-        if (isRunning()) {
-            return this;
-        }
-
-        // TODO register task to the plugin, then wait it's delay, then repeat it's interval.
-
-        return this;
-    }
+    void cancel();
 }
