@@ -20,24 +20,30 @@
 package com.dragovorn.dragonbot.api.bot.scheduler;
 
 import com.dragovorn.dragonbot.api.bot.plugin.BotPlugin;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ThreadFactory;
 
-public interface Scheduler {
+public class GroupedThreadFactory implements ThreadFactory {
 
-    void cancel(int id);
-    void cancel(ScheduledTask task);
+    private final ThreadGroup group;
 
-    int cancel(BotPlugin plugin);
+    private static class BotGroup extends ThreadGroup {
+        private BotGroup(String name) {
+            super(name);
+        }
+    }
 
-    ScheduledTask runAsync(BotPlugin owner, Runnable task);
-    ScheduledTask schedule(BotPlugin owner, Runnable task, long delay, TimeUnit unit);
-    ScheduledTask schedule(BotPlugin owner, Runnable task, long delay, long period, TimeUnit unit);
+    public GroupedThreadFactory(BotPlugin plugin, String name) {
+        this.group = new BotGroup(name);
+    }
 
-    Unsafe unsafe();
+    @Override
+    public Thread newThread(@NotNull Runnable task) {
+        return new Thread(this.group, task);
+    }
 
-    interface Unsafe {
-        ExecutorService getExecutorService(BotPlugin plugin);
+    public ThreadGroup getGroup() {
+        return this.group;
     }
 }

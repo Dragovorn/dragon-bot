@@ -20,24 +20,103 @@
 package com.dragovorn.dragonbot.api.bot.scheduler;
 
 import com.dragovorn.dragonbot.api.bot.plugin.BotPlugin;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
+import gnu.trove.TCollections;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class BotScheduler implements Scheduler {
 
-    @Override
-    public ScheduledTask scheduleRepeatingTask(BotPlugin plugin, Runnable runnable, int delay, int interval, TimeUnit unit) {
-        return null;
+    private final Object lock;
+
+    private final AtomicInteger taskCounter;
+
+    private final TIntObjectMap<BotTask> tasks;
+
+    private final Multimap<BotPlugin, BotTask> tasksByPlugin;
+
+    private final Unsafe unsafe;
+
+    public BotScheduler() {
+        this.lock = new Object();
+        this.taskCounter = new AtomicInteger();
+        this.unsafe = BotPlugin::getExecutorService;
+        this.tasks = TCollections.synchronizedMap(new TIntObjectHashMap<BotTask>());
+        this.tasksByPlugin = Multimaps.synchronizedMultimap(HashMultimap.<BotPlugin, BotTask>create());
+    }
+
+    void cancelTask(BotTask task) {
+        synchronized (this.lock) {
+            this.tasks.remove(task.getId());
+            this.tasksByPlugin.values().remove(task);
+        }
     }
 
     @Override
-    public ScheduledTask scheduleDelayedTask(BotPlugin plugin, Runnable runnable, int delay, TimeUnit unit) {
-        return null;
+    public void cancel(int id) {
+        BotTask task = this.tasks.get(id);
+        Preconditions.checkArgument(task != null, "No task with id %s", id);
+
+        task.cancel();
     }
 
     @Override
-    public List<ScheduledTask> getScheduledTasks() {
-        return null;
+    public void cancel(ScheduledTask task) {
+        task.cancel();
+    }
+
+    @Override
+    public int cancel(BotPlugin plugin) {
+        Set<ScheduledTask> remove = new HashSet<>();
+
+        for (ScheduledTask task : this.tasksByPlugin.get(plugin)) {
+            remove.add(task);
+        }
+
+        for (ScheduledTask task : remove) {
+            cancel(task);
+        }
+
+        return remove.size();
+    }
+
+    @Override
+    public ScheduledTask runAsync(BotPlugin owner, Runnable task) {
+        return schedule(owner, task, 0, TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    public ScheduledTask schedule(BotPlugin owner, Runnable task, long delay, TimeUnit unit) {
+        return schedule(owner, task, delay, 0, unit);
+    }
+
+    @Override
+    public ScheduledTask schedule(BotPlugin owner, Runnable task, long delay, long period, TimeUnit unit) {
+        Preconditions.checkNotNull(owner, "owner");
+        Preconditions.checkNotNull(task, "task");
+
+        BotTask prepared = new BotTask(this, this.taskCounter.getAndIncrement(), owner, task, delay, period, unit);
+
+        synchronized (this.lock) {
+            this.tasks.put(prepared.getId(), prepared);
+            this.tasksByPlugin.put(owner, prepared);
+        }
+
+        owner.getExecutorService().execute(prepared);
+
+        return prepared;
+    }
+
+    @Override
+    public Unsafe unsafe() {
+        return this.unsafe;
     }
 }
