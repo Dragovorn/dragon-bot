@@ -24,4 +24,5 @@ The above being said, that means that you have to download the Dragon Bot inorde
 
 History
 -------
-- Fork of PIRCBot (Link soon)
+- Use of certain aspects of [BungeeCord](https://www.spigotmc.org/ "BungeeCord's Webpage") for plugin specific schedulers.
+- Fork of [PIRCBot](http://www.jibble.org/pircbot.php "PIRCBot's Webpage").
