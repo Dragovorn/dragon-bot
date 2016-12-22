@@ -19,73 +19,44 @@
 
 package com.dragovorn.dragonbot.api.bot.plugin;
 
-import com.dragovorn.dragonbot.bot.Bot;
-import com.dragovorn.dragonbot.exceptions.InvalidPluginException;
-
-import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Collections;
-import java.util.jar.JarFile;
-import java.util.zip.ZipEntry;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
-public class PluginLoader {
+public class PluginLoader extends URLClassLoader {
 
-    public BotPlugin loadPlugin(File file) throws InvalidPluginException {
-        if (file.getName().matches("(.+).(jar)$")) {
-            JarFile jar;
+    private static final Set<PluginLoader> allLoaders = new CopyOnWriteArraySet<>();
 
-            try {
-                jar = new JarFile(file);
+    static {
+        ClassLoader.registerAsParallelCapable();
+    }
 
-                URLClassLoader loader = new URLClassLoader(new URL[] {file.toURI().toURL()}, getClass().getClassLoader());
+    public PluginLoader(URL[] urls) {
+        super(urls);
+        allLoaders.add(this);
+    }
 
-                Plugin plugin = null;
-                BotPlugin botPlugin = null;
+    @Override
+    public Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+        return loadClass(name, resolve, true);
+    }
 
-                for (ZipEntry entry : Collections.list(jar.entries())) {
-                    if (entry.getName() != null && entry.getName().startsWith("__MACOSX")) {
-                        continue;
-                    }
+    private Class<?> loadClass(String name, boolean resolve, boolean checkOther) throws ClassNotFoundException {
+        try {
+            return super.loadClass(name, resolve);
+        } catch (ClassNotFoundException exception) { /* Do Nothing */ }
 
-                    if (!entry.getName().matches("(.+).(class)$")) {
-                        continue;
-                    }
-
-                    Class<?> clazz = Class.forName(entry.getName().replace(".class", "").replace("/", "."), true, loader);
-
-                    Plugin pl = clazz.getAnnotation(Plugin.class);
-
-                    if (plugin != null && pl != null) {
-                        throw new InvalidPluginException("There are two classes with @Plugin annotations " + entry.getName());
-                    } else if (pl != null) {
-                        if (!BotPlugin.class.isAssignableFrom(clazz)) {
-                            throw new InvalidPluginException("The class with the @Plugin annotation does not extend BotPlugin " + entry.getName());
-                        }
-
-                        plugin = pl;
-                        botPlugin = (BotPlugin) clazz.newInstance();
-                    }
+        if (checkOther) {
+            for (PluginLoader loader : allLoaders) {
+                if (loader != this) {
+                    try {
+                        return loader.loadClass(name, resolve, false);
+                    } catch (ClassNotFoundException exception) { /* Do Nothing */ }
                 }
-
-                if (plugin == null) {
-                    throw new InvalidPluginException("There is no class with the @Plugin annotation " + file.getPath());
-                }
-
-                botPlugin.setInfo(new PluginInfo(plugin));
-
-                Bot.getInstance().getLogger().info("Loading " + botPlugin.getInfo().getName() + " v" + botPlugin.getInfo().getVersion());
-
-                botPlugin.onLoad();
-
-                Bot.getInstance().getLogger().info("Loaded " + botPlugin.getInfo().getName() + " v" + botPlugin.getInfo().getVersion() + "!");
-
-                return botPlugin;
-            } catch (Exception exception) {
-                throw new InvalidPluginException(exception);
             }
         }
 
-        return null; // Shouldn't happen
+        throw new ClassNotFoundException(name);
     }
 }
