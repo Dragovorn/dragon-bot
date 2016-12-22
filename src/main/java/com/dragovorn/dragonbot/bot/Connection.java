@@ -21,8 +21,6 @@ package com.dragovorn.dragonbot.bot;
 
 public class Connection {
 
-    // TODO make this builder based.
-
     private String server;
     private String password;
     private String channel;

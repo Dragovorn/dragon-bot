@@ -36,6 +36,7 @@ import com.dragovorn.dragonbot.api.bot.event.UserMessageEvent;
 import com.dragovorn.dragonbot.api.bot.file.FileManager;
 import com.dragovorn.dragonbot.api.bot.plugin.BotPlugin;
 import com.dragovorn.dragonbot.api.bot.plugin.PluginLoader;
+import com.dragovorn.dragonbot.api.bot.plugin.PluginManager;
 import com.dragovorn.dragonbot.api.bot.scheduler.BotScheduler;
 import com.dragovorn.dragonbot.api.bot.scheduler.Scheduler;
 import com.dragovorn.dragonbot.api.github.GitHubAPI;
@@ -61,10 +62,7 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Scanner;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -79,9 +77,7 @@ public class DragonBot extends Bot {
     private String charset;
     private String channelPrefixes = "#&+!";
 
-    private PluginLoader loader;
-
-    private ImmutableList<BotPlugin> plugins;
+    private PluginManager manager;
 
     private Download download;
 
@@ -165,42 +161,33 @@ public class DragonBot extends Bot {
         this.logger = new DragonLogger("Dragon Bot", FileManager.getLogs() + File.separator + this.format.format(new Date()) + "-%g.log");
         this.gitHubAPI = new GitHubAPI("dragovorn", "dragon-bot-twitch", this.config.getPreReleases());
         this.twitchAPI = new TwitchAPI(Keys.twitchClientID);
-        this.loader = new PluginLoader();
         this.scheduler = new BotScheduler();
 
         System.setErr(new PrintStream(new LoggingOutputStream(this.logger, Level.SEVERE), true));
         System.setOut(new PrintStream(new LoggingOutputStream(this.logger, Level.INFO), true));
 
-        ImmutableList.Builder<BotPlugin> builder = new ImmutableList.Builder<>();
+        ArrayList<BotPlugin> arrayList = new ArrayList<>();
 
         getLogger().info("Loading plugins...");
-        if (FileManager.getPlugins().listFiles() != null) {
-            ExecutorService executorService = Executors.newCachedThreadPool();
 
-            for (File file : FileManager.getPlugins().listFiles()) {
-                if (!file.getName().matches("(.+).(jar)$")) {
-                    continue;
-                }
 
-                executorService.execute(() -> {
-                    try {
-                        builder.add(this.loader.loadPlugin(file));
-                    } catch (InvalidPluginException exception) {
-                        exception.printStackTrace();
-                    }
-                });
-            }
+        ExecutorService executorService = Executors.newCachedThreadPool();
 
-            executorService.shutdown();
+        this.plugins.forEach(plugin -> {
+            getLogger().info("Loading " + plugin.getInfo().getName() + "...");
 
-            try {
-                executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-            } catch (InterruptedException exception) {
-                exception.printStackTrace();
-            }
+            executorService.execute(plugin::onLoad);
+
+            getLogger().info("Loading " + plugin.getInfo().getName() + " v" + plugin.getInfo().getVersion() + "!");
+        });
+
+        executorService.shutdown();
+
+        try {
+            executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        } catch (InterruptedException exception) {
+            exception.printStackTrace();
         }
-
-        this.plugins = builder.build();
 
         getLogger().info("Loaded " + this.plugins.size() + " " + (this.plugins.size() == 1 ? "plugin" : "plugins") + "!");
 

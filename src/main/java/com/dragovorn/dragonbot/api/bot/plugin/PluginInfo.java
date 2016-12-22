@@ -21,14 +21,23 @@ package com.dragovorn.dragonbot.api.bot.plugin;
 
 public class PluginInfo {
 
+    private final Class main;
+
     private final String name;
     private final String version;
     private final String author;
+    private final String[] dependencies;
 
-    PluginInfo(Plugin plugin) {
+    PluginInfo(Plugin plugin, Class main) {
+        this.main = main;
         this.name = plugin.name();
         this.version = plugin.version();
         this.author = plugin.author();
+        this.dependencies = plugin.dependencies();
+    }
+
+    public Class getMain() {
+        return this.main;
     }
 
     public String getName() {
@@ -41,5 +50,9 @@ public class PluginInfo {
 
     public String getAuthor() {
         return author;
+    }
+
+    public String[] getDependencies() {
+        return this.dependencies;
     }
 }
