@@ -499,15 +499,15 @@ public class DragonBot extends Bot {
             throw new ConnectionException("You are already connected to twitch!");
         }
 
-        this.connection = new Connection(ip, port, password);
+        this.connection = new Connection.Builder().setServer(ip).setPort(port).setPassword(password).setChannel("").setSSL(false).setVerifySSL(false).build();
 
         Socket socket;
 
-        if (this.connection.useSSL()) {
+        if (this.connection.getSSL()) {
             try {
                 SocketFactory factory;
 
-                if (this.connection.verifySSL()) {
+                if (this.connection.getVerifySSL()) {
                     factory = SSLSocketFactory.getDefault();
                 } else {
                     SSLContext context = UnverifiedSSL.getUnverifedSSLContext();

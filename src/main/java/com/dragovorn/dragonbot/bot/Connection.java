@@ -53,47 +53,47 @@ public class Connection {
 
             return this;
         }
+
+        public Builder setChannel(String channel) {
+            this.channel = channel;
+
+            return this;
+        }
+
+        public Builder setSSL(boolean SSL) {
+            this.SSL = SSL;
+
+            return this;
+        }
+
+        public Builder setVerifySSL(boolean verifySSL) {
+            this.verifySSL = verifySSL;
+
+            return this;
+        }
+
+        public Builder setPort(int port) {
+            this.port = port;
+
+            return this;
+        }
+
+        public Connection build() {
+            return new Connection(this);
+        }
     }
 
-    public Connection(String server) {
-        this(server, 6667, "", "", false, false);
-    }
-
-    public Connection(String server, int port, String password) {
-        this(server, port, password, "", false, false);
-    }
-
-    public Connection(String server, int port, String password, String channel, boolean SSL, boolean verifySSL) {
-        this.server = server;
-        this.port = port;
-        this.password = password;
-        this.channel = channel;
-        this.SSL = SSL;
-        this.verifySSL = verifySSL;
-    }
-
-    public void setServer(String server) {
-        this.server = server;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
+    private Connection(Builder builder) {
+        this.server = builder.server;
+        this.password = builder.password;
+        this.channel = builder.channel;
+        this.SSL = builder.SSL;
+        this.verifySSL = builder.verifySSL;
+        this.port = builder.port;
     }
 
     public void setChannel(String channel) {
         this.channel = channel;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    public void setSSL(boolean SSL) {
-        this.SSL = SSL;
-    }
-
-    public void setVerifySSL(boolean verifySSL) {
-        this.verifySSL = verifySSL;
     }
 
     public String getServer() {
@@ -108,11 +108,11 @@ public class Connection {
         return this.channel;
     }
 
-    public boolean useSSL() {
+    public boolean getSSL() {
         return this.SSL;
     }
 
-    public boolean verifySSL() {
+    public boolean getVerifySSL() {
         return this.verifySSL;
     }
 
