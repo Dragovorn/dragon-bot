@@ -21,6 +21,8 @@ package com.dragovorn.dragonbot.bot;
 
 public class Connection {
 
+    // TODO make this builder based.
+
     private String server;
     private String password;
     private String channel;
@@ -29,6 +31,29 @@ public class Connection {
     private boolean verifySSL = false;
 
     private int port;
+
+    public static class Builder {
+        private String server;
+        private String password;
+        private String channel;
+
+        private boolean SSL;
+        private boolean verifySSL;
+
+        private int port;
+
+        public Builder setServer(String server) {
+            this.server = server;
+
+            return this;
+        }
+
+        public Builder setPassword(String password) {
+            this.password = password;
+
+            return this;
+        }
+    }
 
     public Connection(String server) {
         this(server, 6667, "", "", false, false);
