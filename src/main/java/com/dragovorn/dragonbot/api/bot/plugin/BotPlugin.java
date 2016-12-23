@@ -46,7 +46,7 @@ public abstract class BotPlugin {
         return this.pluginFolder;
     }
 
-    final void setInfo(PluginInfo info) {
+    final void init(PluginInfo info) {
         this.info = info;
         this.pluginFolder = new File(FileManager.getPlugins(), info.getName());
     }
