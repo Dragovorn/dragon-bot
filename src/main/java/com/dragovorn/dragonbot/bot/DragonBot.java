@@ -34,8 +34,6 @@ import com.dragovorn.dragonbot.api.bot.event.ChannelEnterEvent;
 import com.dragovorn.dragonbot.api.bot.event.ServerConnectEvent;
 import com.dragovorn.dragonbot.api.bot.event.UserMessageEvent;
 import com.dragovorn.dragonbot.api.bot.file.FileManager;
-import com.dragovorn.dragonbot.api.bot.plugin.BotPlugin;
-import com.dragovorn.dragonbot.api.bot.plugin.PluginLoader;
 import com.dragovorn.dragonbot.api.bot.plugin.PluginManager;
 import com.dragovorn.dragonbot.api.bot.scheduler.BotScheduler;
 import com.dragovorn.dragonbot.api.bot.scheduler.Scheduler;
@@ -44,13 +42,11 @@ import com.dragovorn.dragonbot.api.twitch.TwitchAPI;
 import com.dragovorn.dragonbot.command.Github;
 import com.dragovorn.dragonbot.command.VersionCmd;
 import com.dragovorn.dragonbot.exceptions.ConnectionException;
-import com.dragovorn.dragonbot.exceptions.InvalidPluginException;
 import com.dragovorn.dragonbot.gui.MainWindow;
 import com.dragovorn.dragonbot.gui.panel.UpdatePanel;
 import com.dragovorn.dragonbot.log.DragonLogger;
 import com.dragovorn.dragonbot.log.LoggingOutputStream;
 import com.google.common.base.CharMatcher;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 import javax.net.SocketFactory;
@@ -62,10 +58,10 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.Date;
+import java.util.List;
+import java.util.Scanner;
+import java.util.StringTokenizer;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -77,7 +73,7 @@ public class DragonBot extends Bot {
     private String charset;
     private String channelPrefixes = "#&+!";
 
-    private PluginManager manager;
+    private PluginManager pluginManager;
 
     private Download download;
 
@@ -85,7 +81,7 @@ public class DragonBot extends Bot {
 
     private Scheduler scheduler;
 
-    private TransferManager manager;
+    private TransferManager transferManager;
 
     private BotConfiguration config;
 
@@ -157,6 +153,7 @@ public class DragonBot extends Bot {
             FileManager.getPlugins().mkdirs();
         }
 
+        this.pluginManager = new PluginManager();
         this.commandManager = new CommandManager();
         this.logger = new DragonLogger("Dragon Bot", FileManager.getLogs() + File.separator + this.format.format(new Date()) + "-%g.log");
         this.gitHubAPI = new GitHubAPI("dragovorn", "dragon-bot-twitch", this.config.getPreReleases());
@@ -166,30 +163,7 @@ public class DragonBot extends Bot {
         System.setErr(new PrintStream(new LoggingOutputStream(this.logger, Level.SEVERE), true));
         System.setOut(new PrintStream(new LoggingOutputStream(this.logger, Level.INFO), true));
 
-        ArrayList<BotPlugin> arrayList = new ArrayList<>();
-
-        getLogger().info("Loading plugins...");
-
-
-        ExecutorService executorService = Executors.newCachedThreadPool();
-
-        this.plugins.forEach(plugin -> {
-            getLogger().info("Loading " + plugin.getInfo().getName() + "...");
-
-            executorService.execute(plugin::onLoad);
-
-            getLogger().info("Loading " + plugin.getInfo().getName() + " v" + plugin.getInfo().getVersion() + "!");
-        });
-
-        executorService.shutdown();
-
-        try {
-            executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-        } catch (InterruptedException exception) {
-            exception.printStackTrace();
-        }
-
-        getLogger().info("Loaded " + this.plugins.size() + " " + (this.plugins.size() == 1 ? "plugin" : "plugins") + "!");
+        this.pluginManager.loadPlugins();
 
         if (!path.equals("null")) {
             getLogger().info("Different file path found: " + FileManager.getDirectory().getPath());
@@ -207,7 +181,7 @@ public class DragonBot extends Bot {
         setState(BotState.STARTING);
 
         AmazonS3 client = new AmazonS3Client();
-        this.manager = new TransferManager(client);
+        this.transferManager = new TransferManager(client);
 
         UpdatePanel update = new UpdatePanel();
 
@@ -242,7 +216,7 @@ public class DragonBot extends Bot {
                     }
                 });
 
-                this.download = this.manager.download(request, FileManager.getUpdater());
+                this.download = this.transferManager.download(request, FileManager.getUpdater());
 
                 try {
                     this.download.waitForCompletion();
@@ -267,27 +241,7 @@ public class DragonBot extends Bot {
         this.commandManager.registerCommand(new Github());
         this.commandManager.registerCommand(new VersionCmd());
 
-        getLogger().info("Enabling " + this.plugins.size() + " " + (this.plugins.size() == 1 ? "plugin" : "plugins") +"...");
-
-        ExecutorService executorService = Executors.newCachedThreadPool();
-
-        this.plugins.forEach(plugin -> {
-            getLogger().info("Enabling " + plugin.getInfo().getName() + "...");
-
-            executorService.execute(plugin::onEnable);
-
-            getLogger().info("Enabled " + plugin.getInfo().getName() + " v" + plugin.getInfo().getVersion() + "!");
-        });
-
-        executorService.shutdown();
-
-        try {
-            executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-        } catch (InterruptedException exception) {
-            exception.printStackTrace();
-        }
-
-        getLogger().info(this.plugins.size() + " plugins enabled!");
+        this.pluginManager.enablePlugins();
 
         if (!this.name.equals("") && !this.config.getAuth().equals("")) {
             getLogger().info("Connecting to twitch!");
@@ -332,30 +286,11 @@ public class DragonBot extends Bot {
 
             @Override
             public void run() {
-                manager.shutdownNow();
+                transferManager.shutdownNow();
 
                 leaveChannel();
 
-                getLogger().info("Disabling " + plugins.size() + " " + (plugins.size() == 1 ? "plugin" : "plugins") + "...");
-
-                if (plugins != null) {
-                    ExecutorService executorService = Executors.newCachedThreadPool();
-
-                    plugins.forEach(plugin -> {
-                        getLogger().info("Disabling " + plugin.getInfo().getName() + " " + plugin.getInfo().getVersion() + "!");
-
-                        executorService.execute(plugin::onDisable);
-
-                        getLogger().info(plugin.getInfo().getName() + " " + plugin.getInfo().getVersion() + " disabled!");
-                    });
-
-                    executorService.shutdown();
-                    try {
-                        executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-                    } catch (InterruptedException exception) {
-                        exception.printStackTrace();
-                    }
-                }
+                pluginManager.disablePlugins();
 
                 getLogger().info("Saving configuration...");
 
@@ -770,11 +705,11 @@ public class DragonBot extends Bot {
         return this.twitchAPI;
     }
 
-    public ImmutableList<BotPlugin> getPlugins() {
-        return this.plugins;
-    }
-
     public Scheduler getScheduler() {
         return this.scheduler;
+    }
+
+    public PluginManager getPluginManager() {
+        return this.pluginManager;
     }
 }
