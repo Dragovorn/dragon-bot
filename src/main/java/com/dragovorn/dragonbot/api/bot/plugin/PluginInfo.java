@@ -19,16 +19,20 @@
 
 package com.dragovorn.dragonbot.api.bot.plugin;
 
+import java.io.File;
+
 public class PluginInfo {
 
-    private final Class main;
+    private final File file;
 
+    private final String main;
     private final String name;
     private final String version;
     private final String author;
     private final String[] dependencies;
 
-    PluginInfo(Plugin plugin, Class main) {
+    PluginInfo(Plugin plugin, String main, File file) {
+        this.file = file;
         this.main = main;
         this.name = plugin.name();
         this.version = plugin.version();
@@ -36,7 +40,11 @@ public class PluginInfo {
         this.dependencies = plugin.dependencies();
     }
 
-    public Class getMain() {
+    public File getFile() {
+        return this.file;
+    }
+
+    public String getMain() {
         return this.main;
     }
 

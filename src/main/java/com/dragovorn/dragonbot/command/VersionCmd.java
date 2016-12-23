@@ -42,7 +42,7 @@ public class VersionCmd extends Command {
 
         String name = builder.toString().trim();
 
-        for (BotPlugin plugin : DragonBot.getInstance().getPlugins()) {
+        for (BotPlugin plugin : DragonBot.getInstance().getPluginManager().getPlugins().values()) {
             if (plugin.getInfo().getName().trim().equalsIgnoreCase(name)) {
                 Bot.getInstance().sendMessage("%s - Version: %s, Created by: %s", plugin.getInfo().getName(), plugin.getInfo().getVersion(), plugin.getInfo().getAuthor());
                 return;

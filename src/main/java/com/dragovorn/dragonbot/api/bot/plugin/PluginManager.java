@@ -20,21 +20,27 @@
 package com.dragovorn.dragonbot.api.bot.plugin;
 
 import com.dragovorn.dragonbot.api.bot.file.FileManager;
+import com.dragovorn.dragonbot.bot.Bot;
 import com.dragovorn.dragonbot.exceptions.InvalidPluginException;
+import com.google.common.collect.ImmutableMap;
 
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
 import java.util.jar.JarFile;
+import java.util.logging.Level;
 import java.util.zip.ZipEntry;
 
 public class PluginManager {
 
     private Map<String, PluginInfo> load;
 
+    private Map<String, BotPlugin> plugins;
+
     public PluginManager() {
         this.load = new HashMap<>();
+        this.plugins = new HashMap<>();
     }
 
     public void loadPlugins() {
@@ -44,36 +50,132 @@ public class PluginManager {
                     continue;
                 }
 
+                try {
+                    PluginInfo info = getPluginInfo(file);
 
+                    this.load.put(info.getName().toLowerCase(), info);
+                } catch (InvalidPluginException exception) {
+                    exception.printStackTrace();
+                }
+            }
+        }
+
+        Map<PluginInfo, Boolean> pluginStatus = new HashMap<>();
+
+        for (Map.Entry<String, PluginInfo> entry : this.load.entrySet()) {
+            try {
+                if (!loadPlugin(pluginStatus, new Stack<>(), entry.getValue())) {
+                    Bot.getInstance().getLogger().log(Level.INFO, "Failed to enable {0}", entry.getKey());
+                }
+            } catch (InvalidPluginException exception) {
+                exception.printStackTrace();
+            }
+        }
+
+        this.load.clear();
+        this.load = null;
+    }
+
+    public void enablePlugins() {
+        for (BotPlugin plugin : this.plugins.values()) {
+            try {
+                plugin.onEnable();
+
+                Bot.getInstance().getLogger().log(Level.INFO, "Enabled plugin {0} version {1} by {2}", new Object[] { plugin.getInfo().getName(), plugin.getInfo().getVersion(), plugin.getInfo().getName() });
+            } catch (Throwable throwable) {
+                Bot.getInstance().getLogger().log(Level.WARNING, "Encountered exception while enabling plugin: " + plugin.getInfo().getName(), throwable);
             }
         }
     }
 
-    public boolean loadPlugin(Map<PluginInfo, Boolean> pluginStatus, Stack<PluginInfo> dependancies, PluginInfo info) {
+    public void disablePlugins() {
+        for (BotPlugin plugin : this.plugins.values()) {
+            try {
+                plugin.onDisable();
+
+                Bot.getInstance().getLogger().log(Level.INFO, "Disabled plugin {0} version {1} by {2}", new Object[] { plugin.getInfo().getName(), plugin.getInfo().getVersion(), plugin.getInfo().getAuthor() });
+            } catch (Throwable throwable) {
+                Bot.getInstance().getLogger().log(Level.WARNING, "Encountered exception while disabling plugin: " + plugin.getInfo().getName(), throwable);
+            }
+        }
+    }
+
+    public boolean loadPlugin(Map<PluginInfo, Boolean> pluginStatus, Stack<PluginInfo> dependencies, PluginInfo info) throws InvalidPluginException {
         if (pluginStatus.containsKey(info)) {
             return pluginStatus.get(info);
         }
 
         Set<String> depends = new HashSet<>();
-        depends.addAll(Arrays.asList(info.getDependencies()));
+
+        if (!info.getDependencies()[0].equals("")) {
+            depends.addAll(Arrays.asList(info.getDependencies()));
+        }
 
         boolean status = true;
 
         for (String name : depends) {
-            PluginInfo depend;
+            PluginInfo depend = this.load.get(name.toLowerCase());
+
+            Boolean dependStatus = (depend != null) ? pluginStatus.get(depend) : Boolean.FALSE;
+
+            if (dependStatus == null) {
+                if (dependencies.contains(depend)) {
+                    StringBuilder graph = new StringBuilder();
+
+                    for (PluginInfo pluginInfo : dependencies) {
+                        graph.append(pluginInfo.getName()).append(" -> ");
+                    }
+
+                    graph.append(info.getName()).append(" -> ").append(name);
+                    Bot.getInstance().getLogger().log(Level.WARNING, "Circular dependency detected {0}", graph);
+                    status = false;
+                } else {
+                    dependencies.push(info);
+                    dependStatus = this.loadPlugin(pluginStatus, dependencies, depend);
+                    dependencies.pop();
+                }
+            }
+
+            if (dependStatus == Boolean.FALSE) {
+                Bot.getInstance().getLogger().log(Level.WARNING, "{0} (required by {1}) is not available!", new Object[] { name, info.getName() });
+                status = false;
+            }
+
+            if (!status) {
+                break;
+            }
         }
 
-        return false; // TODO
+        if (status) {
+            try {
+                URLClassLoader loader = new PluginLoader(new URL[] {info.getFile().toURI().toURL()});
+
+                Class<?> main = loader.loadClass(info.getMain());
+                BotPlugin clazz = (BotPlugin) main.getDeclaredConstructor().newInstance();
+                clazz.init(info);
+
+                this.plugins.put(info.getName(), clazz);
+                clazz.onLoad();
+
+                Bot.getInstance().getLogger().log(Level.INFO, "Loaded {0} version {1} by {2}!", new Object[] { info.getName(), info.getVersion(), info.getAuthor() });
+            } catch (Throwable throwable) {
+                throw new InvalidPluginException(throwable);
+            }
+        }
+
+        pluginStatus.put(info, status);
+
+        return status;
     }
 
-    public PluginInfo getPlugin(File file) throws InvalidPluginException {
+    public PluginInfo getPluginInfo(File file) throws InvalidPluginException {
         if (file.getName().matches("(.+).(jar)$")) {
             JarFile jar;
 
             try {
                 jar = new JarFile(file);
 
-                URLClassLoader loader = new URLClassLoader(new URL[] {file.toURI().toURL()});
+                URLClassLoader loader = new URLClassLoader(new URL[] {file.toURI().toURL()}, getClass().getClassLoader());
 
                 Plugin plugin = null;
                 Class<?> main = null;
@@ -87,7 +189,7 @@ public class PluginManager {
                         continue;
                     }
 
-                    Class<?> clazz = Class.forName(entry.getName().replace(".class", "").replace("/", ""), true, loader);
+                    Class<?> clazz = Class.forName(entry.getName().replace(".class", "").replace("/", "."), true, loader);
 
                     Plugin pl = clazz.getAnnotation(Plugin.class);
 
@@ -107,12 +209,16 @@ public class PluginManager {
                     throw new InvalidPluginException("There is not class with the Plugin annotation");
                 }
 
-                return new PluginInfo(plugin, main);
+                return new PluginInfo(plugin, main.getCanonicalName(), file);
             } catch (Exception exception) {
                 throw new InvalidPluginException(exception);
             }
         }
 
         throw new InvalidPluginException();
+    }
+
+    public ImmutableMap<String, BotPlugin> getPlugins() {
+        return new ImmutableMap.Builder<String, BotPlugin>().putAll(this.plugins).build();
     }
 }
