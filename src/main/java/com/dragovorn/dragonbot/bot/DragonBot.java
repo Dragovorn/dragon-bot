@@ -187,50 +187,52 @@ public class DragonBot extends Bot {
 
         new MainWindow(update);
 
-        getLogger().info("Checking for updates...");
-        getLogger().info("Checking for newer version of the updater...");
+        if (Bot.getInstance().getConfiguration().getCheckForUpdates()) {
+            getLogger().info("Checking for updates...");
+            getLogger().info("Checking for newer version of the updater...");
 
-        try {
-            if (client.getObjectMetadata(new GetObjectMetadataRequest("dl.dragovorn.com", "DragonBot/updater.jar")).getLastModified().getTime() > FileManager.getUpdater().lastModified()) {
-                getLogger().info("Found a newer version of the updater, downloading it now...");
+            try {
+                if (client.getObjectMetadata(new GetObjectMetadataRequest("dl.dragovorn.com", "DragonBot/updater.jar")).getLastModified().getTime() > FileManager.getUpdater().lastModified()) {
+                    getLogger().info("Found a newer version of the updater, downloading it now...");
 
-                FileManager.getUpdater().delete();
+                    FileManager.getUpdater().delete();
 
-                GetObjectRequest request = new GetObjectRequest("dl.dragovorn.com", "DragonBot/updater.jar");
-                request.setGeneralProgressListener((ProgressEvent event) -> {
-                    if (this.download == null) {
-                        return;
-                    }
-
-                    getLogger().info("Downloaded " + this.download.getProgress().getBytesTransferred() + " out of " + this.download.getProgress().getTotalBytesToTransfer() + " bytes!");
-
-                    switch (event.getEventType()) {
-                        case TRANSFER_COMPLETED_EVENT: {
-                            getLogger().info("Download completed!");
-                            break;
-                        } case TRANSFER_FAILED_EVENT: {
-                            getLogger().info("Unable to connect to the internet!");
-
-                            break;
+                    GetObjectRequest request = new GetObjectRequest("dl.dragovorn.com", "DragonBot/updater.jar");
+                    request.setGeneralProgressListener((ProgressEvent event) -> {
+                        if (this.download == null) {
+                            return;
                         }
-                    }
-                });
 
-                this.download = this.transferManager.download(request, FileManager.getUpdater());
+                        getLogger().info("Downloaded " + this.download.getProgress().getBytesTransferred() + " out of " + this.download.getProgress().getTotalBytesToTransfer() + " bytes!");
 
-                try {
-                    this.download.waitForCompletion();
-                } catch (InterruptedException exception) { /* Shouldn't happen */ }
+                        switch (event.getEventType()) {
+                            case TRANSFER_COMPLETED_EVENT: {
+                                getLogger().info("Download completed!");
+                                break;
+                            } case TRANSFER_FAILED_EVENT: {
+                                getLogger().info("Unable to connect to the internet!");
+
+                                break;
+                            }
+                        }
+                    });
+
+                    this.download = this.transferManager.download(request, FileManager.getUpdater());
+
+                    try {
+                        this.download.waitForCompletion();
+                    } catch (InterruptedException exception) { /* Shouldn't happen */ }
+                }
+            } catch (Throwable throwable) {
+                getLogger().info("Unable to connect to the internet!");
             }
-        } catch (Throwable throwable) {
-            getLogger().info("Unable to connect to the internet!");
-        }
 
-        update.update();
+            update.update();
 
-        if(update.shouldStop()) {
-            stop();
-            return;
+            if(update.shouldStop()) {
+                stop();
+                return;
+            }
         }
 
         getLogger().info("Initializing Dragon Bot " + getVersion() + "!");

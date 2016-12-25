@@ -67,6 +67,14 @@ public class BotConfiguration extends Configuration {
         return getBoolean("snapshot versions");
     }
 
+    public boolean getAskForUpdates() {
+        return getBoolean("ask for update");
+    }
+
+    public boolean getCheckForUpdates() {
+        return getBoolean("check for updates");
+    }
+
     public void setName(String name) {
         set("name", name);
     }
@@ -89,5 +97,13 @@ public class BotConfiguration extends Configuration {
 
     public void setPreReleases(boolean preReleases) {
         set("snapshot versions", preReleases);
+    }
+
+    public void setAskForUpdates(boolean askForUpdates) {
+        set("ask for update", askForUpdates);
+    }
+
+    public void setCheckForUpdates(boolean checkForUpdates) {
+        set("check for updates", checkForUpdates);
     }
 }
