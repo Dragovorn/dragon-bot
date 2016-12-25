@@ -70,14 +70,12 @@ public class UpdatePanel extends JPanel {
                 int newSnapshot = 0;
                 int oldSnapshot = 0;
 
-                if (Bot.getInstance().getConfiguration().getPreReleases()) {
-                    if (entry.getKey().contains("SNAPSHOT")) {
-                        newSnapshot = Integer.valueOf(entry.getKey().split("-")[1]);
-                    }
+                if (entry.getKey().contains("SNAPSHOT")) {
+                    newSnapshot = Integer.valueOf(entry.getKey().split("-")[1]);
+                }
 
-                    if (version.contains("SNAPSHOT")) {
-                        oldSnapshot = Integer.valueOf(version.split("-")[1]);
-                    }
+                if (version.contains("SNAPSHOT")) {
+                    oldSnapshot = Integer.valueOf(version.split("-")[1]);
                 }
 
                 if (newVersion > botVersion) {
@@ -87,7 +85,10 @@ public class UpdatePanel extends JPanel {
                     if (newPatch > botPatch) {
                         Bot.getInstance().getLogger().info("Detected newer version (v" + entry.getKey() + ")");
                         release.add(entry.getValue());
-                    } else if ((newSnapshot == 0 && oldSnapshot != 0) || (oldSnapshot != 0 && newSnapshot > oldSnapshot)) {
+                    } else if (newSnapshot == 0 && oldSnapshot != 0) {
+                        Bot.getInstance().getLogger().info("Detected newer version (v" + entry.getKey() + ")");
+                        release.add(entry.getValue());
+                    } else if (newSnapshot > oldSnapshot && Bot.getInstance().getConfiguration().getPreReleases()) {
                         Bot.getInstance().getLogger().info("Detected newer version (v" + entry.getKey() + ")");
                         release.add(entry.getValue());
                     }
@@ -104,7 +105,7 @@ public class UpdatePanel extends JPanel {
             } else {
                 this.hasResponded = true;
             }
-        } catch (Exception exception) {
+        } catch (IOException exception) {
             Bot.getInstance().getLogger().info("Unable to connect to the internet!");
 
             this.stop = false;
@@ -155,7 +156,11 @@ public class UpdatePanel extends JPanel {
             builder.append("<font size=\"7\"><b>").append(releases.get(x).getString("tag_name")).append(" - ").append(releases.get(x).getString("name")).append("</b></font>");
 
             if (x == releases.size() - 1) {
-                builder.append("<br>You are <b>").append(DragonBot.getInstance().getGitHubAPI().getNumCommitsBetween(Bot.getInstance().getVersion(), releases.get(x).getString("tag_name"))).append(" commits</b> behind!<br>");
+                int commits = DragonBot.getInstance().getGitHubAPI().getNumCommitsBetween(Bot.getInstance().getVersion(), releases.get(x).getString("tag_name"));
+
+                if (commits != 0) {
+                    builder.append("<br>You are <b>").append(commits).append(" commits</b> behind!<br>");
+                }
             }
 
             if (releases.get(x).getBoolean("prerelease")) {
