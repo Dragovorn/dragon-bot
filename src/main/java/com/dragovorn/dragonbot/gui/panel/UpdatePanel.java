@@ -95,7 +95,12 @@ public class UpdatePanel extends JPanel {
             }
 
             if (release.size() > 0) {
-                askForUpdate(release);
+                if (Bot.getInstance().getConfiguration().getAskForUpdates()) {
+                    askForUpdate(release);
+                } else {
+                    this.stop = true;
+                    this.hasResponded = true;
+                }
             } else {
                 this.hasResponded = true;
             }
