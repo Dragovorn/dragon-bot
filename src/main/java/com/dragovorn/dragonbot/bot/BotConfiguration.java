@@ -39,7 +39,7 @@ public class BotConfiguration extends Configuration {
         this.defaults.put("auto connect", false);
         this.defaults.put("snapshot versions", false);
         this.defaults.put("ask for update", true);
-        this.defaults.put("check for updates", false);
+        this.defaults.put("check for updates", true);
         this.defaults.put("twitch-api key", ""); // This might get removed.
     }
 
