@@ -64,7 +64,13 @@ public class GitHubAPI {
     public int getNumCommitsBetween(String tag1, String tag2) throws IOException {
         HttpResponse response = client.execute(makeGetRequest(BASE_URL + REPO + owner + "/" + repository + "/compare/" + tag1 + "..." + tag2));
 
-        return new JSONObject(EntityUtils.toString(response.getEntity(), "UTF-8")).getInt("total_commits");
+        JSONObject object = new JSONObject(EntityUtils.toString(response.getEntity(), "UTF-8"));
+
+        if (object.has("message")) {
+            return 0;
+        }
+
+        return object.getInt("total_commits");
     }
 
     public Map<String, JSONObject> getReleases() throws IOException {
