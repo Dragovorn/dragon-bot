@@ -33,6 +33,7 @@ public abstract class Bot {
 
     private BotState state;
 
+    @Deprecated
     private EventBus eventBus = new EventBus();
 
     private static Bot instance;
@@ -84,7 +85,9 @@ public abstract class Bot {
      * Gets the bot's event bus
      *
      * @return the EventBus of the bot
+     * @deprecated
      */
+    @Deprecated
     public final EventBus getEventBus() {
         return this.eventBus;
     }
