@@ -16,8 +16,7 @@ The only installation process for the bot is to download the latest full release
 
 Development
 -----------
-This portion is going to be pretty watered down, because I want to get version 1.06 fully functional before I write an
-official documentation because 1.06 looks like a lot of api changes (With some major front end changes too).
+Now I just need to stop being lazy and write some tutorials on plugin development, right now just look at the essentials plugin for references.
 
 **There currently isn't a maven repo for the Dragon Bot's api**  
 The above being said, that means that you have to download the Dragon Bot inorder to write plugins for it.
