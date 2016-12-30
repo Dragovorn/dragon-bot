@@ -21,6 +21,12 @@ Now I just need to stop being lazy and write some tutorials on plugin developmen
 **There currently isn't a maven repo for the Dragon Bot's api**  
 The above being said, that means that you have to download the Dragon Bot inorder to write plugins for it.
 
+**Also let it be known that I like changing the API a lot which could end up in some versions breaking plugins when it is first released. I will try my darnedest to keep the wiki up to date and to release detailed change-logs about what all got changed.**
+
+Deprecation Policy
+------------------
+I like to clean deprecated things out as quickly as possible, sometimes something that is not deprecated might get removed too. It's kinda the lifecycle as I try to keep things as shiney as possible and optimize every inefficiency I am capable of spotting.
+
 History
 -------
 - Use of certain aspects of [BungeeCord](https://www.spigotmc.org/ "BungeeCord's Webpage") for plugin specific schedulers and recursive dependency loading.
