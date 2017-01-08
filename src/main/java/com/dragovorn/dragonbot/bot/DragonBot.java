@@ -412,7 +412,7 @@ public class DragonBot extends Bot {
             return;
         }
 
-        sendRawLine("PART " + this.connection.getChannel());
+        sendRawLine("PART #" + this.connection.getChannel());
 
         this.connection.setChannel("");
     }
