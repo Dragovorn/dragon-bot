@@ -33,7 +33,7 @@ public class TwitchAPITest {
     @Test
     public void testTwitchAPI() {
         try {
-            System.out.println(api.getChannel("arteezy").toString(4));
+            System.out.println(this.api.getChannel("arteezy").toString(4));
         } catch (Exception exception) {
             exception.printStackTrace();
             fail();
@@ -46,10 +46,19 @@ public class TwitchAPITest {
     @Test
     public void testStreams() {
         try {
-            System.out.println(api.getStream("arteezy").toString(4));
+            System.out.println(this.api.getStream("arteezy").toString(4));
         } catch (Exception exception) {
             exception.printStackTrace();
             fail();
+        }
+    }
+
+    @Test
+    public void testFollowers() {
+        try {
+            System.out.println(this.api.getFollowers("swordmas_").toString(4));
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
     }
 }
