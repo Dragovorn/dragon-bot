@@ -55,7 +55,15 @@ public class TwitchAPI {
     }
 
     public JSONObject getFollowers(String channel) throws IOException {
-        return null;
+        HttpResponse response = this.client.execute(makeGetRequest(BASE_URL + CHANNELS + channel + "/follows"));
+
+        return new JSONObject(EntityUtils.toString(response.getEntity()));
+    }
+
+    public JSONObject getFollowers(String channel, String cursor) throws IOException {
+        HttpResponse response = this.client.execute(makeGetRequest(BASE_URL + CHANNELS + channel + "/follows?cursor=" + cursor));
+
+        return new JSONObject(EntityUtils.toString(response.getEntity()));
     }
 
     private HttpGet makeGetRequest(String url) {
