@@ -21,7 +21,7 @@ package com.dragovorn.dragonbot.gui.listener;
 
 import com.dragovorn.dragonbot.bot.Bot;
 import com.dragovorn.dragonbot.bot.DragonBot;
-import com.dragovorn.dragonbot.exceptions.ConnectionException;
+import com.dragovorn.dragonbot.exception.ConnectionException;
 import com.dragovorn.dragonbot.gui.ConsoleWindow;
 import com.dragovorn.dragonbot.gui.MainWindow;
 import com.dragovorn.dragonbot.gui.panel.OptionsPanel;

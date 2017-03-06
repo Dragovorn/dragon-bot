@@ -20,7 +20,7 @@
 package com.dragovorn.dragonbot.bot;
 
 import com.dragovorn.dragonbot.api.bot.command.CommandManager;
-import com.dragovorn.dragonbot.exceptions.ConnectionException;
+import com.dragovorn.dragonbot.exception.ConnectionException;
 import com.google.common.eventbus.EventBus;
 
 import java.io.File;

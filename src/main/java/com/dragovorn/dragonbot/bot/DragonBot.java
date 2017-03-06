@@ -41,7 +41,7 @@ import com.dragovorn.dragonbot.api.github.GitHubAPI;
 import com.dragovorn.dragonbot.api.twitch.TwitchAPI;
 import com.dragovorn.dragonbot.command.Github;
 import com.dragovorn.dragonbot.command.VersionCmd;
-import com.dragovorn.dragonbot.exceptions.ConnectionException;
+import com.dragovorn.dragonbot.exception.ConnectionException;
 import com.dragovorn.dragonbot.gui.MainWindow;
 import com.dragovorn.dragonbot.gui.panel.UpdatePanel;
 import com.dragovorn.dragonbot.log.DragonLogger;
@@ -156,7 +156,7 @@ public class DragonBot extends Bot {
         this.pluginManager = new PluginManager();
         this.commandManager = new CommandManager();
         this.logger = new DragonLogger("Dragon Bot", FileManager.getLogs() + File.separator + this.format.format(new Date()) + "-%g.log");
-        this.gitHubAPI = new GitHubAPI("dragovorn", "dragon-bot-twitch", this.config.getPreReleases());
+        this.gitHubAPI = new GitHubAPI("dragovorn", "dragon-bot-twitch");
         this.twitchAPI = new TwitchAPI(Keys.twitchClientID);
         this.scheduler = new BotScheduler();
 
