@@ -168,7 +168,7 @@ public class OptionsPanel extends JPanel {
         twitchSettings.add(this.oauth);
         twitchSettings.add(testTwitch);
         twitchSettings.add(lockTwitch);
-        twitchSettings.add(testStatus);
+        twitchSettings.add(this.testStatus);
 
         options.add(unlockTwitch);
 
