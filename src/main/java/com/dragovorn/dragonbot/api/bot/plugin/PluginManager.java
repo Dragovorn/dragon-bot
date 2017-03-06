@@ -21,7 +21,7 @@ package com.dragovorn.dragonbot.api.bot.plugin;
 
 import com.dragovorn.dragonbot.api.bot.file.FileManager;
 import com.dragovorn.dragonbot.bot.Bot;
-import com.dragovorn.dragonbot.exceptions.InvalidPluginException;
+import com.dragovorn.dragonbot.exception.InvalidPluginException;
 import com.google.common.collect.ImmutableMap;
 
 import java.io.File;

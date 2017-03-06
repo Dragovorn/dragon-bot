@@ -17,11 +17,19 @@
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.dragovorn.dragonbot.exceptions;
+package com.dragovorn.dragonbot.exception;
 
-public class ConnectionException extends Exception {
+public class InvalidPluginException extends DragonBotException {
 
-    public ConnectionException(String message) {
+    public InvalidPluginException(Throwable throwable) {
+        super(throwable);
+    }
+
+    public InvalidPluginException(String message) {
         super(message);
+    }
+
+    public InvalidPluginException() {
+        super();
     }
 }

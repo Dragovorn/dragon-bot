@@ -40,12 +40,9 @@ public class GitHubAPI {
 
     private final HttpClient client;
 
-    private final boolean prereleases;
-
-    public GitHubAPI(String owner, String repository, boolean prereleases) {
+    public GitHubAPI(String owner, String repository) {
         this.owner = owner;
         this.repository = repository;
-        this.prereleases = prereleases;
         this.client = HttpClientBuilder.create().build();
     }
 
@@ -83,7 +80,7 @@ public class GitHubAPI {
         for (Object object : array) {
             JSONObject jsonObject = new JSONObject(object.toString());
 
-            if (jsonObject.getBoolean("prerelease") && !this.prereleases) {
+            if (jsonObject.getBoolean("prerelease")) {
                 continue;
             }
 
