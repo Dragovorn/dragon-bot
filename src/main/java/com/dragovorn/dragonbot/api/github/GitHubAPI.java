@@ -24,12 +24,9 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class GitHubAPI {
 
@@ -68,26 +65,6 @@ public class GitHubAPI {
         }
 
         return object.getInt("total_commits");
-    }
-
-    public Map<String, JSONObject> getReleases() throws IOException {
-        HashMap<String, JSONObject> strs = new HashMap<>();
-
-        HttpResponse response = this.client.execute(makeGetRequest(BASE_URL + REPO + owner + "/" + repository + "/releases"));
-
-        JSONArray array = new JSONArray(EntityUtils.toString(response.getEntity(), "UTF-8"));
-
-        for (Object object : array) {
-            JSONObject jsonObject = new JSONObject(object.toString());
-
-            if (jsonObject.getBoolean("prerelease")) {
-                continue;
-            }
-
-            strs.put(jsonObject.getString("tag_name").substring(1), jsonObject);
-        }
-
-        return strs;
     }
 
     private HttpGet makeGetRequest(String url) {

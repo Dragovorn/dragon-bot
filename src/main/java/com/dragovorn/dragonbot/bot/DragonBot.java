@@ -364,7 +364,7 @@ public class DragonBot extends Bot {
 
     @Override
     public String getVersion() {
-        return Version.PRETTY_VERSION;
+        return Version.getPrettyVersion();
     }
 
     @Override
