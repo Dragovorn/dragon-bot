@@ -19,9 +19,13 @@
 
 package com.dragovorn.dragonbot.bot;
 
-class Version {
+public class Version {
 
-    private static final String VERSION = "0.7.0";
+    public static final String VERSION = "0.7.0";
 
-    static final String PRETTY_VERSION = "v" + VERSION;
+    public static boolean snapshot = false;
+
+    public static String getPrettyVersion() {
+        return "v" + VERSION + (snapshot ? "_SNAPSHOT" : "");
+    }
 }
