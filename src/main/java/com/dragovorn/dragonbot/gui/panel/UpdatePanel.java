@@ -23,6 +23,7 @@ import com.dragovorn.dragonbot.DragonBotMain;
 import com.dragovorn.dragonbot.api.bot.file.FileManager;
 import com.dragovorn.dragonbot.bot.Bot;
 import com.dragovorn.dragonbot.bot.DragonBot;
+import com.dragovorn.dragonbot.bot.Version;
 import com.dragovorn.dragonbot.gui.MainWindow;
 import net.dgardiner.markdown.MarkdownProcessor;
 import net.dgardiner.markdown.flavours.github.GithubFlavour;
@@ -33,12 +34,13 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 public class UpdatePanel extends JPanel {
 
+    @Deprecated
     private volatile boolean stop = false;
+
+    @Deprecated
     private boolean hasResponded = false;
 
     public UpdatePanel() {
@@ -54,60 +56,34 @@ public class UpdatePanel extends JPanel {
 
     public void update() {
         try {
-            Map<String, JSONObject> releases = DragonBot.getInstance().getGitHubAPI().getReleases();
+            JSONObject release = DragonBot.getInstance().getGitHubAPI().getLatestRelease();
 
-            List<JSONObject> release = new ArrayList<>();
+            String theirVersion = release.getString("tag_name");
+            String ourVersion = Version.VERSION;
 
-            for (Map.Entry<String, JSONObject> entry : releases.entrySet()) {
-                String version = (release.size() == 0 ? Bot.getInstance().getVersion() : release.get(release.size() - 1).getString("tag_name"));
+            String[] ourNumbersStr = ourVersion.split("\\.");
+            String[] theirNumbersStr = theirVersion.substring(1).split("\\.");
 
-                double newVersion = Double.valueOf(entry.getKey().substring(0, 4));
-                double botVersion = Double.valueOf(version.substring(1, 5));
+            int[] ourNumbers = new int[] {Integer.valueOf(ourNumbersStr[0]), Integer.valueOf(ourNumbersStr[1]), Integer.valueOf(ourNumbersStr[2])};
+            int[] theirNumbers = new int[] {Integer.valueOf(theirNumbersStr[0]), Integer.valueOf(theirNumbersStr[1]), Integer.valueOf(theirNumbersStr[2])};
 
-                char newPatch = entry.getKey().charAt(4);
-                char botPatch = version.charAt(5);
-
-                int newSnapshot = 0;
-                int oldSnapshot = 0;
-
-                if (entry.getKey().contains("SNAPSHOT")) {
-                    newSnapshot = Integer.valueOf(entry.getKey().split("-")[1]);
-                }
-
-                if (version.contains("SNAPSHOT")) {
-                    oldSnapshot = Integer.valueOf(version.split("-")[1]);
-                }
-
-                if (newVersion > botVersion) {
-                    Bot.getInstance().getLogger().info("Detected newer version (v" + entry.getKey() + ")");
-                    release.add(entry.getValue());
-                } else if (newVersion == botVersion) {
-                    if (newPatch > botPatch) {
-                        Bot.getInstance().getLogger().info("Detected newer version (v" + entry.getKey() + ")");
-                        release.add(entry.getValue());
-                    } else if (newSnapshot == 0 && oldSnapshot != 0) {
-                        Bot.getInstance().getLogger().info("Detected newer version (v" + entry.getKey() + ")");
-                        release.add(entry.getValue());
-                    } else if (newSnapshot > oldSnapshot && Bot.getInstance().getConfiguration().getPreReleases()) {
-                        Bot.getInstance().getLogger().info("Detected newer version (v" + entry.getKey() + ")");
-                        release.add(entry.getValue());
-                    }
-                }
-            }
-
-            if (release.size() > 0) {
-                if (Bot.getInstance().getConfiguration().getAskForUpdates()) {
+            for (int x = 0; x < ourNumbers.length; x++) {
+                if (ourNumbers[x] < theirNumbers[x]) {
                     askForUpdate(release);
-                } else {
-                    this.stop = true;
-                    this.hasResponded = true;
+                    return;
+                } else if (ourNumbers[x] > theirNumbers[x]) {
+                    DragonBot.getInstance().getLogger().info("Running snapshot version of Dragon Bot!");
+                    Version.snapshot = true;
+                    return;
                 }
-            } else {
-                this.hasResponded = true;
             }
-        } catch (IOException exception) {
-            Bot.getInstance().getLogger().info("Unable to connect to the internet!");
-
+        } catch (Exception exception) {
+            if (exception instanceof NumberFormatException) {
+                DragonBot.getInstance().getLogger().info("Legacy versioning detected, ignoring...");
+            } else {
+                DragonBot.getInstance().getLogger().info("Unable to connect to the internet!");
+            }
+        } finally {
             this.stop = false;
             this.hasResponded = true;
         }
@@ -125,7 +101,7 @@ public class UpdatePanel extends JPanel {
         return this.stop;
     }
 
-    private void askForUpdate(final List<JSONObject> releases) throws IOException {
+    private void askForUpdate(final JSONObject release) throws IOException {
         Dimension areaSize = new Dimension(480, 160);
         Dimension size = new Dimension(500, 200);
 
@@ -152,28 +128,15 @@ public class UpdatePanel extends JPanel {
         MarkdownProcessor processor = new MarkdownProcessor();
         processor.setFlavour(new GithubFlavour());
 
-        for (int x = releases.size() - 1; x >= 0; x--) {
-            builder.append("<font size=\"7\"><b>").append(releases.get(x).getString("tag_name")).append(" - ").append(releases.get(x).getString("name")).append("</b></font>");
+        builder.append("<font size=\"7\"><b>").append(release.getString("tag_name")).append(" - ").append(release.getString("name")).append("</b></font>");
 
-            if (x == releases.size() - 1) {
-                int commits = DragonBot.getInstance().getGitHubAPI().getNumCommitsBetween(Bot.getInstance().getVersion(), releases.get(x).getString("tag_name"));
+        int commits = DragonBot.getInstance().getGitHubAPI().getNumCommitsBetween(Bot.getInstance().getVersion(), release.getString("tag_name"));
 
-                if (commits != 0) {
-                    builder.append("<br>You are <b>").append(commits).append(" commits</b> behind!<br>");
-                }
-            }
-
-            if (releases.get(x).getBoolean("prerelease")) {
-                builder.append("<font color=\"red\"><b>SNAPSHOT</b></font>");
-            }
-
-            builder.append(processor.process(releases.get(x).getString("body")));
-
-            if (x != 0) {
-                builder.append("<br><br>");
-            }
-
+        if (commits != 0) {
+            builder.append("<br>You are <b>").append(commits).append(" commits</b> behind!<br>");
         }
+
+        builder.append(processor.process(release.getString("body")));
 
         area.setText(builder.toString());
 
@@ -194,40 +157,21 @@ public class UpdatePanel extends JPanel {
 
         update.addActionListener((ActionListener) -> {
             try {
-                int proceed = 1;
+                launchUpdater(release.getJSONArray("assets").getJSONObject(0).getString("browser_download_url"));
 
-                if (releases.get(releases.size() - 1).getBoolean("prerelease")) {
-                    String buttons[] = { "No", "Yes, Update to a Pre-Release" };
+                this.stop = true;
+                this.hasResponded = true;
 
-                    proceed = JOptionPane.showOptionDialog(null, "This update is a pre-release, and might break your plugins, are you sure you want to update?", "Update", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, buttons, buttons[0]);
-                }
-
-                if (proceed == 1) {
-                    launchUpdater(releases.get(releases.size() - 1).getJSONArray("assets").getJSONObject(0).getString("browser_download_url"));
-
-                    this.stop = true;
-                    this.hasResponded = true;
-
-                    Bot.getInstance().getLogger().info("Updating now...");
-                } else {
-                    this.stop = false;
-                    this.hasResponded = true;
-
-                    Bot.getInstance().getLogger().info("Not now chosen.");
-                }
+                Bot.getInstance().getLogger().info("Updating now...");
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
         });
 
         no.addActionListener((ActionListener) -> {
-            int proceed = 1;
+            String buttons[] = { "No", "Yes, Update to a Pre-Release" };
 
-            if (releases.get(releases.size() - 1).getBoolean("prerelease")) {
-                String buttons[] = { "No", "Yes, Update to a Pre-Release" };
-
-                proceed = JOptionPane.showOptionDialog(null, "Are you sure you don't want to update?", "Update", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, buttons, buttons[0]);
-            }
+            int proceed = JOptionPane.showOptionDialog(null, "Are you sure you don't want to update?", "Update", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, buttons, buttons[0]);
 
             if (proceed == 1) {
                 Bot.getInstance().getLogger().info("Not now chosen.");
@@ -236,7 +180,7 @@ public class UpdatePanel extends JPanel {
                 this.hasResponded = true;
             } else {
                 try {
-                    launchUpdater(releases.get(releases.size() - 1).getJSONArray("assets").getJSONObject(0).getString("browser_download_url"));
+                    launchUpdater(release.getJSONArray("assets").getJSONObject(0).getString("browser_download_url"));
 
                     this.stop = true;
                     this.hasResponded = true;
