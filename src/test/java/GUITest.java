@@ -19,45 +19,39 @@
 
 import com.dragovorn.dragonbot.bot.Version;
 import javafx.application.Application;
-import javafx.geometry.HPos;
-import javafx.geometry.Insets;
-import javafx.geometry.NodeOrientation;
-import javafx.geometry.Pos;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
-public class GUITest extends Application {
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class GUITest extends Application implements Initializable {
+
+    @FXML
+    private Label labelVar;
 
     public static void main(String[] args) {
         launch(args);
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
-        Button btn = new Button();
-        btn.setText("Say 'Hello World'");
-        btn.setOnAction(event -> System.out.println("Hello World!"));
+    public void initialize(URL arg0, ResourceBundle arg1) {
+        this.labelVar.setText(Version.getPrettyVersion());
+    }
 
-        Label versionLabel = new Label("v" + Version.VERSION);
-        versionLabel.setAlignment(Pos.BASELINE_LEFT);
+    @Override
+    public void start(Stage stage) throws Exception {
+        Parent root = FXMLLoader.load(getClass().getResource("/gui/main.fxml"));
 
-        GridPane grid = new GridPane();
-        grid.setNodeOrientation(NodeOrientation.LEFT_TO_RIGHT);
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(25, 25, 25, 25));
-//        root.add(btn);
-        grid.add(versionLabel, 0, 0);
-        GridPane.setHalignment(versionLabel, HPos.RIGHT);
+        Scene scene = new Scene(root, 300, 275);
 
-
-        Scene scene = new Scene(grid, 300, 250);
-
-        primaryStage.setTitle("Dragon Bot");
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        stage.setTitle("GUI Test");
+        stage.setScene(scene);
+        stage.show();
     }
 }
