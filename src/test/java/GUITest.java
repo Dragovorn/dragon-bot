@@ -24,6 +24,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
@@ -33,7 +34,10 @@ import java.util.ResourceBundle;
 public class GUITest extends Application implements Initializable {
 
     @FXML
-    private Label labelVar;
+    private Label versionLabel;
+
+    @FXML
+    private Button connect;
 
     public static void main(String[] args) {
         launch(args);
@@ -41,15 +45,19 @@ public class GUITest extends Application implements Initializable {
 
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
-        this.labelVar.setText(Version.getPrettyVersion());
+        this.versionLabel.setText(Version.getPrettyVersion());
+        this.connect.setOnAction(event -> {
+            System.out.println("Button");
+        });
     }
 
     @Override
     public void start(Stage stage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("/gui/main.fxml"));
 
-        Scene scene = new Scene(root, 300, 275);
+        Scene scene = new Scene(root, 250, 50);
 
+        stage.setResizable(false);
         stage.setTitle("GUI Test");
         stage.setScene(scene);
         stage.show();
