@@ -26,6 +26,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.net.URL;
@@ -33,11 +34,15 @@ import java.util.ResourceBundle;
 
 public class GUITest extends Application implements Initializable {
 
-    @FXML
-    private Label versionLabel;
+    private static final String connectText = "Join Channel";
+    private static final String optionsText = "Options";
 
-    @FXML
-    private Button connect;
+    @FXML private Label versionLabel;
+
+    @FXML private TextField channel;
+
+    @FXML private Button connect;
+    @FXML private Button options;
 
     public static void main(String[] args) {
         launch(args);
@@ -46,6 +51,8 @@ public class GUITest extends Application implements Initializable {
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
         this.versionLabel.setText(Version.getPrettyVersion());
+        this.connect.setText(connectText);
+        this.options.setText(optionsText);
         this.connect.setOnAction(event -> {
             System.out.println("Button");
         });
@@ -55,7 +62,7 @@ public class GUITest extends Application implements Initializable {
     public void start(Stage stage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("/gui/main.fxml"));
 
-        Scene scene = new Scene(root, 250, 50);
+        Scene scene = new Scene(root, 500, 50);
 
         stage.setResizable(false);
         stage.setTitle("GUI Test");
