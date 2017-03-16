@@ -13,7 +13,7 @@ These are open source plugins that either I have worked on, or that I've worked 
 Installation
 ------------
 The only installation process for the bot is to download the latest full release (But Snapshots might have some important bugfixes)  
-If you are on **Linux** you might have to install the JavaFK libraries for the newer versions to work because we've moved from swing
+If you are on **Linux** you might have to install the JavaFX libraries for the newer versions to work because we've moved from swing
 to JavaFX. You can install it by executing
 ```
 sudo apt install openjfx
