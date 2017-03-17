@@ -51,6 +51,13 @@ public class GUITest extends Application implements Initializable {
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
         this.versionLabel.setText(Version.getPrettyVersion());
+        this.channel.lengthProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.intValue() > oldValue.intValue()) {
+                if (channel.getText().length() >= 25) {
+                    channel.setText(channel.getText().substring(0, 25));
+                }
+            }
+        });
         this.connect.setText(connectText);
         this.options.setText(optionsText);
         this.connect.setOnAction(event -> {
