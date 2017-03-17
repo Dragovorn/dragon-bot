@@ -53,15 +53,19 @@ public class GUITest extends Application implements Initializable {
         this.versionLabel.setText(Version.getPrettyVersion());
         this.channel.lengthProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.intValue() > oldValue.intValue()) {
-                if (channel.getText().length() >= 25) {
-                    channel.setText(channel.getText().substring(0, 25));
+                if (!channel.getText().matches("[a-zA-Z0-9]{0,25}")) {
+                    channel.setText(channel.getText().substring(0, channel.getText().length() - 1));
                 }
             }
         });
         this.connect.setText(connectText);
         this.options.setText(optionsText);
         this.connect.setOnAction(event -> {
-            System.out.println("Button");
+            if (channel.getText().matches("[a-zA-Z0-9]{4,25}")) {
+                System.out.println("Proper Twitch Name");
+            } else {
+                System.out.println("Improper Twitch Name");
+            }
         });
     }
 
