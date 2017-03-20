@@ -25,8 +25,6 @@ import com.dragovorn.dragonbot.bot.Bot;
 import com.dragovorn.dragonbot.bot.DragonBot;
 import com.dragovorn.dragonbot.bot.Version;
 import com.dragovorn.dragonbot.gui.MainWindow;
-import net.dgardiner.markdown.MarkdownProcessor;
-import net.dgardiner.markdown.flavours.github.GithubFlavour;
 import org.json.JSONObject;
 
 import javax.swing.*;
@@ -125,6 +123,7 @@ public class UpdatePanel extends JPanel {
 
         StringBuilder builder = new StringBuilder();
 
+        // TODO move over to flexmark-java markdown
         MarkdownProcessor processor = new MarkdownProcessor();
         processor.setFlavour(new GithubFlavour());
 
