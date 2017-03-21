@@ -19,11 +19,9 @@
   ~  THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   -->
 
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
 
 <?import javafx.scene.control.Button?>
-<HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="94.0" prefWidth="600.0" spacing="5" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.OptionsScene">
+<HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="94.0" prefWidth="600.0" spacing="5" xmlns="http://javafx.com/javafx/8.0.91" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.OptionsScene">
     <Button fx:id="back" />
 </HBox>
