@@ -49,7 +49,7 @@ public class GUITest extends Application implements Initializable {
     }
 
     @Override
-    public void initialize(URL arg0, ResourceBundle arg1) {
+    public void initialize(URL url, ResourceBundle bundle) {
         this.versionLabel.setText(Version.getPrettyVersion());
         this.channel.lengthProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.intValue() > oldValue.intValue()) {
@@ -60,6 +60,9 @@ public class GUITest extends Application implements Initializable {
         });
         this.connect.setText(connectText);
         this.options.setText(optionsText);
+        this.options.setOnAction(event -> {
+            System.out.println("O P T I O N S");
+        });
         this.connect.setOnAction(event -> {
             if (channel.getText().matches("[a-zA-Z0-9]{4,25}")) {
                 System.out.println("Proper Twitch Name");
