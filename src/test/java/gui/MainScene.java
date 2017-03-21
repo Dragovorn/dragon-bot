@@ -17,22 +17,19 @@
  *  THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+package gui;
+
 import com.dragovorn.dragonbot.bot.Version;
-import javafx.application.Application;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class GUITest extends Application implements Initializable {
+public class MainScene implements Initializable {
 
     private static final String connectText = "Join Channel";
     private static final String optionsText = "Options";
@@ -43,10 +40,6 @@ public class GUITest extends Application implements Initializable {
 
     @FXML private Button connect;
     @FXML private Button options;
-
-    public static void main(String[] args) {
-        launch(args);
-    }
 
     @Override
     public void initialize(URL url, ResourceBundle bundle) {
@@ -60,9 +53,7 @@ public class GUITest extends Application implements Initializable {
         });
         this.connect.setText(connectText);
         this.options.setText(optionsText);
-        this.options.setOnAction(event -> {
-            System.out.println("O P T I O N S");
-        });
+        this.options.setOnAction(event -> App.getInstance().set("options"));
         this.connect.setOnAction(event -> {
             if (channel.getText().matches("[a-zA-Z0-9]{4,25}")) {
                 System.out.println("Proper Twitch Name");
@@ -70,17 +61,5 @@ public class GUITest extends Application implements Initializable {
                 System.out.println("Improper Twitch Name");
             }
         });
-    }
-
-    @Override
-    public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/gui/main.fxml"));
-
-        Scene scene = new Scene(root, 500, 50);
-
-        stage.setResizable(false);
-        stage.setTitle("GUI Test");
-        stage.setScene(scene);
-        stage.show();
     }
 }

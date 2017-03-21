@@ -23,8 +23,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="94.0" prefWidth="600.0" spacing="5" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1">
-    <VBox alignment="BOTTOM_RIGHT" prefHeight="94.0" prefWidth="147.0">
-        <Label alignment="BOTTOM_RIGHT" prefHeight="17.0" prefWidth="200.0" textOverrun="CLIP" text="TEST" />
-    </VBox>
+<?import javafx.scene.control.Button?>
+<HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="94.0" prefWidth="600.0" spacing="5" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.OptionsScene">
+    <Button fx:id="back" />
 </HBox>
