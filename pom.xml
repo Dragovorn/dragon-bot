@@ -93,8 +93,9 @@
             <version>RELEASE</version>
         </dependency>
         <dependency>
-            <groupId>com.vladsch</groupId>
+            <groupId>com.vladsch.flexmark</groupId>
             <artifactId>flexmark</artifactId>
+            <version>0.18.4</version>
         </dependency>
     </dependencies>
 </project>

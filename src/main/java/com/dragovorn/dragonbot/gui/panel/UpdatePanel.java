@@ -25,6 +25,8 @@ import com.dragovorn.dragonbot.bot.Bot;
 import com.dragovorn.dragonbot.bot.DragonBot;
 import com.dragovorn.dragonbot.bot.Version;
 import com.dragovorn.dragonbot.gui.MainWindow;
+import com.vladsch.flexmark.html.HtmlRenderer;
+import com.vladsch.flexmark.parser.Parser;
 import org.json.JSONObject;
 
 import javax.swing.*;
@@ -124,8 +126,7 @@ public class UpdatePanel extends JPanel {
         StringBuilder builder = new StringBuilder();
 
         // TODO move over to flexmark-java markdown
-        MarkdownProcessor processor = new MarkdownProcessor();
-        processor.setFlavour(new GithubFlavour());
+        Parser parser = Parser.builder().build();
 
         builder.append("<font size=\"7\"><b>").append(release.getString("tag_name")).append(" - ").append(release.getString("name")).append("</b></font>");
 
@@ -135,7 +136,7 @@ public class UpdatePanel extends JPanel {
             builder.append("<br>You are <b>").append(commits).append(" commits</b> behind!<br>");
         }
 
-        builder.append(processor.process(release.getString("body")));
+        builder.append(HtmlRenderer.builder().build().render(parser.parse(release.getString("body"))));
 
         area.setText(builder.toString());
 
