@@ -26,10 +26,12 @@
 <?import javafx.scene.control.TextField?>
 
 <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="94.0" prefWidth="600.0" spacing="5" xmlns="http://javafx.com/javafx/8.0.91" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.MainScene">
-    <TextField fx:id="channel" promptText="Channel Name" prefWidth="170.0" />
-    <Button fx:id="connect" mnemonicParsing="false" />
-    <Button fx:id="options" mnemonicParsing="false" />
-    <VBox alignment="BOTTOM_RIGHT" prefHeight="94.0" prefWidth="147.0">
+    <HBox fx:id="main" alignment="CENTER">
+        <TextField fx:id="channel" promptText="Channel Name" prefWidth="170.0" />
+        <Button fx:id="connect" mnemonicParsing="false" />
+        <Button fx:id="options" mnemonicParsing="false" />
+    </HBox>
+    <VBox fx:id="verticalBox" alignment="BOTTOM_RIGHT" prefHeight="94.0" prefWidth="147.0"> <!-- Add some way to resize this bit/add stuff before it -->
         <Label fx:id="versionLabel" alignment="BOTTOM_RIGHT" prefHeight="17.0" prefWidth="200.0" textOverrun="CLIP" />
     </VBox>
 </HBox>
