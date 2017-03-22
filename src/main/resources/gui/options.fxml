@@ -24,4 +24,5 @@
 <?import javafx.scene.control.Button?>
 <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="94.0" prefWidth="600.0" spacing="5" xmlns="http://javafx.com/javafx/8.0.91" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.OptionsScene">
     <Button fx:id="back" />
+    <Button fx:id="addToMain" />
 </HBox>

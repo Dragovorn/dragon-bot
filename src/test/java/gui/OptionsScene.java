@@ -29,10 +29,15 @@ import java.util.ResourceBundle;
 public class OptionsScene implements Initializable {
 
     @FXML private Button back;
+    @FXML private Button addToMain;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.back.setText("Back");
         this.back.setOnAction(event -> App.getInstance().set("main"));
+        this.addToMain.setText("Add Button To Main");
+        this.addToMain.setOnAction(event -> {
+            MainScene.getInstance().addButton(new Button("TEST"));
+        });
     }
 }
