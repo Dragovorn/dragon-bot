@@ -25,6 +25,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -34,6 +36,10 @@ public class MainScene implements Initializable {
     private static final String connectText = "Join Channel";
     private static final String optionsText = "Options";
 
+    @FXML private VBox verticalBox;
+
+    @FXML private HBox main;
+
     @FXML private Label versionLabel;
 
     @FXML private TextField channel;
@@ -41,8 +47,12 @@ public class MainScene implements Initializable {
     @FXML private Button connect;
     @FXML private Button options;
 
+    private static MainScene instance;
+
     @Override
     public void initialize(URL url, ResourceBundle bundle) {
+        instance = this;
+
         this.versionLabel.setText(Version.getPrettyVersion());
         this.channel.lengthProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.intValue() > oldValue.intValue()) {
@@ -61,5 +71,19 @@ public class MainScene implements Initializable {
                 System.out.println("Improper Twitch Name");
             }
         });
+    }
+
+    public void addButton(Button button) {
+        this.main.getChildren().add(button);
+
+        double newSize = (this.verticalBox.getWidth() - button.getWidth()) - 35; // TODO make this nicer
+
+        this.verticalBox.setMaxWidth(newSize);
+        this.verticalBox.setMinWidth(newSize);
+        this.verticalBox.setPrefWidth(newSize);
+    }
+
+    public static MainScene getInstance() {
+        return instance;
     }
 }

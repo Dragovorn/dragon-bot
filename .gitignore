@@ -6,3 +6,5 @@
 */target/
 *.iml
 Keys.java
+.DS_Store
+updater/src/test/
