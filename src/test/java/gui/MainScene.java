@@ -74,13 +74,14 @@ public class MainScene implements Initializable {
     }
 
     public void addButton(Button button) {
-        this.main.getChildren().add(button);
-
         double newSize = (this.verticalBox.getWidth() - button.getWidth()) - 35; // TODO make this nicer
 
         this.verticalBox.setMaxWidth(newSize);
         this.verticalBox.setMinWidth(newSize);
         this.verticalBox.setPrefWidth(newSize);
+
+
+        this.main.getChildren().add(button);
     }
 
     public static MainScene getInstance() {
