@@ -17,7 +17,7 @@
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.dragovorn.dragonbot.bot;
+package com.dragovorn.dragonbot;
 
 import com.amazonaws.event.ProgressEvent;
 import com.amazonaws.services.s3.AmazonS3;
@@ -26,8 +26,6 @@ import com.amazonaws.services.s3.model.GetObjectMetadataRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.transfer.Download;
 import com.amazonaws.services.s3.transfer.TransferManager;
-import com.dragovorn.dragonbot.Keys;
-import com.dragovorn.dragonbot.Utils;
 import com.dragovorn.dragonbot.api.bot.command.Command;
 import com.dragovorn.dragonbot.api.bot.command.CommandManager;
 import com.dragovorn.dragonbot.api.bot.event.ChannelEnterEvent;
@@ -39,6 +37,7 @@ import com.dragovorn.dragonbot.api.bot.scheduler.BotScheduler;
 import com.dragovorn.dragonbot.api.bot.scheduler.Scheduler;
 import com.dragovorn.dragonbot.api.github.GitHubAPI;
 import com.dragovorn.dragonbot.api.twitch.TwitchAPI;
+import com.dragovorn.dragonbot.bot.*;
 import com.dragovorn.dragonbot.command.Github;
 import com.dragovorn.dragonbot.command.VersionCmd;
 import com.dragovorn.dragonbot.exception.ConnectionException;

@@ -20,7 +20,6 @@
 package com.dragovorn.dragonbot.api.bot.scheduler;
 
 import com.dragovorn.dragonbot.api.bot.plugin.BotPlugin;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadFactory;
 
@@ -39,7 +38,7 @@ public class GroupedThreadFactory implements ThreadFactory {
     }
 
     @Override
-    public Thread newThread(@NotNull Runnable task) {
+    public Thread newThread(Runnable task) {
         return new Thread(this.group, task);
     }
 
