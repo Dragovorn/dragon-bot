@@ -22,20 +22,20 @@ package com.dragovorn.dragonbot.bot;
 import java.io.BufferedWriter;
 import java.io.IOException;
 
-class OutputThread extends Thread {
+public class OutputThread extends Thread {
 
     private Bot bot;
 
     private Queue queue;
 
-    OutputThread(Bot bot, Queue outQueue) {
+    public OutputThread(Bot bot, Queue outQueue) {
         this.bot = bot;
         this.queue = outQueue;
 
         setName("IRC Output Thread");
     }
 
-    static void sendRawLine(Bot bot, BufferedWriter writer, String line) {
+    public static void sendRawLine(Bot bot, BufferedWriter writer, String line) {
         if (line.length() > bot.getMaxLineLength()) {
             line = line.substring(0, bot.getMaxLineLength() - 2);
         }

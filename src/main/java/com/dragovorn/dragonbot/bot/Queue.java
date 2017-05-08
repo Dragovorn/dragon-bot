@@ -21,7 +21,7 @@ package com.dragovorn.dragonbot.bot;
 
 import java.util.Vector;
 
-class Queue {
+public class Queue {
 
     private Vector queue = new Vector();
 

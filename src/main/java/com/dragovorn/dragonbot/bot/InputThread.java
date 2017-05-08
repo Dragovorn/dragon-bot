@@ -22,7 +22,7 @@ package com.dragovorn.dragonbot.bot;
 import java.io.*;
 import java.net.Socket;
 
-class InputThread extends Thread {
+public class InputThread extends Thread {
 
     private Bot bot;
 
@@ -37,7 +37,7 @@ class InputThread extends Thread {
 
     public static final int MAX_LINE_LENGTH = 512;
 
-    InputThread(Bot bot, Socket socket, BufferedReader reader, BufferedWriter writer) {
+    public InputThread(Bot bot, Socket socket, BufferedReader reader, BufferedWriter writer) {
         this.bot = bot;
         this.socket = socket;
         this.reader = reader;
@@ -92,11 +92,11 @@ class InputThread extends Thread {
         }
     }
 
-    void sendRawLine(String line) {
+    public void sendRawLine(String line) {
         OutputThread.sendRawLine(this.bot, this.writer, line);
     }
 
-    boolean isConnected() {
+    public boolean isConnected() {
         return this.connected;
     }
 }

@@ -20,7 +20,7 @@
 package com.dragovorn.dragonbot.gui.panel;
 
 import com.dragovorn.dragonbot.bot.Bot;
-import com.dragovorn.dragonbot.bot.DragonBot;
+import com.dragovorn.dragonbot.DragonBot;
 import com.dragovorn.dragonbot.gui.MainWindow;
 import com.dragovorn.dragonbot.gui.TextPrompt;
 import com.dragovorn.dragonbot.gui.listener.ApplyListener;

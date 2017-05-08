@@ -19,8 +19,6 @@
 
 package com.dragovorn.dragonbot;
 
-import com.dragovorn.dragonbot.bot.DragonBot;
-
 import java.io.IOException;
 
 public class DragonBotMain {
