@@ -24,9 +24,9 @@ import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
-class UnverifiedSSL {
+public class UnverifiedSSL {
 
-    static SSLContext getUnverifedSSLContext() throws Exception {
+    public static SSLContext getUnverifedSSLContext() throws Exception {
         TrustManager[] trustAllCerts = new TrustManager[] {new X509TrustManager() {
             @Override
             public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException { /* NOTHING */ }

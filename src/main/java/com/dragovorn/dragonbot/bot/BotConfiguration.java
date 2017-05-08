@@ -24,7 +24,7 @@ import com.dragovorn.dragonbot.api.bot.file.FileManager;
 
 public class BotConfiguration extends Configuration {
 
-    BotConfiguration() {
+    public BotConfiguration() {
         super(FileManager.getConfig());
     }
 

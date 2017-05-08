@@ -22,7 +22,7 @@ package com.dragovorn.dragonbot.command;
 import com.dragovorn.dragonbot.api.bot.command.Command;
 import com.dragovorn.dragonbot.api.bot.plugin.BotPlugin;
 import com.dragovorn.dragonbot.bot.Bot;
-import com.dragovorn.dragonbot.bot.DragonBot;
+import com.dragovorn.dragonbot.DragonBot;
 import com.dragovorn.dragonbot.bot.User;
 import com.sun.istack.internal.NotNull;
 
