@@ -29,8 +29,8 @@ import java.lang.annotation.Target;
 public @interface Plugin {
 
     String name();
-    String version() default "1.00a";
+    String version() default "1.0.0";
     String author() default "Unknown";
 
-    String[] dependencies() default { "" };
+    String[] dependencies() default {};
 }

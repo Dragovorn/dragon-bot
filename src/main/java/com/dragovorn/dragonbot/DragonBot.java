@@ -19,12 +19,10 @@
 
 package com.dragovorn.dragonbot;
 
-import com.amazonaws.event.ProgressEvent;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GetObjectMetadataRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.transfer.Download;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.dragovorn.dragonbot.api.bot.command.Command;
 import com.dragovorn.dragonbot.api.bot.command.CommandManager;
@@ -36,7 +34,6 @@ import com.dragovorn.dragonbot.api.bot.plugin.PluginManager;
 import com.dragovorn.dragonbot.api.bot.scheduler.BotScheduler;
 import com.dragovorn.dragonbot.api.bot.scheduler.Scheduler;
 import com.dragovorn.dragonbot.api.github.GitHubAPI;
-import com.dragovorn.dragonbot.api.twitch.TwitchAPI;
 import com.dragovorn.dragonbot.bot.*;
 import com.dragovorn.dragonbot.command.Github;
 import com.dragovorn.dragonbot.command.VersionCmd;
@@ -67,14 +64,14 @@ import java.util.logging.Logger;
 
 public class DragonBot extends Bot {
 
+    private Version version;
+
     private String name;
     private String auth;
     private String charset;
     private String channelPrefixes = "#&+!";
 
     private PluginManager pluginManager;
-
-    private Download download;
 
     private CommandManager commandManager;
 
@@ -96,8 +93,6 @@ public class DragonBot extends Bot {
 
     private GitHubAPI gitHubAPI;
 
-    private TwitchAPI twitchAPI;
-
     private final Logger logger;
 
     private final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
@@ -105,6 +100,7 @@ public class DragonBot extends Bot {
     public DragonBot() throws IOException {
         setInstance(this);
 
+        this.version = new Version();
         this.outQueue = new Queue();
 
         if (!FileManager.dir.exists()) {
@@ -156,7 +152,6 @@ public class DragonBot extends Bot {
         this.commandManager = new CommandManager();
         this.logger = new DragonLogger("Dragon Bot", FileManager.getLogs() + File.separator + this.format.format(new Date()) + "-%g.log");
         this.gitHubAPI = new GitHubAPI("dragovorn", "dragon-bot-twitch");
-        this.twitchAPI = new TwitchAPI(Keys.twitchClientID);
         this.scheduler = new BotScheduler();
 
         System.setErr(new PrintStream(new LoggingOutputStream(this.logger, Level.SEVERE), true));
@@ -197,29 +192,9 @@ public class DragonBot extends Bot {
                     FileManager.getUpdater().delete();
 
                     GetObjectRequest request = new GetObjectRequest("dl.dragovorn.com", "DragonBot/updater.jar");
-                    request.setGeneralProgressListener((ProgressEvent event) -> {
-                        if (this.download == null) {
-                            return;
-                        }
-
-                        getLogger().info("Downloaded " + this.download.getProgress().getBytesTransferred() + " out of " + this.download.getProgress().getTotalBytesToTransfer() + " bytes!");
-
-                        switch (event.getEventType()) {
-                            case TRANSFER_COMPLETED_EVENT: {
-                                getLogger().info("Download completed!");
-                                break;
-                            } case TRANSFER_FAILED_EVENT: {
-                                getLogger().info("Unable to connect to the internet!");
-
-                                break;
-                            }
-                        }
-                    });
-
-                    this.download = this.transferManager.download(request, FileManager.getUpdater());
 
                     try {
-                        this.download.waitForCompletion();
+                        this.transferManager.download(request, FileManager.getUpdater()).waitForCompletion();
                     } catch (InterruptedException exception) { /* Shouldn't happen */ }
                 }
             } catch (Throwable throwable) {
@@ -275,6 +250,7 @@ public class DragonBot extends Bot {
 
         MainWindow.getInstance().setContentPane(MainWindow.getInstance().getPanel());
         MainWindow.getInstance().pack();
+        MainWindow.getInstance().center();
 
         getLogger().info("Dragon Bot " + getVersion() + " initialized!");
     }
@@ -363,7 +339,7 @@ public class DragonBot extends Bot {
 
     @Override
     public String getVersion() {
-        return Version.getPrettyVersion();
+        return this.version.getVersion();
     }
 
     @Override
@@ -700,10 +676,6 @@ public class DragonBot extends Bot {
 
     public GitHubAPI getGitHubAPI() {
         return this.gitHubAPI;
-    }
-
-    public TwitchAPI getTwitchAPI() {
-        return this.twitchAPI;
     }
 
     public Scheduler getScheduler() {

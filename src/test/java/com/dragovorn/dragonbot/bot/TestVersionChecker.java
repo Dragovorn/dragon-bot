@@ -1,4 +1,4 @@
-/*
+package com.dragovorn.dragonbot.bot;/*
  * Copyright (c) 2017. Andrew Burr
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  *  associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -17,31 +17,30 @@
  *  THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import com.dragovorn.dragonbot.bot.Version;
+import com.dragovorn.dragonbot.Version;
+import com.tngtech.java.junit.dataprovider.DataProvider;
+import com.tngtech.java.junit.dataprovider.DataProviderRunner;
+import com.tngtech.java.junit.dataprovider.UseDataProvider;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import static org.junit.Assert.assertEquals;
+
+@RunWith(DataProviderRunner.class)
 public class TestVersionChecker {
 
     @Test
-    public void testVersionChecker() {
-        String ourVersion = Version.VERSION;
-        String theirVersion = "v0.7.0";
-        String[] ourNumbersStr = ourVersion.split("\\.");
-        String[] theirNumbersStr = theirVersion.substring(1).split("\\.");
+    @UseDataProvider("versionData")
+    public void testVersionChecker(final String version1, final String version2, final boolean shouldUpdate) {
+        assertEquals(shouldUpdate, Version.shouldUpdate(version1, version2));
+    }
 
-        int[] ourNumbers = new int[] {Integer.valueOf(ourNumbersStr[0]), Integer.valueOf(ourNumbersStr[1]), Integer.valueOf(ourNumbersStr[2])};
-        int[] theirNumbers = new int[] {Integer.valueOf(theirNumbersStr[0]), Integer.valueOf(theirNumbersStr[1]), Integer.valueOf(theirNumbersStr[2])};
-
-        for (int x = 0; x < ourNumbers.length; x++) {
-            if (ourNumbers[x] < theirNumbers[x]) {
-                System.out.println("update!");
-                return;
-            } else if (ourNumbers[x] > theirNumbers[x]) {
-                System.out.println("no update!");
-                return;
-            }
-        }
-
-        System.out.println("same version");
+    @DataProvider
+    public static Object[][] versionData() {
+        return new Object[][] {
+                new Object[] {"0.0.1", "0.0.1", false},
+                new Object[] {"0.0.2", "0.0.1", false},
+                new Object[] {"0.0.1", "0.0.2", true}
+        };
     }
 }

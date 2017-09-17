@@ -5,5 +5,6 @@
 /target/
 */target/
 *.iml
+dependency-reduced-pom.xml
 Keys.java
 .DS_Store

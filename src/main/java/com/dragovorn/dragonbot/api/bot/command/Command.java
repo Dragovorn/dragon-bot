@@ -20,7 +20,6 @@
 package com.dragovorn.dragonbot.api.bot.command;
 
 import com.dragovorn.dragonbot.bot.User;
-import com.sun.istack.internal.NotNull;
 
 public abstract class Command {
 
@@ -30,7 +29,7 @@ public abstract class Command {
 
     private final String name;
 
-    public Command(@NotNull String name, @NotNull int requiredArgs, @NotNull boolean argsRequired) {
+    public Command(String name, int requiredArgs, boolean argsRequired) {
         this.name = name;
         this.requiredArgs = requiredArgs;
         this.argsRequired = argsRequired;
@@ -48,5 +47,5 @@ public abstract class Command {
         return name;
     }
 
-    public abstract void execute(@NotNull User user, @NotNull String[] args);
+    public abstract void execute(User user, String[] args);
 }
