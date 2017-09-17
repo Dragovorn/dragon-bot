@@ -22,7 +22,6 @@ package com.dragovorn.dragonbot.api.bot.plugin;
 import java.io.File;
 
 public class PluginInfo {
-
     private final File file;
 
     private final String main;
@@ -31,13 +30,67 @@ public class PluginInfo {
     private final String author;
     private final String[] dependencies;
 
-    PluginInfo(Plugin plugin, String main, File file) {
+    static class Builder {
+        private File file;
+
+        private String main = "";
+        private String name = "";
+        private String version = "1.0.0";
+        private String author = "Unknown";
+        private String[] dependencies = new String[0];
+
+        public Builder setFile(File file) {
+            this.file = file;
+
+            return this;
+        }
+
+        public String getMain() {
+            return this.main;
+        }
+
+        public Builder setMain(String main) {
+            this.main = main;
+
+            return this;
+        }
+
+        public Builder setName(String name) {
+            this.name = name;
+
+            return this;
+        }
+
+        public Builder setVersion(String version) {
+            this.version = version;
+
+            return this;
+        }
+
+        public Builder setAuthor(String author) {
+            this.author = author;
+
+            return this;
+        }
+
+        public Builder setDependencies(String... dependencies) {
+            this.dependencies = dependencies;
+
+            return this;
+        }
+        public PluginInfo build() {
+            return new PluginInfo(this.file, this.main, this.name, this.version, this.author, this.dependencies);
+        }
+
+    }
+
+    private PluginInfo(File file, String main, String name, String version, String author, String[] dependencies) {
         this.file = file;
         this.main = main;
-        this.name = plugin.name();
-        this.version = plugin.version();
-        this.author = plugin.author();
-        this.dependencies = plugin.dependencies();
+        this.name = name;
+        this.version = version;
+        this.author = author;
+        this.dependencies = dependencies;
     }
 
     public File getFile() {

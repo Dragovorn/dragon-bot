@@ -23,8 +23,10 @@ import com.dragovorn.dragonbot.api.bot.file.FileManager;
 import com.dragovorn.dragonbot.bot.Bot;
 import com.dragovorn.dragonbot.exception.InvalidPluginException;
 import com.google.common.collect.ImmutableMap;
+import org.objectweb.asm.ClassReader;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
@@ -46,15 +48,15 @@ public class PluginManager {
     public void loadPlugins() {
         if (FileManager.getPlugins().listFiles() != null) {
             for (File file : FileManager.getPlugins().listFiles()) {
-                if (!file.getName().matches("(.+).(jar)$")) {
+                if (!file.getName().matches("(.+).(jar)")) {
                     continue;
                 }
 
                 try {
-                    PluginInfo info = getPluginInfo(file);
+                    PluginInfo info = loadPluginInfo(file);
 
                     this.load.put(info.getName().toLowerCase(), info);
-                } catch (InvalidPluginException exception) {
+                } catch (InvalidPluginException | IOException exception) {
                     exception.printStackTrace();
                 }
             }
@@ -107,7 +109,7 @@ public class PluginManager {
 
         Set<String> depends = new HashSet<>();
 
-        if (!info.getDependencies()[0].equals("")) {
+        if (info.getDependencies().length != 0) {
             depends.addAll(Arrays.asList(info.getDependencies()));
         }
 
@@ -168,54 +170,32 @@ public class PluginManager {
         return status;
     }
 
-    public PluginInfo getPluginInfo(File file) throws InvalidPluginException {
-        if (file.getName().matches("(.+).(jar)$")) {
-            JarFile jar;
+    private PluginInfo loadPluginInfo(File file) throws InvalidPluginException, IOException {
+        PluginInfo.Builder builder = new PluginInfo.Builder();
+        builder.setFile(file);
 
-            try {
-                jar = new JarFile(file);
+        if (file.getName().matches("(.+).(jar)")) {
+            JarFile jar = new JarFile(file);
 
-                URLClassLoader loader = new URLClassLoader(new URL[] {file.toURI().toURL()}, getClass().getClassLoader());
-
-                Plugin plugin = null;
-                Class<?> main = null;
-
-                for (ZipEntry entry : Collections.list(jar.entries())) {
-                    if (entry.getName() != null && entry.getName().equals("__MACOSX")) {
-                        continue;
-                    }
-
-                    if (!entry.getName().matches("(.+).(class)")) {
-                        continue;
-                    }
-
-                    Class<?> clazz = Class.forName(entry.getName().replace(".class", "").replace("/", "."), true, loader);
-
-                    Plugin pl = clazz.getAnnotation(Plugin.class);
-
-                    if (plugin != null && pl != null) {
-                        throw new InvalidPluginException("There are two classes with the Plugin annotation");
-                    } else if (pl != null) {
-                        if (!BotPlugin.class.isAssignableFrom(clazz)) {
-                            throw new InvalidPluginException("The class with the Plugin annotation does not extend BotPlugin");
-                        }
-
-                        plugin = pl;
-                        main = clazz;
-                    }
+            for (ZipEntry entry : Collections.list(jar.entries())) {
+                if (entry.getName() != null && entry.getName().equals("__MACOSX")) {
+                    continue;
                 }
 
-                if (plugin == null) {
-                    throw new InvalidPluginException("There is not class with the Plugin annotation");
+                if (!entry.getName().matches("(.+).(class)")) {
+                    continue;
                 }
 
-                return new PluginInfo(plugin, main.getCanonicalName(), file);
-            } catch (Exception exception) {
-                throw new InvalidPluginException(exception);
+                ClassReader reader = new ClassReader(jar.getInputStream(entry));
+                reader.accept(new PluginClassVisitor(builder, entry.getName()), 0);
             }
         }
 
-        throw new InvalidPluginException();
+        if (builder.getMain().equals("")) {
+            throw new InvalidPluginException();
+        }
+
+        return builder.build();
     }
 
     public ImmutableMap<String, BotPlugin> getPlugins() {

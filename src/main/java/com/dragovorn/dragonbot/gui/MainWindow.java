@@ -33,7 +33,7 @@ import java.awt.event.WindowEvent;
 
 public class MainWindow {
 
-    public static final String TITLE = "Dragon Bot";
+    public static String TITLE = "Dragon Bot (v%s)";
 
     private JFrame frame;
 
@@ -45,8 +45,6 @@ public class MainWindow {
     private TextPrompt channelPrompt;
 
     private JPanel panel;
-
-    private JLabel version; // TODO
 
     private Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
 

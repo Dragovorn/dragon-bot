@@ -23,7 +23,7 @@ import com.dragovorn.dragonbot.DragonBotMain;
 import com.dragovorn.dragonbot.api.bot.file.FileManager;
 import com.dragovorn.dragonbot.bot.Bot;
 import com.dragovorn.dragonbot.DragonBot;
-import com.dragovorn.dragonbot.bot.Version;
+import com.dragovorn.dragonbot.Version;
 import com.dragovorn.dragonbot.gui.MainWindow;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
@@ -55,37 +55,20 @@ public class UpdatePanel extends JPanel {
     }
 
     public void update() {
+        JSONObject release = null;
         try {
-            JSONObject release = DragonBot.getInstance().getGitHubAPI().getLatestRelease();
+            release = DragonBot.getInstance().getGitHubAPI().getLatestRelease();
 
-            String theirVersion = release.getString("tag_name");
-            String ourVersion = Version.VERSION;
+            boolean shouldUpdate = Version.shouldUpdate(DragonBot.getInstance().getVersion(), release.getString("tag_name"));
 
-            String[] ourNumbersStr = ourVersion.split("\\.");
-            String[] theirNumbersStr = theirVersion.substring(1).split("\\.");
-
-            int[] ourNumbers = new int[] {Integer.valueOf(ourNumbersStr[0]), Integer.valueOf(ourNumbersStr[1]), Integer.valueOf(ourNumbersStr[2])};
-            int[] theirNumbers = new int[] {Integer.valueOf(theirNumbersStr[0]), Integer.valueOf(theirNumbersStr[1]), Integer.valueOf(theirNumbersStr[2])};
-
-            for (int x = 0; x < ourNumbers.length; x++) {
-                if (ourNumbers[x] < theirNumbers[x]) {
-                    askForUpdate(release);
-                    return;
-                } else if (ourNumbers[x] > theirNumbers[x]) {
-                    DragonBot.getInstance().getLogger().info("Running snapshot version of Dragon Bot!");
-                    Version.snapshot = true;
-                    return;
-                }
+            if (shouldUpdate) {
+                askForUpdate(release);
             }
-        } catch (Exception exception) {
-            if (exception instanceof NumberFormatException) {
-                DragonBot.getInstance().getLogger().info("Legacy versioning detected, ignoring...");
-            } else {
-                DragonBot.getInstance().getLogger().info("Unable to connect to the internet!");
-            }
-        } finally {
+
             this.stop = false;
             this.hasResponded = true;
+        } catch (IOException e) {
+            DragonBot.getInstance().getLogger().severe("Unable to retrieve version information!");
         }
     }
 
