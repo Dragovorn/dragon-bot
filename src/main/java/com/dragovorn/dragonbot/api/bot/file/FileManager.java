@@ -19,8 +19,6 @@
 
 package com.dragovorn.dragonbot.api.bot.file;
 
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
 import org.apache.commons.io.FileUtils;
 
 import java.io.BufferedWriter;
@@ -71,8 +69,7 @@ public class FileManager {
         });
     }
 
-    @Nullable
-    public static File getFile(@NotNull String name) {
+    public static File getFile(String name) {
         for (File file : pluginAddedFiles) {
             if (file.getName().indexOf(".") > 0) {
                 if (file.getName().substring(0, file.getName().lastIndexOf(".")).equals(name)) {
@@ -84,7 +81,7 @@ public class FileManager {
         return null;
     }
 
-    public static File addFile(@NotNull File file) {
+    public static File addFile(File file) {
         if (!file.exists()) {
             if (file.isDirectory()) {
                 file.mkdirs();

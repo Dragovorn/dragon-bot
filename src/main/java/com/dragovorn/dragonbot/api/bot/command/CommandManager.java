@@ -22,13 +22,11 @@ package com.dragovorn.dragonbot.api.bot.command;
 import com.dragovorn.dragonbot.bot.Bot;
 import com.dragovorn.dragonbot.bot.BotState;
 import com.google.common.collect.ImmutableList;
-import com.sun.istack.internal.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-@Deprecated
 public class CommandManager {
 
     private List<Command> commands;
@@ -39,7 +37,7 @@ public class CommandManager {
         this.consoleCommands = new ArrayList<>();
     }
 
-    public void registerCommand(@NotNull Command command) {
+    public void registerCommand(Command command) {
         if (Bot.getInstance().getState() != BotState.STARTING) {
             return;
         }
@@ -51,7 +49,7 @@ public class CommandManager {
         this.commands.add(command);
     }
 
-    public void registerConsoleCommand(@NotNull ConsoleCommand command) {
+    public void registerConsoleCommand(ConsoleCommand command) {
         if (Bot.getInstance().getState() != BotState.STARTING) {
             return;
         }
@@ -72,7 +70,7 @@ public class CommandManager {
     }
 
     @Nullable
-    public String[] parseCommand(@NotNull String prefix, @NotNull String message) {
+    public String[] parseCommand(String prefix, String message) {
         prefix = "!" + prefix;
 
         if (message.startsWith(prefix)) {

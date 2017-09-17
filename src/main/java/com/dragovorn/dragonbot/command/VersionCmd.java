@@ -24,7 +24,6 @@ import com.dragovorn.dragonbot.api.bot.plugin.BotPlugin;
 import com.dragovorn.dragonbot.bot.Bot;
 import com.dragovorn.dragonbot.DragonBot;
 import com.dragovorn.dragonbot.bot.User;
-import com.sun.istack.internal.NotNull;
 
 public class VersionCmd extends Command {
 
@@ -33,7 +32,7 @@ public class VersionCmd extends Command {
     }
 
     @Override
-    public void execute(@NotNull User user, @NotNull String[] args) {
+    public void execute(User user, String[] args) {
         StringBuilder builder = new StringBuilder();
 
         for (int x = 1; x < args.length; x++) {
