@@ -52,7 +52,6 @@ public class OptionsPanel extends JPanel {
         Dimension size = new Dimension(500, 500);
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
         setPreferredSize(size);
         setMaximumSize(size);
         setMinimumSize(size);
@@ -105,9 +104,10 @@ public class OptionsPanel extends JPanel {
             MainWindow.getInstance().pack();
         });
 
+        // TODO this is so broken and requires the most fixing
         testTwitch.addActionListener(event -> {
             testStatus.setText("Testing...");
-            testStatus.setForeground(Color.yellow);
+            testStatus.setForeground(Color.YELLOW);
             lockTwitch.setEnabled(false);
             testTwitch.setEnabled(false);
             MainWindow.getInstance().pack();
@@ -116,7 +116,7 @@ public class OptionsPanel extends JPanel {
                 Bot.getInstance().getLogger().info("You require a username to connect to twitch!");
 
                 testStatus.setText("No Username!");
-                testStatus.setForeground(Color.red);
+                testStatus.setForeground(Color.RED);
                 lockTwitch.setEnabled(true);
                 testTwitch.setEnabled(true);
 
@@ -127,7 +127,7 @@ public class OptionsPanel extends JPanel {
                 Bot.getInstance().getLogger().info("You require an oauth key to connect to twitch!");
 
                 testStatus.setText("No Auth Key!");
-                testStatus.setForeground(Color.red);
+                testStatus.setForeground(Color.RED);
                 lockTwitch.setEnabled(true);
                 testTwitch.setEnabled(true);
 
@@ -138,7 +138,7 @@ public class OptionsPanel extends JPanel {
                 Bot.getInstance().getLogger().info("Failed to connect to twitch!");
 
                 testStatus.setText("Failed to connect!");
-                testStatus.setForeground(Color.red);
+                testStatus.setForeground(Color.RED);
                 lockTwitch.setEnabled(true);
                 testTwitch.setEnabled(true);
 
