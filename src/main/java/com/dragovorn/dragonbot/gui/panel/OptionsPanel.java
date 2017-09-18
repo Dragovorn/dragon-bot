@@ -19,8 +19,8 @@
 
 package com.dragovorn.dragonbot.gui.panel;
 
-import com.dragovorn.dragonbot.bot.Bot;
 import com.dragovorn.dragonbot.DragonBot;
+import com.dragovorn.dragonbot.bot.Bot;
 import com.dragovorn.dragonbot.gui.MainWindow;
 import com.dragovorn.dragonbot.gui.TextPrompt;
 import com.dragovorn.dragonbot.gui.listener.ApplyListener;
@@ -119,36 +119,32 @@ public class OptionsPanel extends JPanel {
                 testStatus.setForeground(Color.RED);
                 lockTwitch.setEnabled(true);
                 testTwitch.setEnabled(true);
-
-                return;
-            }
-
-            if (this.oauth.getPassword().length == 0) {
+            } else if (this.oauth.getPassword().length == 0) {
                 Bot.getInstance().getLogger().info("You require an oauth key to connect to twitch!");
 
                 testStatus.setText("No Auth Key!");
                 testStatus.setForeground(Color.RED);
                 lockTwitch.setEnabled(true);
                 testTwitch.setEnabled(true);
+            } else {
+                Bot.getInstance().getLogger().info("Testing...");
+                this.tested = DragonBot.getInstance().testConnection(this.username.getText(), this.oauth.getText());
 
-                return;
-            }
+                if (!this.tested) {
+                    Bot.getInstance().getLogger().info("Failed to connect to twitch!");
 
-            if (!(this.tested = DragonBot.getInstance().testConnection(this.username.getText(), String.valueOf(this.oauth.getPassword())))) {
-                Bot.getInstance().getLogger().info("Failed to connect to twitch!");
+                    testStatus.setText("Failed to connect!");
+                    testStatus.setForeground(Color.RED);
+                    lockTwitch.setEnabled(true);
+                    testTwitch.setEnabled(true);
+                    return;
+                }
 
-                testStatus.setText("Failed to connect!");
-                testStatus.setForeground(Color.RED);
+                testStatus.setText("Success!");
+                testStatus.setForeground(Color.GREEN);
                 lockTwitch.setEnabled(true);
                 testTwitch.setEnabled(true);
-
-                return;
             }
-
-            testStatus.setText("Success!");
-            testStatus.setForeground(Color.green);
-            lockTwitch.setEnabled(true);
-            testTwitch.setEnabled(true);
         });
 
         JButton back = new JButton("Back");
