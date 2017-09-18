@@ -19,7 +19,7 @@
 
 package com.dragovorn.dragonbot.gui.panel;
 
-import com.dragovorn.dragonbot.DragonBotMain;
+import com.dragovorn.dragonbot.Main;
 import com.dragovorn.dragonbot.api.bot.file.FileManager;
 import com.dragovorn.dragonbot.bot.Bot;
 import com.dragovorn.dragonbot.DragonBot;
@@ -55,7 +55,7 @@ public class UpdatePanel extends JPanel {
     }
 
     public void update() {
-        JSONObject release = null;
+        JSONObject release;
         try {
             release = DragonBot.getInstance().getGitHubAPI().getLatestRelease();
 
@@ -196,7 +196,7 @@ public class UpdatePanel extends JPanel {
         command.add(javaBin);
         command.add("-jar");
         command.add(FileManager.getUpdater().getPath());
-        command.add(DragonBotMain.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+        command.add(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
         command.add(url);
 
         ProcessBuilder builder = new ProcessBuilder(command);

@@ -21,7 +21,7 @@ package com.dragovorn.dragonbot;
 
 import java.io.IOException;
 
-public class DragonBotMain {
+public class Main {
 
     public static void main(String... args) throws IOException {
         new DragonBot();
