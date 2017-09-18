@@ -282,23 +282,18 @@ public class DragonBot extends Bot {
         }.start();
     }
 
-    public synchronized boolean testConnection(String username, String password) {
+    public boolean testConnection(String username, String password) {
+        Bot.getInstance().getLogger().info("running connect...");
         try {
-            connect(username, password);
-        } catch (ConnectionException | IOException exception) {
+            connect("irc.twitch.tv", 6667, username, password);
+            disconnect();
+            return true;
+        } catch (ConnectionException | IOException e) {
             return false;
         }
-
-        disconnect();
-
-        return true;
     }
 
-    public synchronized void connect(String username, String password) throws ConnectionException, IOException {
-        connect("irc.twitch.tv", 6667, username, password);
-    }
-
-    public synchronized void connect() throws ConnectionException, IOException {
+    public void connect() throws ConnectionException, IOException {
         if (this.name.equals("") || this.getPassword().equals("")) {
             return;
         }
@@ -307,7 +302,7 @@ public class DragonBot extends Bot {
         connect("irc.twitch.tv", 6667, this.name, this.auth);
     }
 
-    private synchronized void disconnect() {
+    private void disconnect() {
         if (!this.isConnected()) {
             return;
         }
@@ -372,7 +367,7 @@ public class DragonBot extends Bot {
     }
 
     @Override
-    public synchronized void connectTo(String channel) {
+    public void connectTo(String channel) {
         this.connection.setChannel(channel.substring(1));
         this.config.setChannel(channel.substring(1));
 
@@ -393,7 +388,7 @@ public class DragonBot extends Bot {
     }
 
     @Override
-    public synchronized void connect(String ip, int port, String username, String password) throws ConnectionException, IOException {
+    public void connect(String ip, int port, String username, String password) throws ConnectionException, IOException {
         if (isConnected()) {
             throw new ConnectionException("You are already connected to twitch!");
         }
@@ -497,7 +492,7 @@ public class DragonBot extends Bot {
     @Override
     public void sendMessage(String message) {
         if (this.connection.getChannel().equals("")) {
-            return; // We are no in a channel then
+            return; // We are not in a channel then
         }
 
         this.outQueue.add("PRIVMSG #" + this.connection.getChannel() + " :" + message);
@@ -509,7 +504,7 @@ public class DragonBot extends Bot {
     }
 
     @Override
-    public synchronized boolean isConnected() {
+    public boolean isConnected() {
         return this.inputThread != null && this.inputThread.isConnected();
     }
 
