@@ -29,7 +29,6 @@ import com.dragovorn.dragonbot.gui.listener.BackListener;
 import javax.swing.*;
 import java.awt.*;
 
-// TODO Add options for file management and other config options
 public class OptionsPanel extends JPanel {
 
     private JCheckBox console;
