@@ -16,7 +16,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>com.dragovorn.dragonbot.DragonBotMain</mainClass>
+                            <mainClass>com.dragovorn.dragonbot.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

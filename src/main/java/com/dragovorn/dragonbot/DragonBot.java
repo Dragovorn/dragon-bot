@@ -209,7 +209,7 @@ public class DragonBot extends Bot {
             }
         }
 
-        getLogger().info("Initializing Dragon Bot " + getVersion() + "!");
+        getLogger().info("Initializing Dragon Bot v" + getVersion() + "!");
 
         this.name = this.config.getName();
         this.auth = this.config.getAuth();
@@ -252,7 +252,7 @@ public class DragonBot extends Bot {
         MainWindow.getInstance().pack();
         MainWindow.getInstance().center();
 
-        getLogger().info("Dragon Bot " + getVersion() + " initialized!");
+        getLogger().info("Dragon Bot v" + getVersion() + " initialized!");
     }
 
     @Override
