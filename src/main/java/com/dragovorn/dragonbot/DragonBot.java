@@ -286,7 +286,6 @@ public class DragonBot extends Bot {
         Bot.getInstance().getLogger().info("running connect...");
         try {
             connect("irc.twitch.tv", 6667, username, password);
-            disconnect();
             return true;
         } catch (ConnectionException | IOException e) {
             return false;
