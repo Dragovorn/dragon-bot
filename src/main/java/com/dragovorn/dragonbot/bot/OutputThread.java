@@ -40,23 +40,21 @@ public class OutputThread extends Thread {
             line = line.substring(0, bot.getMaxLineLength() - 2);
         }
 
-        synchronized (writer) {
-            try {
-                writer.write(line + "\r\n");
-                writer.flush();
+        try {
+            writer.write(line + "\r\n");
+            writer.flush();
 
-                if (line.startsWith("PASS") || line.startsWith("PONG")) {
-                    return;
-                }
-
-                if (line.startsWith("PRIVMSG")) {
-                    bot.getLogger().info("CHAT [Bot] " + bot.getName() + ": " + line.substring(line.indexOf(" :") + 2));
-                } else {
-                    bot.getLogger().info(line);
-                }
-            } catch (IOException exception) {
-                // Lose the line
+            if (line.startsWith("PASS") || line.startsWith("PONG")) {
+                return;
             }
+
+            if (line.startsWith("PRIVMSG")) {
+                bot.getLogger().info("CHAT [Bot] " + bot.getName() + ": " + line.substring(line.indexOf(" :") + 2));
+            } else {
+                bot.getLogger().info(line);
+            }
+        } catch (IOException exception) {
+            // Lose the line
         }
     }
 
