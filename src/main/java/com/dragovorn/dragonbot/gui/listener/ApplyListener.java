@@ -77,6 +77,7 @@ public class ApplyListener implements ActionListener {
                     String buttons[] = { "Ok" };
 
                     JOptionPane.showOptionDialog(null, "Please make sure to test your account connectivity before applying changes!", "Twitch Account", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, buttons, buttons[0]);
+                    return;
                 }
             }
         } catch (ConnectionException | IOException exception) {
