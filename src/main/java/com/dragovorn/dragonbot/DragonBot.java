@@ -283,9 +283,9 @@ public class DragonBot extends Bot {
     }
 
     public boolean testConnection(String username, String password) {
-        Bot.getInstance().getLogger().info("running connect...");
         try {
             connect("irc.twitch.tv", 6667, username, password);
+            disconnect();
             return true;
         } catch (ConnectionException | IOException e) {
             return false;
@@ -415,7 +415,7 @@ public class DragonBot extends Bot {
             socket = new Socket(this.connection.getServer(), this.connection.getPort());
         }
 
-        getLogger().info("Connected to twitch!");
+        getLogger().info("Connected to twitch servers!");
 
         this.inetAddress = socket.getInetAddress();
 
@@ -446,6 +446,14 @@ public class DragonBot extends Bot {
 
         while ((line = bufferedReader.readLine()) != null) {
             this.handleLine(line);
+
+            if (line.equals(":tmi.twitch.tv NOTICE * :Improperly formatted auth")) {
+                socket.close();
+
+                this.inputThread = null;
+
+                throw new ConnectionException("Could not log into the IRC Server: " + line);
+            }
 
             int firstSpace = line.indexOf(" ");
             int secondSpace = line.indexOf(" ", firstSpace + 1);
