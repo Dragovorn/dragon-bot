@@ -84,7 +84,6 @@ public abstract class Bot {
      * Gets the bot's event bus
      *
      * @return the EventBus of the bot
-     * @deprecated
      */
     public final EventBus getEventBus() {
         return this.eventBus;

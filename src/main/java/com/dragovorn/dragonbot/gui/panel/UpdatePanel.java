@@ -37,10 +37,8 @@ import java.util.ArrayList;
 
 public class UpdatePanel extends JPanel {
 
-    @Deprecated
     private volatile boolean stop = false;
 
-    @Deprecated
     private boolean hasResponded = false;
 
     public UpdatePanel() {
