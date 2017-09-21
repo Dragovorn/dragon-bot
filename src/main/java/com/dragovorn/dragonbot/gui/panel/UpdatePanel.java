@@ -27,6 +27,7 @@ import com.dragovorn.dragonbot.Version;
 import com.dragovorn.dragonbot.gui.MainWindow;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.swing.*;
@@ -57,14 +58,18 @@ public class UpdatePanel extends JPanel {
         try {
             release = DragonBot.getInstance().getGitHubAPI().getLatestRelease();
 
-            boolean shouldUpdate = Version.shouldUpdate(DragonBot.getInstance().getVersion(), release.getString("tag_name"));
+            boolean shouldUpdate = false;
+
+            try {
+                shouldUpdate = Version.shouldUpdate(DragonBot.getInstance().getVersion(), release.getString("tag_name"));
+            } catch (JSONException exception) { /* Just keep shouldUpdate false */ }
 
             if (shouldUpdate) {
                 askForUpdate(release);
+            } else {
+                this.stop = false;
+                this.hasResponded = true;
             }
-
-            this.stop = false;
-            this.hasResponded = true;
         } catch (IOException e) {
             DragonBot.getInstance().getLogger().severe("Unable to retrieve version information!");
         }

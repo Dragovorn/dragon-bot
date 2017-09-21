@@ -182,7 +182,6 @@ public class DragonBot extends Bot {
         new MainWindow(update);
 
         if (Bot.getInstance().getConfiguration().getCheckForUpdates()) {
-            getLogger().info("Checking for updates...");
             getLogger().info("Checking for newer version of the updater...");
 
             try {
@@ -201,6 +200,7 @@ public class DragonBot extends Bot {
                 getLogger().info("Unable to connect to the internet!");
             }
 
+            getLogger().info("Checking for updates...");
             update.update();
 
             if(update.shouldStop()) {
