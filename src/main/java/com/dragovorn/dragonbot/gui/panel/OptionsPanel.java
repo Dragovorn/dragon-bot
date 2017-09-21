@@ -104,13 +104,9 @@ public class OptionsPanel extends JPanel {
             MainWindow.getInstance().pack();
         });
 
-        // TODO this is so broken and requires the most fixing
         testTwitch.addActionListener(event -> {
-            testStatus.setText("Testing...");
-            testStatus.setForeground(Color.YELLOW);
             lockTwitch.setEnabled(false);
             testTwitch.setEnabled(false);
-            MainWindow.getInstance().pack();
 
             if (this.username.getText().equals("")) {
                 Bot.getInstance().getLogger().info("You require a username to connect to twitch!");

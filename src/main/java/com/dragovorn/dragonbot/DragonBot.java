@@ -284,6 +284,7 @@ public class DragonBot extends Bot {
 
     public boolean testConnection(String username, String password) {
         try {
+            disconnect();
             connect("irc.twitch.tv", 6667, username, password);
             disconnect();
             return true;
@@ -292,7 +293,7 @@ public class DragonBot extends Bot {
         }
     }
 
-    public void connect() throws ConnectionException, IOException {
+    public synchronized void connect() throws ConnectionException, IOException {
         if (this.name.equals("") || this.getPassword().equals("")) {
             return;
         }
@@ -301,7 +302,7 @@ public class DragonBot extends Bot {
         connect("irc.twitch.tv", 6667, this.name, this.auth);
     }
 
-    private void disconnect() {
+    private synchronized void disconnect() {
         if (!this.isConnected()) {
             return;
         }
@@ -387,7 +388,7 @@ public class DragonBot extends Bot {
     }
 
     @Override
-    public void connect(String ip, int port, String username, String password) throws ConnectionException, IOException {
+    public synchronized void connect(String ip, int port, String username, String password) throws ConnectionException, IOException {
         if (isConnected()) {
             throw new ConnectionException("You are already connected to twitch!");
         }
