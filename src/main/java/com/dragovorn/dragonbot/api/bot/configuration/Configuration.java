@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("unchecked")
 public abstract class Configuration {
 
     protected Map<String, Object> entries;
@@ -79,17 +80,17 @@ public abstract class Configuration {
         this.defaults.clear();
         addDefaults();
 
-        this.defaults.entrySet().forEach(entry -> {
-            if (!this.entries.containsKey(entry.getKey())) {
-                this.entries.put(entry.getKey(), entry.getValue());
+        this.defaults.forEach((key, value) -> {
+            if (!this.entries.containsKey(key)) {
+                this.entries.put(key, value);
             }
         });
 
         ArrayList<String> remove = new ArrayList<>();
 
-        this.entries.entrySet().forEach(entry -> {
-            if (!this.defaults.containsKey(entry.getKey())) {
-                remove.add(entry.getKey());
+        this.entries.forEach((key, value) -> {
+            if (!this.defaults.containsKey(key)) {
+                remove.add(key);
             }
         });
 
