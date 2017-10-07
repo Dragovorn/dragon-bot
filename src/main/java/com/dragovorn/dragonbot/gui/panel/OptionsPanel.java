@@ -124,7 +124,7 @@ public class OptionsPanel extends JPanel {
                 testTwitch.setEnabled(true);
             } else {
                 Bot.getInstance().getLogger().info("Testing...");
-                this.tested = DragonBot.getInstance().testConnection(this.username.getText(), this.oauth.getText());
+                this.tested = DragonBot.getInstance().testConnection(this.username.getText(), String.valueOf(this.oauth.getPassword()));
 
                 if (!this.tested) {
                     Bot.getInstance().getLogger().info("Failed to connect to twitch!");

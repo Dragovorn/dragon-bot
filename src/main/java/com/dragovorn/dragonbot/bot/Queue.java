@@ -21,39 +21,40 @@ package com.dragovorn.dragonbot.bot;
 
 import java.util.Vector;
 
+@SuppressWarnings("unchecked")
 public class Queue {
 
-    private Vector queue = new Vector();
+    private final Vector queue = new Vector();
 
     public void add(Object object) {
-        synchronized (queue) {
-            queue.addElement(object);
-            queue.notify();
+        synchronized (this.queue) {
+            this.queue.addElement(object);
+            this.queue.notify();
         }
     }
 
     public void addFront(Object object) {
-        synchronized (queue) {
-            queue.insertElementAt(object, 0);
-            queue.notify();
+        synchronized (this.queue) {
+            this.queue.insertElementAt(object, 0);
+            this.queue.notify();
         }
     }
 
     public Object next() {
         Object object;
 
-        synchronized (queue) {
-            if (queue.size() == 0) {
+        synchronized (this.queue) {
+            if (this.queue.size() == 0) {
                 try {
-                    queue.wait();
+                    this.queue.wait();
                 } catch (InterruptedException exception) {
                     return null;
                 }
             }
 
             try {
-                object = queue.firstElement();
-                queue.removeElementAt(0);
+                object = this.queue.firstElement();
+                this.queue.removeElementAt(0);
             } catch (ArrayIndexOutOfBoundsException exception) {
                 throw new InternalError("Race hazard in Queue Object");
             }
@@ -67,12 +68,12 @@ public class Queue {
     }
 
     public void clear() {
-        synchronized (queue) {
-            queue.removeAllElements();
+        synchronized (this.queue) {
+            this.queue.removeAllElements();
         }
     }
 
     public int size() {
-        return queue.size();
+        return this.queue.size();
     }
 }
