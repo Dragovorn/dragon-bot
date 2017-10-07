@@ -19,6 +19,7 @@
 
 package com.dragovorn.dragonbot;
 
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.GetObjectMetadataRequest;
@@ -173,8 +174,8 @@ public class DragonBot extends Bot {
     public void start() {
         setState(BotState.STARTING);
 
-        AmazonS3 client = AmazonS3ClientBuilder.defaultClient();
-        this.transferManager = TransferManagerBuilder.defaultTransferManager();
+        AmazonS3 client = AmazonS3ClientBuilder.standard().withRegion(Regions.US_EAST_1).build();
+        this.transferManager = TransferManagerBuilder.standard().withS3Client(client).build();
 
         UpdatePanel update = new UpdatePanel();
 
