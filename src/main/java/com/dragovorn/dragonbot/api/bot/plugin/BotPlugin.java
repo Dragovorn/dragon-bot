@@ -21,6 +21,7 @@ package com.dragovorn.dragonbot.api.bot.plugin;
 
 import com.dragovorn.dragonbot.api.bot.file.FileManager;
 import com.dragovorn.dragonbot.api.bot.scheduler.GroupedThreadFactory;
+import com.dragovorn.dragonbot.log.PluginLogger;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.io.File;
@@ -31,6 +32,8 @@ import java.util.logging.Logger;
 public abstract class BotPlugin {
 
     private PluginInfo info;
+
+    private Logger logger;
 
     private ExecutorService executorService;
 
@@ -49,6 +52,7 @@ public abstract class BotPlugin {
     final void init(PluginInfo info) {
         this.info = info;
         this.pluginFolder = new File(FileManager.getPlugins(), info.getName());
+        this.logger = new PluginLogger(this);
     }
 
     public final PluginInfo getInfo() {
@@ -56,7 +60,7 @@ public abstract class BotPlugin {
     }
 
     public final Logger getLogger() {
-        return null;
+        return this.logger;
     }
 
     public final File registerFile(String file) {
