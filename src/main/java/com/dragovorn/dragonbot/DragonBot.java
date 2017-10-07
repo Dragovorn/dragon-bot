@@ -20,10 +20,11 @@
 package com.dragovorn.dragonbot;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.GetObjectMetadataRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.transfer.TransferManager;
+import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import com.dragovorn.dragonbot.api.bot.command.Command;
 import com.dragovorn.dragonbot.api.bot.command.CommandManager;
 import com.dragovorn.dragonbot.api.bot.event.ChannelEnterEvent;
@@ -62,6 +63,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class DragonBot extends Bot {
 
     private Version version;
@@ -69,7 +71,6 @@ public class DragonBot extends Bot {
     private String name;
     private String auth;
     private String charset;
-    private String channelPrefixes = "#&+!";
 
     private PluginManager pluginManager;
 
@@ -94,8 +95,6 @@ public class DragonBot extends Bot {
     private GitHubAPI gitHubAPI;
 
     private final Logger logger;
-
-    private final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
     public DragonBot() throws IOException {
         setInstance(this);
@@ -150,7 +149,7 @@ public class DragonBot extends Bot {
 
         this.pluginManager = new PluginManager();
         this.commandManager = new CommandManager();
-        this.logger = new DragonLogger("Dragon Bot", FileManager.getLogs() + File.separator + this.format.format(new Date()) + "-%g.log");
+        this.logger = new DragonLogger("Dragon Bot", FileManager.getLogs() + File.separator + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + "-%g.log");
         this.gitHubAPI = new GitHubAPI("dragovorn", "dragon-bot-twitch");
         this.scheduler = new BotScheduler();
 
@@ -174,8 +173,8 @@ public class DragonBot extends Bot {
     public void start() {
         setState(BotState.STARTING);
 
-        AmazonS3 client = new AmazonS3Client();
-        this.transferManager = new TransferManager(client);
+        AmazonS3 client = AmazonS3ClientBuilder.defaultClient();
+        this.transferManager = TransferManagerBuilder.defaultTransferManager();
 
         UpdatePanel update = new UpdatePanel();
 
@@ -465,10 +464,6 @@ public class DragonBot extends Bot {
                 if (code.equals("004")) {
                     // We've connected
                     break;
-                } else if (code.equals("433")) {
-                    // No action required
-                } else if (code.equals("439")) {
-                    // No action required
                 } else if (code.startsWith("5") || code.startsWith("4")) {
                     socket.close();
 
@@ -564,12 +559,10 @@ public class DragonBot extends Bot {
                 hostname = senderInfo.substring(at + 1);
             } else {
                 if (!parsedLine.isEmpty()) {
-                    String token = command;
-
                     int code = -1;
 
                     try {
-                        code = Integer.parseInt(token);
+                        code = Integer.parseInt(command);
                     } catch (NumberFormatException exception) {
                         // Leave it at -1
                     }
@@ -578,7 +571,7 @@ public class DragonBot extends Bot {
                         return;
                     } else {
                         nick = senderInfo;
-                        target = token;
+                        target = command;
                     }
                 }
             }
@@ -598,11 +591,11 @@ public class DragonBot extends Bot {
             target = target.substring(1);
         }
 
-        if (command.equals("PRIVMSG") && line.indexOf(":\u0001") > 0 && line.endsWith("\u0001")) {
-            String request = line.substring(line.indexOf(":\u0001") + 2, line.length() - 1);
-
-            // TODO: Check for CTP Requests
-        } else if (command.equals("PRIVMSG") && this.channelPrefixes.indexOf(target.charAt(0)) >= 0) {
+//        if (command.equals("PRIVMSG") && line.indexOf(":\u0001") > 0 && line.endsWith("\u0001")) {
+//            String request = line.substring(line.indexOf(":\u0001") + 2, line.length() - 1);
+//
+//             TODO: Check for CTP Requests
+/*        } else*/ if (command.equals("PRIVMSG") && "#&+!".indexOf(target.charAt(0)) >= 0) {
             User user = new User(nick, login, hostname, tags.build());
 
             String message = line.substring(line.indexOf(" :") + 2);
