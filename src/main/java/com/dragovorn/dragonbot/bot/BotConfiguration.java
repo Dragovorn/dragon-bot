@@ -36,9 +36,10 @@ public class BotConfiguration extends Configuration {
         this.defaults.put("oauth", "");
         this.defaults.put("channel", "");
         this.defaults.put("console", true);
-        this.defaults.put("auto connect", false);
-        this.defaults.put("ask for update", true);
-        this.defaults.put("check for updates", true);
+        this.defaults.put("auto-connect", false);
+        this.defaults.put("ask-for-update", true);
+        this.defaults.put("check-for-updates", true);
+        this.defaults.put("api-key", "");
     }
 
     public String getName() {
@@ -53,20 +54,24 @@ public class BotConfiguration extends Configuration {
         return getString("channel");
     }
 
+    public String getAPIKey() {
+        return getString("api-key");
+    }
+
     public boolean getConsole() {
         return getBoolean("console");
     }
 
     public boolean getAutoConnect() {
-        return getBoolean("auto connect");
+        return getBoolean("auto-connect");
     }
 
     public boolean getAskForUpdates() {
-        return getBoolean("ask for update");
+        return getBoolean("ask-for-update");
     }
 
     public boolean getCheckForUpdates() {
-        return getBoolean("check for updates");
+        return getBoolean("check-for-updates");
     }
 
     public void setName(String name) {
@@ -81,19 +86,23 @@ public class BotConfiguration extends Configuration {
         set("channel", channel);
     }
 
+    public void setAPIKey(String apiKey) {
+        set("api-key", apiKey);
+    }
+
     public void setConsole(boolean console) {
         set("console", console);
     }
 
     public void setAutoConnect(boolean autoConnect) {
-        set("auto connect", autoConnect);
+        set("auto-connect", autoConnect);
     }
 
     public void setAskForUpdates(boolean askForUpdates) {
-        set("ask for update", askForUpdates);
+        set("ask-for-update", askForUpdates);
     }
 
     public void setCheckForUpdates(boolean checkForUpdates) {
-        set("check for updates", checkForUpdates);
+        set("check-for-updates", checkForUpdates);
     }
 }

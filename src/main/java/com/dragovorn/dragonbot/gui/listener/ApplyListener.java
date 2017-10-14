@@ -56,6 +56,8 @@ public class ApplyListener implements ActionListener {
                     ConsoleWindow.getInstance().getFrame().dispose();
                 }
             }
+
+            DragonBot.getInstance().getTwitchAPI().setClientId(OptionsPanel.getInstance().getClientId());
         }
 
         if (OptionsPanel.getInstance().getAutoConnect().isSelected() != Bot.getInstance().getConfiguration().getAutoConnect()) {

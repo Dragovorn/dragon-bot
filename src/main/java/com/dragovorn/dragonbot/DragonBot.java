@@ -36,6 +36,7 @@ import com.dragovorn.dragonbot.api.bot.plugin.PluginManager;
 import com.dragovorn.dragonbot.api.bot.scheduler.BotScheduler;
 import com.dragovorn.dragonbot.api.bot.scheduler.Scheduler;
 import com.dragovorn.dragonbot.api.github.GitHubAPI;
+import com.dragovorn.dragonbot.api.twitch.TwitchAPI;
 import com.dragovorn.dragonbot.bot.*;
 import com.dragovorn.dragonbot.command.Github;
 import com.dragovorn.dragonbot.command.VersionCmd;
@@ -95,6 +96,8 @@ public class DragonBot extends Bot {
 
     private GitHubAPI gitHubAPI;
 
+    private TwitchAPI twitchAPI;
+
     private final Logger logger;
 
     public DragonBot() throws IOException {
@@ -152,7 +155,9 @@ public class DragonBot extends Bot {
         this.commandManager = new CommandManager();
         this.logger = new DragonLogger("Dragon Bot", FileManager.getLogs() + File.separator + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + "-%g.log");
         this.gitHubAPI = new GitHubAPI("dragovorn", "dragon-bot-twitch");
+        this.twitchAPI = new TwitchAPI();
         this.scheduler = new BotScheduler();
+        this.twitchAPI.setClientId(this.config.getAPIKey());
 
         System.setErr(new PrintStream(new LoggingOutputStream(this.logger, Level.SEVERE), true));
         System.setOut(new PrintStream(new LoggingOutputStream(this.logger, Level.INFO), true));
@@ -673,6 +678,10 @@ public class DragonBot extends Bot {
 
     public GitHubAPI getGitHubAPI() {
         return this.gitHubAPI;
+    }
+
+    public TwitchAPI getTwitchAPI() {
+        return this.twitchAPI;
     }
 
     public Scheduler getScheduler() {
