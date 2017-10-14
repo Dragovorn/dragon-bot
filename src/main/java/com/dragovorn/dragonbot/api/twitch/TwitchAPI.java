@@ -33,13 +33,20 @@ public class TwitchAPI {
     private static final String BASE_URL = "https://api.twitch.tv/kraken/";
     private static final String CHANNELS = "channels/";
     private static final String STREAMS = "streams/";
-    private final String clientId;
+    private String clientId;
 
     private final HttpClient client;
 
-    public TwitchAPI(String clientId) {
-        this.clientId = clientId;
+    public TwitchAPI() {
         this.client = HttpClientBuilder.create().build();
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
+
+    public String getClientId() {
+        return this.clientId;
     }
 
     public JSONObject getChannel(String channel) throws IOException {

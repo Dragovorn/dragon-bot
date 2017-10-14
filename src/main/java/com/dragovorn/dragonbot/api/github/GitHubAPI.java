@@ -44,19 +44,19 @@ public class GitHubAPI {
     }
 
     public JSONObject getLatestRelease() throws IOException {
-        HttpResponse response = client.execute(makeGetRequest(BASE_URL + REPO + owner + "/" + repository + "/releases/latest"));
+        HttpResponse response = client.execute(makeGetRequest(BASE_URL + REPO + this.owner + "/" + this.repository + "/releases/latest"));
 
         return new JSONObject(EntityUtils.toString(response.getEntity(), "UTF-8"));
     }
 
     public JSONObject getRelease(String tag) throws IOException {
-        HttpResponse response = client.execute(makeGetRequest(BASE_URL + REPO + owner + "/" + repository + "/releases/tags/" + tag));
+        HttpResponse response = client.execute(makeGetRequest(BASE_URL + REPO + this.owner + "/" + this.repository + "/releases/tags/" + tag));
 
         return new JSONObject(EntityUtils.toString(response.getEntity(), "UTF-8"));
     }
 
     public int getNumCommitsBetween(String tag1, String tag2) throws IOException {
-        HttpResponse response = client.execute(makeGetRequest(BASE_URL + REPO + owner + "/" + repository + "/compare/" + tag1 + "..." + tag2));
+        HttpResponse response = client.execute(makeGetRequest(BASE_URL + REPO + this.owner + "/" + this.repository + "/compare/" + tag1 + "..." + tag2));
 
         JSONObject object = new JSONObject(EntityUtils.toString(response.getEntity(), "UTF-8"));
 
