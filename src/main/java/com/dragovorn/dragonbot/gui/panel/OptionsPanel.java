@@ -35,6 +35,7 @@ public class OptionsPanel extends JPanel {
     private JCheckBox autoConnect;
 
     private JTextField username;
+    private JTextField clientId;
 
     private final JLabel testStatus;
 
@@ -69,6 +70,11 @@ public class OptionsPanel extends JPanel {
         this.autoConnect = new JCheckBox("Auto-connect to \'" + Bot.getInstance().getConfiguration().getChannel() + "\'");
         this.autoConnect.setToolTipText("Allow the bot to automatically connect to \'" + Bot.getInstance().getConfiguration().getChannel() + "\' when it starts up.");
         this.autoConnect.setSelected(Bot.getInstance().getConfiguration().getAutoConnect());
+
+        this.clientId = new JTextField(10);
+        this.clientId.setToolTipText("The client ID the bot uses to run twitch api queries.");
+        this.clientId.setMaximumSize(new Dimension(350, 20));
+        new TextPrompt("Client ID", this.clientId);
 
         this.username = new JTextField(10);
         this.username.setToolTipText("The username for the bot");
@@ -150,6 +156,7 @@ public class OptionsPanel extends JPanel {
         apply.addActionListener(new ApplyListener());
 
         options.add(this.console);
+        options.add(this.clientId);
 
         if (!Bot.getInstance().getConfiguration().getChannel().equals("")) {
             options.add(this.autoConnect);
@@ -187,6 +194,10 @@ public class OptionsPanel extends JPanel {
             return true;
         }
 
+        if (!this.clientId.getText().equals(DragonBot.getInstance().getTwitchAPI().getClientId())) {
+            return true;
+        }
+
         return hasAccountInfoChanged();
     }
 
@@ -205,6 +216,10 @@ public class OptionsPanel extends JPanel {
 
     public JLabel getTestStatus() {
         return this.testStatus;
+    }
+
+    public String getClientId() {
+        return this.clientId.getText();
     }
 
     public static OptionsPanel getInstance() {
