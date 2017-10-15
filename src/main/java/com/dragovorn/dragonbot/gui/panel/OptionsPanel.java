@@ -74,6 +74,7 @@ public class OptionsPanel extends JPanel {
         this.clientId = new JTextField(10);
         this.clientId.setToolTipText("The client ID the bot uses to run twitch api queries.");
         this.clientId.setMaximumSize(new Dimension(350, 20));
+        this.clientId.setText(DragonBot.getInstance().getTwitchAPI().getClientId());
         new TextPrompt("Client ID", this.clientId);
 
         this.username = new JTextField(10);
