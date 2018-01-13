@@ -109,7 +109,7 @@ public class MainWindow {
 
         this.frame = new JFrame(TITLE);
         this.frame.setLocation(this.screen.width / 2 - container.getSize().width / 2, this.screen.height / 2 - container.getSize().height / 2);
-        this.frame.setResizable(false);
+        this.frame.setResizable(true);
         this.frame.setContentPane(container);
         this.frame.pack();
         this.frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
