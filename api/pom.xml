@@ -3,10 +3,13 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>dragon-bot</artifactId>
-        <groupId>com.dragovorn</groupId>
-        <version>2.0.0-alpha.1</version>
+        <artifactId>parent</artifactId>
+        <groupId>com.dragovorn.dragon-bot</groupId>
+        <version>2.0.0-alpha.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>api</artifactId>
+    <packaging>jar</packaging>
+    <dependencies>
+    </dependencies>
 </project>

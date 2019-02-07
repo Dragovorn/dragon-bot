@@ -3,23 +3,24 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>dragon-bot</artifactId>
-        <groupId>com.dragovorn</groupId>
-        <version>2.0.0-alpha.1</version>
+        <artifactId>parent</artifactId>
+        <groupId>com.dragovorn.dragon-bot</groupId>
+        <version>2.0.0-alpha.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>core</artifactId>
+    <packaging>jar</packaging>
     <build>
         <finalName>DragonBot</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.4</version>
+                <version>3.1.1</version>
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.dragovorn.dragonbot.Main</mainClass>
+                            <mainClass>com.dragovorn.dragonbot.DragonBotApplication</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -32,4 +33,16 @@
             </resource>
         </resources>
     </build>
+    <dependencies>
+        <dependency>
+            <groupId>com.dragovorn.dragon-bot</groupId>
+            <artifactId>api</artifactId>
+            <version>2.0.0-alpha.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+            <version>1.11.492</version>
+        </dependency>
+    </dependencies>
 </project>
