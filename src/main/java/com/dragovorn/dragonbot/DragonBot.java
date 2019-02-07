@@ -154,7 +154,7 @@ public class DragonBot extends Bot {
         this.pluginManager = new PluginManager();
         this.commandManager = new CommandManager();
         this.logger = new DragonLogger("Dragon Bot", FileManager.getLogs() + File.separator + new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + "-%g.log");
-        this.gitHubAPI = new GitHubAPI("dragovorn", "dragon-bot-twitch");
+        this.gitHubAPI = new GitHubAPI("dragovorn", "dragon-bot");
         this.twitchAPI = new TwitchAPI();
         this.scheduler = new BotScheduler();
         this.twitchAPI.setClientId(this.config.getAPIKey());
