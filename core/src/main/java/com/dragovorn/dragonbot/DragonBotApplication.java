@@ -17,7 +17,7 @@ public class DragonBotApplication extends Application {
     private Stage stage;
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         instance = this;
 
         String javaVersion = System.getProperty("java.version");

@@ -53,6 +53,8 @@ public class Downloader {
 
             bufferedInputStream.close();
             bufferedOutputStream.close();
+        } else {
+            throw new NullPointerException("Failed to retrieve entity data!");
         }
     }
 }
