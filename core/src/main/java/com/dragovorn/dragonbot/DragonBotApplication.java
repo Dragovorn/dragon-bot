@@ -1,6 +1,8 @@
 package com.dragovorn.dragonbot;
 
-import com.dragovorn.dragonbot.util.FileSystem;
+import com.dragovorn.dragonbot.api.gui.scene.IScene;
+import com.dragovorn.dragonbot.manager.GuiManager;
+import com.dragovorn.dragonbot.api.util.FileSystem;
 import com.google.common.collect.Maps;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -10,6 +12,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Properties;
 
 public class DragonBotApplication extends Application {
 
@@ -27,47 +30,38 @@ public class DragonBotApplication extends Application {
 
     private static Stage stage;
 
-    public static final int DEFAULT_WIDTH = 500;
-    public static final int DEFAULT_HEIGHT = 500;
+    public static final String VERSION;
+
+    static {
+        Properties properties = new Properties();
+
+        try {
+            properties.load(FileSystem.getResource("project.properties").openStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        VERSION = properties.getProperty("version");
+    }
 
     @Override
-    public void start(Stage paramStage) {
+    public void start(Stage stage) {
         instance = this;
 
-        registerParent("main", "main");
-
-        DEFAULT_PARENT = getParent("main");
-
-        scene = new Scene(DEFAULT_PARENT, 500, 500);
-        stage.setScene(scene);
-        stage.show();
-
-        stage = paramStage;
+        GuiManager.init(stage);
     }
 
     public static Parent getParent(String name) {
         return parents.getOrDefault(name, DEFAULT_PARENT);
     }
 
-    public static void resizeScene(int width, int height) {
-        if (width <= 0) {
-            width = DEFAULT_WIDTH;
-        }
-
-        if (height <= 0) {
-            height = DEFAULT_HEIGHT;
-        }
-
-        stage.setScene(new Scene(scene.getRoot(), width, height));
-    }
-
     public static void updateParent(String name) {
         scene.setRoot(getParent(name));
     }
 
-    public static void registerParent(String name, String fxmlName) {
+    public static void registerScene(IScene scene) {
         try {
-            parents.put(name, FXMLLoader.load(FileSystem.getResource("fxml/" + fxmlName + ".fxml")));
+            parents.put(scene.getName(), FXMLLoader.load(FileSystem.getResource("fxml/" + scene.getFileName() + ".fxml")));
         } catch (IOException e) {
             e.printStackTrace();
         }
