@@ -2,6 +2,6 @@
 
 <?import javafx.scene.layout.GridPane?>
 
-<GridPane fx:controller="com.dragovorn.dragonbot.gui.MainScene" xmlns:fx="http://javafx.com/fxml" alignment="CENTER" hgap="10" vgap="10">
+<GridPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.dragovorn.dragonbot.gui.MainScene" alignment="CENTER" hgap="10" vgap="10">
 
 </GridPane>

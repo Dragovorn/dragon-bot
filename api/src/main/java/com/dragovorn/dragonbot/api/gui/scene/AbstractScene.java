@@ -10,20 +10,28 @@ import java.io.IOException;
 
 public abstract class AbstractScene implements IScene {
 
-    protected final Parent parent;
+    protected Parent parent;
 
     protected final String name;
     protected final String fileName;
 
-    public AbstractScene(String name, String fileName) throws IOException {
-        this.parent = FXMLLoader.load(FileSystem.getResource("fxml/" + fileName + ".fxml"));
+    public AbstractScene(String name, String fileName) {
         this.name = name;
         this.fileName = fileName;
     }
 
     @Override
+    public void init() {
+        try {
+            this.parent = FXMLLoader.load(FileSystem.getResource("fxml/" + this.fileName + ".fxml"));
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    @Override
     public void update(Stage stage) {
-        stage.setScene(this.toScene()); // Forces an update of the scene
+        stage.setScene(this.toJFXScene()); // Forces an update of the scene
     }
 
     @Override
@@ -42,7 +50,7 @@ public abstract class AbstractScene implements IScene {
     }
 
     @Override
-    public Scene toScene() {
+    public Scene toJFXScene() {
         return new Scene(getParent(), getWidth(), getHeight());
     }
 }
