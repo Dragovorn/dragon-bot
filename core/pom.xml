@@ -20,7 +20,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.dragovorn.dragonbot.DragonBotApplication</mainClass>
+                            <mainClass>com.dragovorn.dragonbot.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -43,7 +43,7 @@
         <dependency>
             <groupId>com.dragovorn.dragon-bot</groupId>
             <artifactId>api</artifactId>
-            <version>2.0.0-alpha.1-SNAPSHOT</version>
+            <version>2.0.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
