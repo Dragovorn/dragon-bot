@@ -1,4 +1,4 @@
-package com.dragovorn.dragonbot.util;
+package com.dragovorn.dragonbot.api.util;
 
 import java.net.URL;
 
