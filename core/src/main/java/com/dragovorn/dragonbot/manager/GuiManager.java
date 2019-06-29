@@ -3,8 +3,7 @@ package com.dragovorn.dragonbot.manager;
 import com.dragovorn.dragonbot.DragonBot;
 import com.dragovorn.dragonbot.api.gui.IGuiManager;
 import com.dragovorn.dragonbot.api.gui.scene.IScene;
-import com.dragovorn.dragonbot.gui.MainScene;
-import com.dragovorn.dragonbot.gui.OptionsScene;
+import com.dragovorn.dragonbot.gui.scene.Scenes;
 import com.google.common.collect.Maps;
 import javafx.stage.Stage;
 
@@ -18,18 +17,11 @@ public final class GuiManager implements IGuiManager {
 
     private final Map<String, IScene> scenes = Maps.newHashMap();
 
-    private final IScene DEFAULT;
-
     private boolean init = false;
 
     public GuiManager(Stage stage) {
         this.stage = stage;
-        this.DEFAULT = registerScene(new MainScene());
-        this.current = this.DEFAULT;
 
-        registerScene(new OptionsScene());
-
-        stage.setScene(this.current.toJFXScene());
         stage.setResizable(false);
         stage.setOnCloseRequest((event -> DragonBot.getInstance().shutdown()));
 //        stage.getIcons().add(FileSystem.getResource("our/icon")) TODO: Commission/create an icon for the bot.
@@ -41,6 +33,9 @@ public final class GuiManager implements IGuiManager {
             throw new IllegalStateException("GuiManager has already been initialized!");
         }
 
+        this.current = Scenes.MAIN;
+
+        this.stage.setScene(this.current.toJFXScene());
         this.stage.setTitle("Dragon Bot v" + DragonBot.getInstance().getVersion());
         this.stage.show();
 
@@ -67,12 +62,12 @@ public final class GuiManager implements IGuiManager {
 
     @Override
     public void setToDefaultScene() {
-        useScene(this.DEFAULT);
+        useScene(getDefaultScene());
     }
 
     @Override
     public IScene getDefaultScene() {
-        return this.DEFAULT;
+        return Scenes.MAIN;
     }
 
     @Override

@@ -1,18 +1,16 @@
-package com.dragovorn.dragonbot.gui;
+package com.dragovorn.dragonbot.gui.scene;
 
 import com.dragovorn.dragonbot.DragonBot;
 import com.dragovorn.dragonbot.api.gui.scene.AbstractScene;
 import javafx.fxml.FXML;
 
-public final class OptionsScene extends AbstractScene {
+public final class AdvancedScene extends AbstractScene {
 
-    public OptionsScene() {
-        super("options", "options");
-    }
+    private static final int WIDTH = 500;
+    private static final int HEIGHT = 500;
 
-    @FXML
-    public void initialize() {
-        System.out.println("Initialize options!");
+    public AdvancedScene() {
+        super("advanced", "advanced");
     }
 
     @FXML
@@ -22,11 +20,11 @@ public final class OptionsScene extends AbstractScene {
 
     @Override
     public int getWidth() {
-        return 100;
+        return WIDTH;
     }
 
     @Override
     public int getHeight() {
-        return 100;
+        return HEIGHT;
     }
 }
