@@ -2,11 +2,8 @@ package com.dragovorn.dragonbot.api.gui.scene;
 
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.stage.Stage;
 
 public interface IScene {
-
-    void update(Stage stage);
 
     /**
      * This method is a way to avoid running the parent loading logic in the constructor

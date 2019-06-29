@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.Button?>
+
+<GridPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.dragovorn.dragonbot.gui.OptionsScene" alignment="CENTER" hgap="10" vgap="10">
+    <Button text="Back" onAction="#handleBackButton"/>
+</GridPane>

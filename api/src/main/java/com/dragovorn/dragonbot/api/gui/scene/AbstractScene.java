@@ -4,7 +4,6 @@ import com.dragovorn.dragonbot.api.util.FileSystem;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 
@@ -14,6 +13,8 @@ public abstract class AbstractScene implements IScene {
 
     protected final String name;
     protected final String fileName;
+
+    private Scene scene;
 
     public AbstractScene(String name, String fileName) {
         this.name = name;
@@ -27,11 +28,6 @@ public abstract class AbstractScene implements IScene {
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }
-    }
-
-    @Override
-    public void update(Stage stage) {
-        stage.setScene(this.toJFXScene()); // Forces an update of the scene
     }
 
     @Override
@@ -51,6 +47,6 @@ public abstract class AbstractScene implements IScene {
 
     @Override
     public Scene toJFXScene() {
-        return new Scene(getParent(), getWidth(), getHeight());
+        return (this.scene == null ? this.scene = new Scene(getParent(), getWidth(), getHeight()) : this.scene);
     }
 }
