@@ -1,5 +1,6 @@
 package com.dragovorn.dragonbot.gui;
 
+import com.dragovorn.dragonbot.DragonBot;
 import com.dragovorn.dragonbot.api.gui.scene.AbstractScene;
 import javafx.fxml.FXML;
 
@@ -14,7 +15,12 @@ public final class MainScene extends AbstractScene {
 
     @FXML
     public void initialize() {
-        System.out.println("Initialize!");
+        System.out.println("Initialize main!");
+    }
+
+    @FXML
+    public void handleOptionsButton() {
+        DragonBot.getInstance().getGuiManager().useScene("options");
     }
 
     @Override
