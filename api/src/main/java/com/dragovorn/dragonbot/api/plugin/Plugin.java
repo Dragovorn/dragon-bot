@@ -1,4 +1,4 @@
-package com.dragovorn.dragonbot.api.annotation;
+package com.dragovorn.dragonbot.api.plugin;
 
 public @interface Plugin {
 

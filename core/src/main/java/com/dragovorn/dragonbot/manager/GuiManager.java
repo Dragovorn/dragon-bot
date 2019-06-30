@@ -24,7 +24,7 @@ public final class GuiManager implements IGuiManager {
 
         stage.setResizable(false);
         stage.setOnCloseRequest((event -> DragonBot.getInstance().shutdown()));
-//        stage.getIcons().add(FileSystem.getResource("our/icon")) TODO: Commission/create an icon for the bot.
+//        stage.getIcons().add(Resources.getResource("our/icon")) TODO: Commission/create an icon for the bot.
     }
 
     @Override
