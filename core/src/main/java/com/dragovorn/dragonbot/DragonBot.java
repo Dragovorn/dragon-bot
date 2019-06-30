@@ -3,7 +3,7 @@ package com.dragovorn.dragonbot;
 import com.dragovorn.dragonbot.api.bot.AbstractIRCBot;
 import com.dragovorn.dragonbot.api.bot.channel.IChannel;
 import com.dragovorn.dragonbot.api.gui.IGuiManager;
-import com.dragovorn.dragonbot.api.util.FileSystem;
+import com.dragovorn.dragonbot.api.file.Resources;
 import com.dragovorn.dragonbot.manager.GuiManager;
 import javafx.stage.Stage;
 
@@ -18,13 +18,16 @@ public final class DragonBot extends AbstractIRCBot {
 
     private boolean running;
 
+    private Thread mainThread;
+
     DragonBot(Stage stage) {
         this.guiManager = new GuiManager(stage);
+        this.mainThread = Thread.currentThread();
 
         Properties properties = new Properties();
 
         try {
-            properties.load(FileSystem.getResource("project.properties").openStream());
+            properties.load(Resources.getResource("project.properties").openStream());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -72,5 +75,10 @@ public final class DragonBot extends AbstractIRCBot {
     @Override
     public IGuiManager getGuiManager() {
         return this.guiManager;
+    }
+
+    @Override
+    public Thread getMainThread() {
+        return this.mainThread;
     }
 }

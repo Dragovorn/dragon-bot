@@ -1,6 +1,6 @@
 package com.dragovorn.dragonbot.api.gui.scene;
 
-import com.dragovorn.dragonbot.api.util.FileSystem;
+import com.dragovorn.dragonbot.api.file.Resources;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -24,7 +24,7 @@ public abstract class AbstractScene implements IScene {
     @Override
     public void init() {
         try {
-            this.parent = FXMLLoader.load(FileSystem.getResource("fxml/" + this.fileName + ".fxml"));
+            this.parent = FXMLLoader.load(Resources.getResource("fxml/" + this.fileName + ".fxml"));
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }

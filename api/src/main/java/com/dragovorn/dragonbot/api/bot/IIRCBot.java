@@ -13,4 +13,6 @@ public interface IIRCBot {
     String getVersion();
 
     IGuiManager getGuiManager();
+
+    Thread getMainThread();
 }
