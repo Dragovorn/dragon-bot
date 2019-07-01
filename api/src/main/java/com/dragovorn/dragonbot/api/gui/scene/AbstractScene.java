@@ -23,14 +23,19 @@ public abstract class AbstractScene implements IScene {
                 .trimResults()
                 .omitEmptyStrings();
 
+        // Split the path to our jarfile on it's /'s
         Iterable<String> jarSplit = urlSplitter
                 .split(AbstractScene.class.getProtectionDomain().getCodeSource().getLocation().toString());
 
+        // Do list operations to distill it down to the fxml directory & file name
         ArrayList<String> locationList = Lists.newArrayList(urlSplitter.split(location.toString()));
         List<String> result = locationList.subList(Lists.newArrayList(jarSplit).size() + 1, locationList.size());
+
+        // Remove file extension.
         String fxmlName = result.get(result.size() - 1);
         fxmlName = fxmlName.substring(0, fxmlName.lastIndexOf("."));
 
+        // Make this object known to the GuiManager
         AbstractIRCBot.getInstance().getGuiManager().registerScene(this, fxmlName);
 
         initialize();

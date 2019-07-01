@@ -51,6 +51,7 @@ public final class GuiManager implements IGuiManager {
 
         this.current = Scenes.MAIN;
 
+        // Set the parents of the scenes because we can't do that on initial scene binding.
         this.scenes.forEach((key, value) -> value.setParent(this.expectingParent.remove(key)));
 
         this.stage.setScene(this.current.toJFXScene());
@@ -116,6 +117,7 @@ public final class GuiManager implements IGuiManager {
     @Override
     public void registerScene(String name, String fxmlPath) {
         try {
+            // Make sure to get all of the references added properly.
             this.expectingFXML.put(fxmlPath, name);
             this.expectingName.put(name, fxmlPath);
             this.expectingParent.put(name, FXMLLoader.load(Resources.getResource("fxml/" + fxmlPath + ".fxml")));
@@ -128,11 +130,13 @@ public final class GuiManager implements IGuiManager {
     public void registerScene(IScene scene, String fxmlPath) {
         String name = this.expectingFXML.get(fxmlPath);
 
+        // We just got the scene from the JavaFX initialization. Bind it.
         this.scenes.put(name, scene);
         this.expectingFXML.remove(fxmlPath);
 
         String lockedName = this.expectingName.remove(name);
 
+        // Notify the waiting threads on this string.
         synchronized (lockedName) {
             lockedName.notifyAll();
         }
