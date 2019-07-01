@@ -56,6 +56,9 @@ public final class DragonBot extends AbstractIRCBot {
 
         this.configuration = new BotConfiguration();
         this.configuration.load();
+
+        // TODO: ENABLE PLUGINS HERE
+
         this.guiManager.init();
 
         this.running = true;
@@ -66,6 +69,8 @@ public final class DragonBot extends AbstractIRCBot {
         if (!this.running) {
             throw new IllegalStateException("Dragon bot isn't running!");
         }
+
+        // TODO DISABLE PLUGINS HERE
 
         this.configuration.save();
 

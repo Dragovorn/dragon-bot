@@ -20,8 +20,6 @@ public final class BotAccountScene extends AbstractScene {
 
     @FXML
     private void handleLoginWithTwitch(ActionEvent actionEvent) {
-        updateButtons();
-
         System.out.println("LOGIN BUTTON PRESS");
 
         this.configuration.set("account.username", "Testovorn");
@@ -31,8 +29,6 @@ public final class BotAccountScene extends AbstractScene {
     }
 
     private void handleLogout(ActionEvent actionEvent) {
-        updateButtons();
-
         System.out.println("LOGOUT");
 
         this.configuration.set("account.username", "");
