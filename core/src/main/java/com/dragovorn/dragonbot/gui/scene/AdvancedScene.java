@@ -9,10 +9,6 @@ public final class AdvancedScene extends AbstractScene {
     private static final int WIDTH = 500;
     private static final int HEIGHT = 500;
 
-    public AdvancedScene() {
-        super("advanced", "advanced");
-    }
-
     @FXML
     public void handleBackButton() {
         DragonBot.getInstance().getGuiManager().setToDefaultScene();

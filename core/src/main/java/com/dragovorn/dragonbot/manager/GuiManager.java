@@ -1,13 +1,20 @@
 package com.dragovorn.dragonbot.manager;
 
 import com.dragovorn.dragonbot.DragonBot;
+import com.dragovorn.dragonbot.api.file.Resources;
 import com.dragovorn.dragonbot.api.gui.IGuiManager;
 import com.dragovorn.dragonbot.api.gui.scene.IScene;
 import com.dragovorn.dragonbot.gui.scene.Scenes;
 import com.google.common.collect.Maps;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 public final class GuiManager implements IGuiManager {
 
@@ -17,6 +24,10 @@ public final class GuiManager implements IGuiManager {
 
     private final Map<String, IScene> scenes = Maps.newHashMap();
 
+    private final Map<String, String> expectingFXML = Maps.newHashMap();
+    private final Map<String, String> expectingName = Maps.newHashMap();
+    private final Map<String, Parent> expectingParent = Maps.newHashMap();
+
     private boolean init = false;
 
     public GuiManager(Stage stage) {
@@ -24,7 +35,12 @@ public final class GuiManager implements IGuiManager {
 
         stage.setResizable(false);
         stage.setOnCloseRequest((event -> DragonBot.getInstance().shutdown()));
-//        stage.getIcons().add(Resources.getResource("our/icon")) TODO: Commission/create an icon for the bot.
+
+        try {
+            stage.getIcons().add(new Image(Resources.getResource("icon.png").openStream()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -34,6 +50,8 @@ public final class GuiManager implements IGuiManager {
         }
 
         this.current = Scenes.MAIN;
+
+        this.scenes.forEach((key, value) -> value.setParent(this.expectingParent.remove(key)));
 
         this.stage.setScene(this.current.toJFXScene());
         this.stage.setTitle("Dragon Bot v" + DragonBot.getInstance().getVersion());
@@ -58,6 +76,7 @@ public final class GuiManager implements IGuiManager {
     public void useScene(IScene scene) {
         this.current = scene;
         this.stage.setScene(scene.toJFXScene());
+        scene.onShow();
     }
 
     @Override
@@ -76,10 +95,51 @@ public final class GuiManager implements IGuiManager {
     }
 
     @Override
-    public IScene registerScene(IScene scene) {
-        this.scenes.put(scene.getName(), scene);
-        scene.init();
+    public Future<IScene> getFutureScene(String name) {
+        if (!this.expectingFXML.containsValue(name) && !this.scenes.containsKey(name)) {
+            throw new IllegalStateException(name + " hasn't even been registered!");
+        }
 
-        return scene;
+        return CompletableFuture.supplyAsync(() -> {
+            if (this.expectingFXML.containsValue(name)) {
+                try {
+                    this.expectingName.get(name).wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            return this.scenes.get(name);
+        });
+    }
+
+    @Override
+    public void registerScene(String name, String fxmlPath) {
+        try {
+            this.expectingFXML.put(fxmlPath, name);
+            this.expectingName.put(name, fxmlPath);
+            this.expectingParent.put(name, FXMLLoader.load(Resources.getResource("fxml/" + fxmlPath + ".fxml")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void registerScene(IScene scene, String fxmlPath) {
+        String name = this.expectingFXML.get(fxmlPath);
+
+        this.scenes.put(name, scene);
+        this.expectingFXML.remove(fxmlPath);
+
+        String lockedName = this.expectingName.remove(name);
+
+        synchronized (lockedName) {
+            lockedName.notifyAll();
+        }
+    }
+
+    @Override
+    public void registerScene(String name) {
+        registerScene(name, name);
     }
 }

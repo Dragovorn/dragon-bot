@@ -11,6 +11,7 @@ final class BotConfiguration extends FileConfiguration {
     @Override
     public void addDefaults() {
         this.defaults.put("console", false);
+        this.defaults.put("custom_commands", false);
         this.defaults.put("account.username", "");
         this.defaults.put("account.oauth", "");
     }
