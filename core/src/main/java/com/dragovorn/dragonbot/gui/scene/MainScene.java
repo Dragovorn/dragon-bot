@@ -9,11 +9,6 @@ public final class MainScene extends AbstractScene {
     private static final int WIDTH = 500;
     private static final int HEIGHT = 500;
 
-    // This needs to be public because FXML needs to be able to invoke it
-    public MainScene() {
-        super("main", "main");
-    }
-
     @FXML
     public void handleChannelsButton() {
 //        DragonBot.getInstance().getGuiManager().useScene(Scenes.ADVANCED_OPTIONS);
