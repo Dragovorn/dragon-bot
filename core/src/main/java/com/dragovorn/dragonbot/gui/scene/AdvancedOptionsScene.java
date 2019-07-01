@@ -4,7 +4,7 @@ import com.dragovorn.dragonbot.DragonBot;
 import com.dragovorn.dragonbot.api.gui.scene.AbstractScene;
 import javafx.fxml.FXML;
 
-public final class AdvancedScene extends AbstractScene {
+public final class AdvancedOptionsScene extends AbstractScene {
 
     private static final int WIDTH = 500;
     private static final int HEIGHT = 500;
