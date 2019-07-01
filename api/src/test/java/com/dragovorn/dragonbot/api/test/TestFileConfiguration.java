@@ -51,10 +51,15 @@ public class TestFileConfiguration {
     public void testConfigurationSave() {
         this.configuration.reset();
         this.configuration.set("test", "testing");
+        this.configuration.set("more.testing", "fun");
         this.configuration.save();
+
+        JsonObject more = new JsonObject();
+        more.addProperty("testing", "fun");
 
         JsonObject expected = new JsonObject();
         expected.addProperty("test", "testing");
+        expected.add("more", more);
 
         assertEquals(GSON.toJson(expected), this.writer.toString());
     }
