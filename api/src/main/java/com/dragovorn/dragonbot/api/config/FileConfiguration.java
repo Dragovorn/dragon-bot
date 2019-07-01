@@ -9,16 +9,18 @@ import com.google.gson.JsonObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Path;
 
 public class FileConfiguration extends Configuration {
 
-    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     private final Path path;
 
     private IFactory<? extends Writer, File> writerFactory;
+    private IFactory<? extends Reader, File> readerFactory;
 
     /**
      * Creates a new configuration object with the given writer factory.
@@ -26,9 +28,10 @@ public class FileConfiguration extends Configuration {
      * @param path The path for configuration i/o.
      * @param writerFactory The writer factory to use to save the config.
      */
-    public FileConfiguration(Path path, IFactory<? extends Writer, File> writerFactory) {
+    public FileConfiguration(Path path, IFactory<? extends Writer, File> writerFactory, IFactory<? extends Reader, File> readerFactory) {
         this(path);
         this.writerFactory = writerFactory;
+        this.readerFactory = readerFactory;
     }
 
     /**
@@ -49,12 +52,12 @@ public class FileConfiguration extends Configuration {
             JsonObject object = new JsonObject();
 
             this.values.forEach((key, value) -> {
-                JsonElement element = gson.toJsonTree(value);
+                JsonElement element = GSON.toJsonTree(value);
 
                 object.add(key, element);
             });
 
-            gson.toJson(object, writer);
+            GSON.toJson(object, writer);
             writer.flush();
         } catch (IOException e) {
             e.printStackTrace();
@@ -63,7 +66,26 @@ public class FileConfiguration extends Configuration {
 
     @Override
     public void load() {
+        try {
+            Reader reader = this.readerFactory.create(this.path.toFile());
 
+            JsonObject object = GSON.fromJson(reader, JsonObject.class);
+
+            object.entrySet().forEach(entry -> {
+                String key = entry.getKey();
+                JsonElement element = entry.getValue();
+
+                if (element.getAsJsonPrimitive().isBoolean()) {
+                    this.values.put(key, element.getAsBoolean());
+                } else if (element.getAsJsonPrimitive().isNumber()) {
+                    this.values.put(key, element.getAsNumber());
+                } else {
+                    this.values.put(key, element.getAsString());
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public Path getFile() {
