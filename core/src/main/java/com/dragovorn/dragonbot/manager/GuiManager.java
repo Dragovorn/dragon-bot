@@ -4,7 +4,7 @@ import com.dragovorn.dragonbot.DragonBot;
 import com.dragovorn.dragonbot.api.file.Resources;
 import com.dragovorn.dragonbot.api.gui.IGuiManager;
 import com.dragovorn.dragonbot.api.gui.scene.IScene;
-import com.dragovorn.dragonbot.gui.scene.Scenes;
+import com.dragovorn.dragonbot.gui.scene.MainScene;
 import com.google.common.collect.Maps;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -13,8 +13,6 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 
 public final class GuiManager implements IGuiManager {
 
@@ -22,22 +20,19 @@ public final class GuiManager implements IGuiManager {
 
     private IScene current;
 
-    private final Map<String, IScene> scenes = Maps.newHashMap();
-
-    private final Map<String, String> expectingFXML = Maps.newHashMap();
-    private final Map<String, String> expectingName = Maps.newHashMap();
-    private final Map<String, Parent> expectingParent = Maps.newHashMap();
+    private final Map<Class<? extends IScene>, IScene> scenes = Maps.newHashMap();
+    private final Map<String, Class<? extends IScene>> recentlyLoaded = Maps.newHashMap();
 
     private boolean init = false;
 
     public GuiManager(Stage stage) {
         this.stage = stage;
 
-        stage.setResizable(false);
-        stage.setOnCloseRequest((event -> DragonBot.getInstance().shutdown()));
+        this.stage.setResizable(false);
+        this.stage.setOnCloseRequest((event -> DragonBot.getInstance().shutdown()));
 
         try {
-            stage.getIcons().add(new Image(Resources.getResource("icon.png").openStream()));
+            this.stage.getIcons().add(new Image(Resources.getResource("icon.png").openStream()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -49,28 +44,10 @@ public final class GuiManager implements IGuiManager {
             throw new IllegalStateException("GuiManager has already been initialized!");
         }
 
-        this.current = Scenes.MAIN;
-
-        // Set the parents of the scenes because we can't do that on initial scene binding.
-        this.scenes.forEach((key, value) -> value.setParent(this.expectingParent.remove(key)));
-
-        this.stage.setScene(this.current.toJFXScene());
         this.stage.setTitle("Dragon Bot v" + DragonBot.getInstance().getVersion());
         this.stage.show();
 
         this.init = true;
-    }
-
-    @Override
-    public void useScene(String key) {
-        IScene scene = getScene(key);
-
-        if (scene == null) {
-            System.err.println(key + " isn't a registered scene!");
-            return;
-        }
-
-        useScene(scene);
     }
 
     @Override
@@ -86,64 +63,39 @@ public final class GuiManager implements IGuiManager {
     }
 
     @Override
-    public IScene getDefaultScene() {
-        return Scenes.MAIN;
-    }
-
-    @Override
-    public IScene getScene(String name) {
-        return this.scenes.get(name);
-    }
-
-    @Override
-    public Future<IScene> getFutureScene(String name) {
-        if (!this.expectingFXML.containsValue(name) && !this.scenes.containsKey(name)) {
-            throw new IllegalStateException(name + " hasn't even been registered!");
-        }
-
-        return CompletableFuture.supplyAsync(() -> {
-            if (this.expectingFXML.containsValue(name)) {
-                try {
-                    this.expectingName.get(name).wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            return this.scenes.get(name);
-        });
-    }
-
-    @Override
-    public void registerScene(String name, String fxmlPath) {
-        try {
-            // Make sure to get all of the references added properly.
-            this.expectingFXML.put(fxmlPath, name);
-            this.expectingName.put(name, fxmlPath);
-            this.expectingParent.put(name, FXMLLoader.load(Resources.getResource("fxml/" + fxmlPath + ".fxml")));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void useScene(Class<? extends IScene> clazz) {
+        useScene(getScene(clazz));
     }
 
     @Override
     public void registerScene(IScene scene, String fxmlPath) {
-        String name = this.expectingFXML.get(fxmlPath);
-
-        // We just got the scene from the JavaFX initialization. Bind it.
-        this.scenes.put(name, scene);
-        this.expectingFXML.remove(fxmlPath);
-
-        String lockedName = this.expectingName.remove(name);
-
-        // Notify the waiting threads on this string.
-        synchronized (lockedName) {
-            lockedName.notifyAll();
-        }
+        this.scenes.put(scene.getClass(), scene);
+        this.recentlyLoaded.put(fxmlPath, scene.getClass());
     }
 
     @Override
-    public void registerScene(String name) {
-        registerScene(name, name);
+    public IScene getDefaultScene() {
+        return getScene(MainScene.class);
+    }
+
+    @Override
+    public IScene getCurrentScene() {
+        return this.current;
+    }
+
+    @Override
+    public IScene getScene(Class<? extends IScene> clazz) {
+        return this.scenes.get(clazz);
+    }
+
+    @Override
+    public IScene registerScene(String fxmlPath) throws IOException {
+        // This NEEDS to be written like this because scenes and recentlyLoaded will return null otherwise.
+        Parent parent = FXMLLoader.load(Resources.getResource("fxml/" + fxmlPath + ".fxml"));
+
+        IScene result = this.scenes.get(this.recentlyLoaded.remove(fxmlPath));
+        result.setParent(parent);
+
+        return result;
     }
 }

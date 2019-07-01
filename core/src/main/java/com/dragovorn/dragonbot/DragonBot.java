@@ -5,6 +5,7 @@ import com.dragovorn.dragonbot.api.bot.channel.IChannel;
 import com.dragovorn.dragonbot.api.config.IConfiguration;
 import com.dragovorn.dragonbot.api.gui.IGuiManager;
 import com.dragovorn.dragonbot.api.file.Resources;
+import com.dragovorn.dragonbot.gui.scene.MainScene;
 import com.dragovorn.dragonbot.manager.GuiManager;
 import javafx.stage.Stage;
 
@@ -56,6 +57,16 @@ public final class DragonBot extends AbstractIRCBot {
 
         this.configuration = new BotConfiguration();
         this.configuration.load();
+
+        try {
+            this.guiManager.registerScene("main");
+            this.guiManager.registerScene("advanced_options");
+            this.guiManager.registerScene("bot_account");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        this.guiManager.useScene(MainScene.class);
 
         // TODO: ENABLE PLUGINS HERE
 

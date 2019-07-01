@@ -21,7 +21,7 @@ public final class MainScene extends AbstractScene {
 
     @FXML
     public void handleBotAccountButton() {
-        DragonBot.getInstance().getGuiManager().useScene(Scenes.BOT_ACCOUNT);
+        DragonBot.getInstance().getGuiManager().useScene(BotAccountScene.class);
     }
 
     @FXML
@@ -36,7 +36,7 @@ public final class MainScene extends AbstractScene {
 
     @FXML
     public void handleAdvancedButton() {
-        DragonBot.getInstance().getGuiManager().useScene(Scenes.ADVANCED_OPTIONS);
+        DragonBot.getInstance().getGuiManager().useScene(AdvancedOptionsScene.class);
     }
 
     @Override

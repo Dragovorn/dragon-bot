@@ -2,20 +2,18 @@ package com.dragovorn.dragonbot.api.gui;
 
 import com.dragovorn.dragonbot.api.gui.scene.IScene;
 
-import java.util.concurrent.Future;
+import java.io.IOException;
 
 public interface IGuiManager {
 
     void init();
     void setToDefaultScene();
-    void useScene(String name);
+    void useScene(Class<? extends IScene> clazz);
     void useScene(IScene scene);
-    void registerScene(String name);
-    void registerScene(String name, String fxmlPath);
     void registerScene(IScene scene, String fxmlPath);
 
+    IScene registerScene(String fxmlPath) throws IOException;
     IScene getDefaultScene();
-    IScene getScene(String name);
-
-    Future<IScene> getFutureScene(String name);
+    IScene getCurrentScene();
+    IScene getScene(Class<? extends IScene> clazz);
 }
