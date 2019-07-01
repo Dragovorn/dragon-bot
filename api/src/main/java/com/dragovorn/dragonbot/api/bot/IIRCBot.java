@@ -1,7 +1,10 @@
 package com.dragovorn.dragonbot.api.bot;
 
 import com.dragovorn.dragonbot.api.bot.channel.IChannel;
+import com.dragovorn.dragonbot.api.config.IConfiguration;
 import com.dragovorn.dragonbot.api.gui.IGuiManager;
+
+import java.nio.file.Path;
 
 public interface IIRCBot {
 
@@ -15,4 +18,8 @@ public interface IIRCBot {
     IGuiManager getGuiManager();
 
     Thread getMainThread();
+
+    Path getHomePath();
+
+    IConfiguration getConfiguration();
 }

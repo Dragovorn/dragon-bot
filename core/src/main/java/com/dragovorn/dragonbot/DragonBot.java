@@ -2,15 +2,23 @@ package com.dragovorn.dragonbot;
 
 import com.dragovorn.dragonbot.api.bot.AbstractIRCBot;
 import com.dragovorn.dragonbot.api.bot.channel.IChannel;
+import com.dragovorn.dragonbot.api.config.IConfiguration;
 import com.dragovorn.dragonbot.api.gui.IGuiManager;
 import com.dragovorn.dragonbot.api.file.Resources;
 import com.dragovorn.dragonbot.manager.GuiManager;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 public final class DragonBot extends AbstractIRCBot {
+
+    private final Path home = Paths.get(System.getProperty("user.home") + File.separator + ".dragonbot");
+
+    private BotConfiguration configuration;
 
     private final GuiManager guiManager;
 
@@ -42,6 +50,12 @@ public final class DragonBot extends AbstractIRCBot {
         }
 
         System.out.println("Starting Dragon Bot v" + this.version);
+        if (!this.home.toFile().exists()) {
+            this.home.toFile().mkdirs();
+        }
+
+        this.configuration = new BotConfiguration();
+        this.configuration.load();
         this.guiManager.init();
 
         this.running = true;
@@ -52,6 +66,8 @@ public final class DragonBot extends AbstractIRCBot {
         if (!this.running) {
             throw new IllegalStateException("Dragon bot isn't running!");
         }
+
+        this.configuration.save();
 
         System.out.println("Shutting down!");
         System.exit(0);
@@ -80,5 +96,15 @@ public final class DragonBot extends AbstractIRCBot {
     @Override
     public Thread getMainThread() {
         return this.mainThread;
+    }
+
+    @Override
+    public Path getHomePath() {
+        return this.home;
+    }
+
+    @Override
+    public IConfiguration getConfiguration() {
+        return this.configuration;
     }
 }

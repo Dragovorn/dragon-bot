@@ -1,5 +1,6 @@
 package com.dragovorn.dragonbot.api.config;
 
+import com.dragovorn.dragonbot.api.factory.FileReaderFactory;
 import com.dragovorn.dragonbot.api.factory.FileWriterFactory;
 import com.dragovorn.dragonbot.api.factory.IFactory;
 import com.google.gson.Gson;
@@ -40,8 +41,17 @@ public class FileConfiguration extends Configuration {
      * @param path The path for configuration i/o.
      */
     public FileConfiguration(Path path) {
+        if (!path.toFile().exists()) {
+            try {
+                path.toFile().createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         this.path = path;
         this.writerFactory = new FileWriterFactory();
+        this.readerFactory = new FileReaderFactory();
     }
 
     @Override
@@ -71,6 +81,10 @@ public class FileConfiguration extends Configuration {
 
             JsonObject object = GSON.fromJson(reader, JsonObject.class);
 
+            if (object == null) {
+                return;
+            }
+
             loadJsonIntoValues(object, "");
         } catch (IOException e) {
             e.printStackTrace();
@@ -92,7 +106,13 @@ public class FileConfiguration extends Configuration {
             return;
         }
 
-        JsonObject current = new JsonObject();
+        JsonObject current;
+
+        if (previous.has(keys[index])) {
+            current = previous.get(keys[index]).getAsJsonObject();
+        } else {
+            current = new JsonObject();
+        }
 
         previous.add(keys[index], current);
 
@@ -113,9 +133,9 @@ public class FileConfiguration extends Configuration {
      * A helper method to make loading a little more streamlined, will support nested objects in dot notation.
      * <pre>{@code example.dot.notation}</pre> would be represented by:
      * <pre>{@code
-     * "example" : {
-     *     "dot" : {
-     *         "notation" : "somevalue"
+     * "example": {
+     *     "dot": {
+     *         "notation": "somevalue"
      *     }
      * }
      * }</pre>

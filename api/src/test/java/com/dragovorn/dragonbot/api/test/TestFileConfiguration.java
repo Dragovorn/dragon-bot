@@ -33,10 +33,13 @@ public class TestFileConfiguration {
     @Before
     public void before() throws Exception {
         this.writer = new StringWriter();
-        this.reader = new StringReader("{\n\"test\": \"testing\",\n\"more\": {\n\"testing\": \"fun\"\n}\n}");
+        this.reader = new StringReader("{\n\"test\": \"testing\",\n\"more\": {\n\"testing\": \"fun\",\n\"work\": \"yay!\"\n}\n}");
+
+        File file = mock(File.class);
+        when(file.exists()).thenReturn(true);
 
         Path path = mock(Path.class);
-        when(path.toFile()).thenReturn(mock(File.class));
+        when(path.toFile()).thenReturn(file);
 
         IFactory<Writer, File> fileWriter = mock(IFactory.class);
         when(fileWriter.create(any(File.class))).thenReturn(this.writer);
@@ -52,10 +55,12 @@ public class TestFileConfiguration {
         this.configuration.reset();
         this.configuration.set("test", "testing");
         this.configuration.set("more.testing", "fun");
+        this.configuration.set("more.work", "yay!");
         this.configuration.save();
 
         JsonObject more = new JsonObject();
         more.addProperty("testing", "fun");
+        more.addProperty("work", "yay!");
 
         JsonObject expected = new JsonObject();
         expected.addProperty("test", "testing");
@@ -71,5 +76,6 @@ public class TestFileConfiguration {
 
         assertEquals("testing", this.configuration.get("test"));
         assertEquals("fun", this.configuration.get("more.testing"));
+        assertEquals("yay!", this.configuration.get("more.work"));
     }
 }
