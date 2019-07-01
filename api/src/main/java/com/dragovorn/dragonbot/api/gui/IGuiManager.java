@@ -1,6 +1,7 @@
 package com.dragovorn.dragonbot.api.gui;
 
 import com.dragovorn.dragonbot.api.gui.scene.IScene;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 
@@ -16,4 +17,6 @@ public interface IGuiManager {
     IScene getDefaultScene();
     IScene getCurrentScene();
     IScene getScene(Class<? extends IScene> clazz);
+
+    Stage getStage();
 }

@@ -89,6 +89,11 @@ public final class GuiManager implements IGuiManager {
     }
 
     @Override
+    public Stage getStage() {
+        return this.stage;
+    }
+
+    @Override
     public IScene registerScene(String fxmlPath) throws IOException {
         // This NEEDS to be written like this because scenes and recentlyLoaded will return null otherwise.
         Parent parent = FXMLLoader.load(Resources.getResource("fxml/" + fxmlPath + ".fxml"));
