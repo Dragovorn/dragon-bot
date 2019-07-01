@@ -10,6 +10,18 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>api</artifactId>
     <packaging>jar</packaging>
+    <profiles>
+        <profile>
+            <id>build-bot</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+    </profiles>
+    <build>
+        <finalName>DragonBotAPI-${project.version}</finalName>
+        <defaultGoal>clean package</defaultGoal>
+    </build>
     <dependencies>
         <dependency>
             <groupId>com.google.guava</groupId>
