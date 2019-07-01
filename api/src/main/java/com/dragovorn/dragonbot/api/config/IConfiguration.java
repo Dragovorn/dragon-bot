@@ -15,6 +15,11 @@ public interface IConfiguration {
     void load();
 
     /**
+     * Completely clears all of the configuration's values.
+     */
+    void reset();
+
+    /**
      * Remove a key from the configuration.
      *
      * @param key The key to remove from the configuration.
@@ -45,14 +50,13 @@ public interface IConfiguration {
     boolean has(String key);
 
     /**
-     * Gets the value of the given key while mapping it to the type of the given class.
+     * Gets the value of the given key while mapping it to the proper type.
      *
      * @param key The key to get the value of.
-     * @param clazz The class to defer the type from.
      * @param <T> The type to return.
      * @return The value from the key.
      */
-    <T> T get(String key, Class<T> clazz);
+    <T> T get(String key);
 
     /**
      * An ImmutableMap of the key values in the configuration.

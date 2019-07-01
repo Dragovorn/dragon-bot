@@ -23,6 +23,11 @@ public abstract class Configuration implements IConfiguration {
     }
 
     @Override
+    public void reset() {
+        this.values.clear();
+    }
+
+    @Override
     public void remove(String key) {
         this.values.remove(key);
     }
@@ -38,7 +43,7 @@ public abstract class Configuration implements IConfiguration {
     }
 
     @Override
-    public <T> T get(String key, Class<T> clazz) {
+    public <T> T get(String key) {
         return (T) this.values.get(key);
     }
 
