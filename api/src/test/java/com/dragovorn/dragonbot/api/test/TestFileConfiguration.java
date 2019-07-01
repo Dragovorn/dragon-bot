@@ -33,7 +33,7 @@ public class TestFileConfiguration {
     @Before
     public void before() throws Exception {
         this.writer = new StringWriter();
-        this.reader = new StringReader("{\n\"test\": \"testing\"}");
+        this.reader = new StringReader("{\n\"test\": \"testing\",\n\"more\": {\n\"testing\": \"fun\"\n}\n}");
 
         Path path = mock(Path.class);
         when(path.toFile()).thenReturn(mock(File.class));
@@ -70,5 +70,6 @@ public class TestFileConfiguration {
         this.configuration.load();
 
         assertEquals("testing", this.configuration.get("test"));
+        assertEquals("fun", this.configuration.get("more.testing"));
     }
 }
