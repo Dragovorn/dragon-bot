@@ -52,9 +52,9 @@ public class FileConfiguration extends Configuration {
             JsonObject object = new JsonObject();
 
             this.values.forEach((key, value) -> {
-                JsonElement element = GSON.toJsonTree(value);
+                String[] keys = key.split("\\.");
 
-                object.add(key, element);
+                writeToJsonObject(keys, 0, object, value);
             });
 
             GSON.toJson(object, writer);
@@ -71,21 +71,73 @@ public class FileConfiguration extends Configuration {
 
             JsonObject object = GSON.fromJson(reader, JsonObject.class);
 
-            object.entrySet().forEach(entry -> {
-                String key = entry.getKey();
-                JsonElement element = entry.getValue();
-
-                if (element.getAsJsonPrimitive().isBoolean()) {
-                    this.values.put(key, element.getAsBoolean());
-                } else if (element.getAsJsonPrimitive().isNumber()) {
-                    this.values.put(key, element.getAsNumber());
-                } else {
-                    this.values.put(key, element.getAsString());
-                }
-            });
+            loadJsonIntoValues(object, "");
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * A helper method to convert a dot notated key to a JsonObject.
+     *
+     * @param keys The result of splitting the string on the dots.
+     * @param index The index in the array to check.
+     * @param previous The previous JsonObject, used when finally putting the value in.
+     * @param value The actual value to put into the final JsonObject.
+     */
+    private void writeToJsonObject(String[] keys, int index, JsonObject previous, Object value) {
+        if (index + 1 >= keys.length) {
+            previous.add(keys[index], toJsonElement(value));
+
+            return;
+        }
+
+        JsonObject current = new JsonObject();
+
+        previous.add(keys[index], current);
+
+        writeToJsonObject(keys, ++index, current, value);
+    }
+
+    /**
+     * A helper method to convert an object to a JsonElement.
+     *
+     * @param object The object to convert.
+     * @return The JsonElement of the passed object.
+     */
+    private JsonElement toJsonElement(Object object) {
+        return GSON.toJsonTree(object);
+    }
+
+    /**
+     * A helper method to make loading a little more streamlined, will support nested objects in dot notation.
+     * <pre>{@code example.dot.notation}</pre> would be represented by:
+     * <pre>{@code
+     * "example" : {
+     *     "dot" : {
+     *         "notation" : "somevalue"
+     *     }
+     * }
+     * }</pre>
+     *
+     * @param object The json object to iterate
+     * @param namespace The current operating namespace.
+     */
+    private void loadJsonIntoValues(JsonObject object, String namespace) {
+        object.entrySet().forEach(entry -> {
+            String key = namespace + entry.getKey();
+            JsonElement element = entry.getValue();
+
+            if (element.isJsonObject()) {
+                loadJsonIntoValues(element.getAsJsonObject(), key + ".");
+            } else if (element.getAsJsonPrimitive().isBoolean()) {
+                this.values.put(key, element.getAsBoolean());
+            } else if (element.getAsJsonPrimitive().isNumber()) {
+                this.values.put(key, element.getAsNumber());
+            } else {
+                this.values.put(key, element.getAsString());
+            }
+        });
     }
 
     public Path getFile() {
