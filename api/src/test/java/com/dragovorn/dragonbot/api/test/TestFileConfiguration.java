@@ -1,6 +1,6 @@
 package com.dragovorn.dragonbot.api.test;
 
-import com.dragovorn.dragonbot.api.config.Configuration;
+import com.dragovorn.dragonbot.api.config.FileConfiguration;
 import com.dragovorn.dragonbot.api.factory.IFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -17,7 +17,7 @@ import static org.mockito.Matchers.any;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.when;
 
-public class TestConfiguration {
+public class TestFileConfiguration {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
@@ -31,7 +31,7 @@ public class TestConfiguration {
         IFactory<Writer, File> fileWriter = mock(IFactory.class);
         when(fileWriter.create(any(File.class))).thenReturn(writer);
 
-        Configuration configuration = new Configuration(path, fileWriter);
+        FileConfiguration configuration = new FileConfiguration(path, fileWriter);
         configuration.set("test", "testing");
         configuration.save();
 
