@@ -33,6 +33,8 @@ public final class DragonBot extends AbstractIRCBot {
         this.guiManager = new GuiManager(stage);
         this.mainThread = Thread.currentThread();
 
+        Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
+
         Properties properties = new Properties();
 
         try {
@@ -86,7 +88,6 @@ public final class DragonBot extends AbstractIRCBot {
         this.configuration.save();
 
         System.out.println("Shutting down!");
-        System.exit(0);
     }
 
     @Override

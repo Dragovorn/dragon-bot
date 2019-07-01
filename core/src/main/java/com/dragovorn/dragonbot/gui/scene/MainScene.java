@@ -31,7 +31,7 @@ public final class MainScene extends AbstractScene {
 
     @FXML
     public void handleExitButton() {
-        DragonBot.getInstance().shutdown();
+        System.exit(0);
     }
 
     @FXML
