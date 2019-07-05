@@ -1,17 +1,13 @@
-package com.dragovorn.dragonbot.gui.scene;
+package com.dragovorn.dragonbot.gui.scene.account;
 
 import com.dragovorn.dragonbot.DragonBot;
 import com.dragovorn.dragonbot.api.config.IConfiguration;
 import com.dragovorn.dragonbot.api.gui.scene.AbstractScene;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public final class BotAccountScene extends AbstractScene {
@@ -20,6 +16,8 @@ public final class BotAccountScene extends AbstractScene {
     private static final String LOGOUT = "Logout %s";
 
     @FXML private Button button;
+
+    private Stage login;
 
     private IConfiguration configuration = null;
 
@@ -30,21 +28,7 @@ public final class BotAccountScene extends AbstractScene {
 
     @FXML
     private void handleLoginWithTwitch(ActionEvent actionEvent) {
-        Stage login = new Stage();
-        login.initModality(Modality.APPLICATION_MODAL);
-        login.initOwner(DragonBot.getInstance().getGuiManager().getStage());
-        VBox loginVBox = new VBox(20);
-        loginVBox.getChildren().add(new Text("This is a Dialog"));
-        Scene loginScene = new Scene(loginVBox, 300, 200);
-        login.setScene(loginScene);
-        login.show();
-
-        // TODO: Block until the dialog box is closed.
-
-        this.configuration.set("account.username", "Testovorn");
-        this.configuration.set("account.oauth", "Oauth");
-
-        updateButtons();
+        this.login = DragonBot.getInstance().getGuiManager().createSubStage("Login to your Twitch bot account!", AccountLoginScene.class);
     }
 
     private void handleLogout(ActionEvent actionEvent) {
@@ -78,7 +62,11 @@ public final class BotAccountScene extends AbstractScene {
         return 100;
     }
 
-    public void updateButtons() {
+    public Stage getLogin() {
+        return this.login;
+    }
+
+    private void updateButtons() {
         if (this.configuration == null) {
             this.configuration = DragonBot.getInstance().getConfiguration();
         }

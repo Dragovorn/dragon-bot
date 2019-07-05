@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.FlowPane?>
+
+<?import javafx.scene.web.WebView?>
+<FlowPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.dragovorn.dragonbot.gui.scene.account.AccountLoginScene" alignment="CENTER" hgap="10" vgap="10">
+    <WebView fx:id="webView" />
+</FlowPane>
