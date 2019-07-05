@@ -32,13 +32,33 @@ public abstract class AbstractScene implements IScene {
         List<String> result = locationList.subList(Lists.newArrayList(jarSplit).size() + 1, locationList.size());
 
         // Remove file extension.
-        String fxmlName = result.get(result.size() - 1);
+        String fxmlName = createFileStr(result);
         fxmlName = fxmlName.substring(0, fxmlName.lastIndexOf("."));
 
         // Make this object known to the GuiManager
         AbstractIRCBot.getInstance().getGuiManager().registerScene(this, fxmlName);
 
         initialize();
+    }
+
+    /**
+     * Convert the given list to a string with '/'s.
+     *
+     * @param list The list to convert.
+     * @return The string with '/'s
+     */
+    private String createFileStr(List<String> list) {
+        StringBuilder builder = new StringBuilder();
+
+        for (String str : list) {
+            if (builder.length() != 0) {
+                builder.append("/");
+            }
+
+            builder.append(str);
+        }
+
+        return builder.toString();
     }
 
     @Override

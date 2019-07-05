@@ -13,6 +13,11 @@ public interface IScene extends Initializable {
      */
     default void onShow() { }
 
+    /**
+     * Executes when the scene is hidden.
+     */
+    default void onHide() { }
+
     void setParent(Parent parent);
 
     int getWidth();

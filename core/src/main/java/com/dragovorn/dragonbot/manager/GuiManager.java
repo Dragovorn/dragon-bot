@@ -9,6 +9,7 @@ import com.google.common.collect.Maps;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.image.Image;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -18,24 +19,26 @@ public final class GuiManager implements IGuiManager {
 
     private Stage stage;
 
-    private IScene current;
-
     private final Map<Class<? extends IScene>, IScene> scenes = Maps.newHashMap();
     private final Map<String, Class<? extends IScene>> recentlyLoaded = Maps.newHashMap();
+
+    private final Map<Stage, IScene> currentScenes = Maps.newHashMap();
+
+    private Image icon;
 
     private boolean init = false;
 
     public GuiManager(Stage stage) {
         this.stage = stage;
-
-        this.stage.setResizable(false);
-        this.stage.setOnCloseRequest((event -> DragonBot.getInstance().shutdown()));
-
         try {
-            this.stage.getIcons().add(new Image(Resources.getResource("icon.png").openStream()));
+            this.icon = new Image(Resources.getResource("icon.png").openStream());
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        this.stage.setResizable(false);
+        this.stage.setOnCloseRequest((event -> System.exit(0)));
+        this.stage.getIcons().add(this.icon);
     }
 
     @Override
@@ -52,9 +55,25 @@ public final class GuiManager implements IGuiManager {
 
     @Override
     public void useScene(IScene scene) {
-        this.current = scene;
-        this.stage.setScene(scene.toJFXScene());
+        useScene(scene, this.stage);
+    }
+
+    @Override
+    public void useScene(IScene scene, Stage stage) {
+        IScene previous = this.currentScenes.get(stage);
+
+        if (previous != null) {
+            previous.onHide();
+        }
+
+        if (!this.stage.equals(stage)) { // If the stage isn't the main stage set the close event to onHide
+            stage.setOnCloseRequest((event -> scene.onHide()));
+        }
+
+        stage.setScene(scene.toJFXScene());
         scene.onShow();
+
+        this.currentScenes.put(this.stage, scene);
     }
 
     @Override
@@ -74,13 +93,18 @@ public final class GuiManager implements IGuiManager {
     }
 
     @Override
+    public void useScene(Class<? extends IScene> clazz, Stage stage) {
+        useScene(getScene(clazz), stage);
+    }
+
+    @Override
     public IScene getDefaultScene() {
         return getScene(MainScene.class);
     }
 
     @Override
     public IScene getCurrentScene() {
-        return this.current;
+        return this.currentScenes.get(this.stage);
     }
 
     @Override
@@ -91,6 +115,30 @@ public final class GuiManager implements IGuiManager {
     @Override
     public Stage getStage() {
         return this.stage;
+    }
+
+    @Override
+    public Stage createSubStage(String title, IScene firstScene) {
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.initOwner(this.stage);
+        stage.getIcons().add(this.icon);
+        stage.setTitle(title);
+        stage.setResizable(false);
+        useScene(firstScene, stage);
+        stage.show();
+
+        return stage;
+    }
+
+    @Override
+    public Stage createSubStage(String title, Class<? extends IScene> firstScene) {
+        return createSubStage(title, getScene(firstScene));
+    }
+
+    @Override
+    public Image getIcon() {
+        return this.icon;
     }
 
     @Override

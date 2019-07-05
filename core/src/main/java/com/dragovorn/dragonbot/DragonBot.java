@@ -17,6 +17,8 @@ import java.util.Properties;
 
 public final class DragonBot extends AbstractIRCBot {
 
+    public static final String CLIENT_ID = "2z1ry6ofmarrs5te7s1f209myewzbf"; // This isn't the secret so pls dont try anything
+
     private final Path home = Paths.get(System.getProperty("user.home") + File.separator + ".dragonbot");
 
     private BotConfiguration configuration;
@@ -64,6 +66,7 @@ public final class DragonBot extends AbstractIRCBot {
             this.guiManager.registerScene("main");
             this.guiManager.registerScene("advanced_options");
             this.guiManager.registerScene("bot_account");
+            this.guiManager.registerScene("sub/login");
         } catch (IOException e) {
             e.printStackTrace();
         }
