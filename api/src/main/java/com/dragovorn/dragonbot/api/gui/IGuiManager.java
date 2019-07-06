@@ -9,6 +9,7 @@ import java.io.IOException;
 public interface IGuiManager {
 
     void init();
+    void close(Stage stage);
     void setToDefaultScene();
     void useScene(Class<? extends IScene> clazz);
     void useScene(IScene scene);
@@ -19,7 +20,8 @@ public interface IGuiManager {
     IScene registerScene(String fxmlPath) throws IOException;
     IScene getDefaultScene();
     IScene getCurrentScene();
-    IScene getScene(Class<? extends IScene> clazz);
+    IScene getCurrentScene(Stage stage);
+    <T extends IScene> T getScene(Class<T> clazz);
 
     Stage getStage();
     Stage createSubStage(String title, IScene firstScene);

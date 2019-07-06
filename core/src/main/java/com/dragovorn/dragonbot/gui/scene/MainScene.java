@@ -1,6 +1,5 @@
 package com.dragovorn.dragonbot.gui.scene;
 
-import com.dragovorn.dragonbot.DragonBot;
 import com.dragovorn.dragonbot.api.gui.scene.AbstractScene;
 import com.dragovorn.dragonbot.gui.scene.account.BotAccountScene;
 import javafx.fxml.FXML;
@@ -22,7 +21,7 @@ public final class MainScene extends AbstractScene {
 
     @FXML
     public void handleBotAccountButton() {
-        DragonBot.getInstance().getGuiManager().useScene(BotAccountScene.class);
+        guiManager.useScene(BotAccountScene.class);
     }
 
     @FXML
@@ -37,7 +36,7 @@ public final class MainScene extends AbstractScene {
 
     @FXML
     public void handleAdvancedButton() {
-        DragonBot.getInstance().getGuiManager().useScene(AdvancedOptionsScene.class);
+        guiManager.useScene(AdvancedOptionsScene.class);
     }
 
     @Override

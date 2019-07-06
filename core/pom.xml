@@ -74,6 +74,12 @@
     </build>
     <dependencies>
         <dependency>
+            <groupId>org.nanohttpd</groupId>
+            <artifactId>nanohttpd</artifactId>
+            <version>2.2.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>com.dragovorn.dragon-bot</groupId>
             <artifactId>api</artifactId>
             <version>2.0.0-SNAPSHOT</version>

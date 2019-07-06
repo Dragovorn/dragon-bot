@@ -54,6 +54,12 @@ public final class GuiManager implements IGuiManager {
     }
 
     @Override
+    public void close(Stage stage) {
+        stage.getOnCloseRequest().handle(null); // We need this because close bypasses the close event.
+        stage.close();
+    }
+
+    @Override
     public void useScene(IScene scene) {
         useScene(scene, this.stage);
     }
@@ -73,7 +79,7 @@ public final class GuiManager implements IGuiManager {
         stage.setScene(scene.toJFXScene());
         scene.onShow();
 
-        this.currentScenes.put(this.stage, scene);
+        this.currentScenes.put(stage, scene);
     }
 
     @Override
@@ -104,12 +110,17 @@ public final class GuiManager implements IGuiManager {
 
     @Override
     public IScene getCurrentScene() {
-        return this.currentScenes.get(this.stage);
+        return getCurrentScene(this.stage);
     }
 
     @Override
-    public IScene getScene(Class<? extends IScene> clazz) {
-        return this.scenes.get(clazz);
+    public IScene getCurrentScene(Stage stage) {
+        return this.currentScenes.get(stage);
+    }
+
+    @Override
+    public <T extends IScene> T getScene(Class<T> clazz) {
+        return (T) this.scenes.get(clazz);
     }
 
     @Override

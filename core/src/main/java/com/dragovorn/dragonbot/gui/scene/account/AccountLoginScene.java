@@ -2,34 +2,63 @@ package com.dragovorn.dragonbot.gui.scene.account;
 
 import com.dragovorn.dragonbot.DragonBot;
 import com.dragovorn.dragonbot.api.gui.scene.AbstractScene;
+import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
+import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+
+import java.io.IOException;
 
 public final class AccountLoginScene extends AbstractScene {
 
+    private static final int PORT = 9502;
+
     private static final String LINK = "https://id.twitch.tv/oauth2/authorize" +
             "?client_id=" + DragonBot.CLIENT_ID +
-            "&redirect_uri=http://localhost" +
+            "&redirect_uri=http://localhost:" + PORT +
             "&response_type=token" +
             "&scope=chat:edit";
+
+    private OAuthWebServer server;
 
     @FXML private WebView webView;
 
     @Override
     public void initialize() {
-        this.webView.getEngine().load(LINK);
+        this.server = new OAuthWebServer(PORT);
+
+        WebEngine webEngine = this.webView.getEngine();
+
+        webEngine.load(LINK);
+        webEngine.setJavaScriptEnabled(true);
+        webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
+            if (Worker.State.SUCCEEDED.equals(newValue)) {
+                String location = webEngine.getLocation();
+
+                if (location.startsWith("http://localhost")) {
+                    parseURL(location);
+                    guiManager.close(guiManager.getScene(BotAccountScene.class).getLogin());
+                }
+            }
+        });
     }
 
     @Override
     public void onShow() {
-        System.out.println("Showing AccountLoginScene");
-        // TODO: Create the web-server listening for the response from the login.
+        System.out.println("Launching OAuth listening web server.");
+
+        try {
+            this.server.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void onHide() {
-        System.out.println("Hiding AccountLoginScene");
-        // TODO: Turn off the web-server listening for response from twitch login.
+        System.out.println("Stopping OAuth listening web server.");
+
+        this.server.stop();
     }
 
     @Override
@@ -40,5 +69,11 @@ public final class AccountLoginScene extends AbstractScene {
     @Override
     public int getHeight() {
         return 500;
+    }
+
+    private void parseURL(String url) {
+        System.out.println(url);
+
+        // TODO: Get access_token from http!
     }
 }

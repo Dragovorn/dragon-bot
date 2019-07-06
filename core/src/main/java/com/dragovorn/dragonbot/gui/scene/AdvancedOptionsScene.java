@@ -1,6 +1,5 @@
 package com.dragovorn.dragonbot.gui.scene;
 
-import com.dragovorn.dragonbot.DragonBot;
 import com.dragovorn.dragonbot.api.gui.scene.AbstractScene;
 import javafx.fxml.FXML;
 
@@ -11,7 +10,7 @@ public final class AdvancedOptionsScene extends AbstractScene {
 
     @FXML
     public void handleBackButton() {
-        DragonBot.getInstance().getGuiManager().setToDefaultScene();
+        guiManager.setToDefaultScene();
     }
 
     @Override
