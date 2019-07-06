@@ -1,6 +1,8 @@
 package com.dragovorn.dragonbot.api.gui.scene;
 
+import com.dragovorn.dragonbot.api.IAPIManager;
 import com.dragovorn.dragonbot.api.bot.AbstractIRCBot;
+import com.dragovorn.dragonbot.api.bot.IIRCBot;
 import com.dragovorn.dragonbot.api.gui.IGuiManager;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
@@ -14,7 +16,9 @@ import java.util.ResourceBundle;
 
 public abstract class AbstractScene implements IScene {
 
-    protected static final IGuiManager guiManager = AbstractIRCBot.getInstance().getGuiManager();
+    protected static final IIRCBot bot = AbstractIRCBot.getInstance();
+    protected static final IGuiManager guiManager = bot.getGuiManager();
+    protected static final IAPIManager apiManager = bot.getAPIManager();
 
     protected Parent parent;
 

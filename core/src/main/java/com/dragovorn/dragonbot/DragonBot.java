@@ -1,12 +1,16 @@
 package com.dragovorn.dragonbot;
 
+import com.dragovorn.dragonbot.api.IAPIManager;
 import com.dragovorn.dragonbot.api.bot.AbstractIRCBot;
 import com.dragovorn.dragonbot.api.bot.channel.IChannel;
 import com.dragovorn.dragonbot.api.config.IConfiguration;
 import com.dragovorn.dragonbot.api.gui.IGuiManager;
 import com.dragovorn.dragonbot.api.file.Resources;
+import com.dragovorn.dragonbot.api.web.api.ITwitchAPI;
 import com.dragovorn.dragonbot.gui.scene.MainScene;
+import com.dragovorn.dragonbot.manager.APIManager;
 import com.dragovorn.dragonbot.manager.GuiManager;
+import com.dragovorn.dragonbot.web.api.TwitchAPI;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -25,6 +29,8 @@ public final class DragonBot extends AbstractIRCBot {
 
     private final GuiManager guiManager;
 
+    private final APIManager apiManager;
+
     private final String version;
 
     private boolean running;
@@ -33,6 +39,7 @@ public final class DragonBot extends AbstractIRCBot {
 
     DragonBot(Stage stage) {
         this.guiManager = new GuiManager(stage);
+        this.apiManager = new APIManager();
         this.mainThread = Thread.currentThread();
 
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
@@ -67,9 +74,13 @@ public final class DragonBot extends AbstractIRCBot {
             this.guiManager.registerScene("advanced_options");
             this.guiManager.registerScene("bot_account");
             this.guiManager.registerScene("sub/login");
+            this.guiManager.registerScene("sub/checking");
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        // Use a method like this so that plugins can override our twitch api to add more functionality to it.
+        this.apiManager.registerAPI(new TwitchAPI(), ITwitchAPI.class);
 
         this.guiManager.useScene(MainScene.class);
 
@@ -111,6 +122,11 @@ public final class DragonBot extends AbstractIRCBot {
     @Override
     public IGuiManager getGuiManager() {
         return this.guiManager;
+    }
+
+    @Override
+    public IAPIManager getAPIManager() {
+        return this.apiManager;
     }
 
     @Override

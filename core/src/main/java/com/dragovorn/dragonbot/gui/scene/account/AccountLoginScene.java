@@ -6,6 +6,7 @@ import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 
@@ -20,6 +21,8 @@ public final class AccountLoginScene extends AbstractScene {
             "&scope=chat:edit";
 
     private OAuthWebServer server;
+
+    private Stage stage = guiManager.getScene(BotAccountScene.class).getLogin();
 
     @FXML private WebView webView;
 
@@ -37,7 +40,6 @@ public final class AccountLoginScene extends AbstractScene {
 
                 if (location.startsWith("http://localhost")) {
                     parseURL(location);
-                    guiManager.close(guiManager.getScene(BotAccountScene.class).getLogin());
                 }
             }
         });
@@ -72,8 +74,17 @@ public final class AccountLoginScene extends AbstractScene {
     }
 
     private void parseURL(String url) {
-        System.out.println(url);
+        url = url.substring(url.lastIndexOf("/") + 2);
+        String[] split = url.split("&");
 
-        // TODO: Get access_token from http!
+        String token = split[0].split("=")[1];
+
+        System.out.println("Successfully got token!");
+
+        CheckingAccountScene scene = guiManager.getScene(CheckingAccountScene.class);
+
+        guiManager.useScene(scene, this.stage);
+
+        scene.convertTokenToUsername(token);
     }
 }
