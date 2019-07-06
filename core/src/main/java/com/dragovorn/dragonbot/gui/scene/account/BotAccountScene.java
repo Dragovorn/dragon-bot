@@ -28,7 +28,7 @@ public final class BotAccountScene extends AbstractScene {
 
     @FXML
     private void handleLoginWithTwitch(ActionEvent actionEvent) {
-        this.login = DragonBot.getInstance().getGuiManager().createSubStage("Login to your Twitch bot account!", AccountLoginScene.class);
+        this.login = guiManager.createSubStage("Login to your Twitch bot account!", AccountLoginScene.class);
     }
 
     private void handleLogout(ActionEvent actionEvent) {
@@ -49,7 +49,7 @@ public final class BotAccountScene extends AbstractScene {
 
     @FXML
     public void handleBackButton() {
-        DragonBot.getInstance().getGuiManager().setToDefaultScene();
+        guiManager.setToDefaultScene();
     }
 
     @Override
