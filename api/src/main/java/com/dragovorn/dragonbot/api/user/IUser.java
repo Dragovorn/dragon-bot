@@ -7,6 +7,8 @@ public interface IUser {
     boolean isMod();
     boolean hasTag(String tag);
 
+    long getUserId();
+
     String getLogin();
     String getHostname();
     String getUsername();

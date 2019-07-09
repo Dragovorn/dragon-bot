@@ -1,14 +1,17 @@
 package com.dragovorn.dragonbot.gui.scene.account;
 
 import com.dragovorn.dragonbot.DragonBot;
-import com.dragovorn.dragonbot.api.config.IConfiguration;
 import com.dragovorn.dragonbot.api.gui.scene.AbstractScene;
+import com.dragovorn.dragonbot.api.web.api.ITwitchAPI;
+import com.dragovorn.dragonbot.user.BotAccount;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public final class BotAccountScene extends AbstractScene {
 
@@ -19,7 +22,7 @@ public final class BotAccountScene extends AbstractScene {
 
     private Stage login;
 
-    private IConfiguration configuration = null;
+    private BotAccount account = null;
 
     @Override
     public void onShow() {
@@ -32,16 +35,22 @@ public final class BotAccountScene extends AbstractScene {
     }
 
     private void handleLogout(ActionEvent actionEvent) {
-        String username = this.configuration.get("account.username");
+        String username = this.account.getUsername();
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to logout " + username + "?");
 
         alert.showAndWait()
                 .filter(r -> r == ButtonType.OK)
                 .ifPresent(r -> {
+                    try {
+                        apiManager.getAPI(ITwitchAPI.class).invalidateToken(this.account.getAccessToken());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     System.out.println("Logout " + username);
-                    this.configuration.set("account.username", "");
-                    this.configuration.set("account.oauth", "");
+                    this.account.setUsername("");
+                    this.account.setAccessToken("");
+                    ((DragonBot) DragonBot.getInstance()).getConfiguration().set(this.account);
                 });
 
         updateButtons();
@@ -62,18 +71,18 @@ public final class BotAccountScene extends AbstractScene {
         return 100;
     }
 
-    public Stage getLogin() {
+    Stage getLogin() {
         return this.login;
     }
 
-    private void updateButtons() {
-        if (this.configuration == null) {
-            this.configuration = DragonBot.getInstance().getConfiguration();
+    void updateButtons() {
+        if (this.account == null) {
+            this.account = (BotAccount) DragonBot.getInstance().getAccount();
         }
 
-        String username = this.configuration.get("account.username");
+        String username = this.account.getUsername();
 
-        if (username.equals("") || this.configuration.get("account.oauth").equals("")) {
+        if (username.equals("") || this.account.getAccessToken().equals("")) {
             this.button.setText(LOGIN);
             this.button.setOnAction(this::handleLoginWithTwitch);
 

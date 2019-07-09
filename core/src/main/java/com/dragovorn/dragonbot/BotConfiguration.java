@@ -1,8 +1,9 @@
 package com.dragovorn.dragonbot;
 
 import com.dragovorn.dragonbot.api.config.FileConfiguration;
+import com.dragovorn.dragonbot.user.BotAccount;
 
-final class BotConfiguration extends FileConfiguration {
+public final class BotConfiguration extends FileConfiguration {
 
     BotConfiguration() {
         super(DragonBot.getInstance().getHomePath().resolve("config.json"));
@@ -13,6 +14,16 @@ final class BotConfiguration extends FileConfiguration {
         this.defaults.put("console", false);
         this.defaults.put("custom_commands", false);
         this.defaults.put("account.username", "");
-        this.defaults.put("account.oauth", "");
+        this.defaults.put("account.access_token", "");
+    }
+
+    @Override
+    public void load() {
+        super.load();
+
+        BotAccount botAccount = (BotAccount) DragonBot.getInstance().getAccount();
+
+        botAccount.setUsername(get("account.username"));
+        botAccount.setAccessToken(get("account.access_token"));
     }
 }

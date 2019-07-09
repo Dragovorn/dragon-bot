@@ -6,7 +6,6 @@ import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 
@@ -22,7 +21,7 @@ public final class AccountLoginScene extends AbstractScene {
 
     private OAuthWebServer server;
 
-    private Stage stage = guiManager.getScene(BotAccountScene.class).getLogin();
+    private BotAccountScene botAccountScene = guiManager.getScene(BotAccountScene.class);
 
     @FXML private WebView webView;
 
@@ -83,7 +82,7 @@ public final class AccountLoginScene extends AbstractScene {
 
         CheckingAccountScene scene = guiManager.getScene(CheckingAccountScene.class);
 
-        guiManager.useScene(scene, this.stage);
+        guiManager.useScene(scene, this.botAccountScene.getLogin());
 
         scene.convertTokenToUsername(token);
     }
