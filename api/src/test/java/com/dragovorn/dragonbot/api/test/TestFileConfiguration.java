@@ -1,12 +1,17 @@
 package com.dragovorn.dragonbot.api.test;
 
+import com.dragovorn.dragonbot.api.bot.AbstractIRCBot;
 import com.dragovorn.dragonbot.api.config.FileConfiguration;
 import com.dragovorn.dragonbot.api.factory.IFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.File;
 import java.io.Reader;
@@ -18,8 +23,11 @@ import java.nio.file.Path;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.powermock.api.mockito.PowerMockito.mock;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(AbstractIRCBot.class)
 public class TestFileConfiguration {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -32,6 +40,12 @@ public class TestFileConfiguration {
 
     @Before
     public void before() throws Exception {
+        AbstractIRCBot ircBot = mock(AbstractIRCBot.class);
+
+        mockStatic(AbstractIRCBot.class);
+        when(AbstractIRCBot.getInstance()).thenReturn(ircBot);
+        when(ircBot.getGSON()).thenReturn(new GsonBuilder().setPrettyPrinting().create());
+
         this.writer = new StringWriter();
         this.reader = new StringReader("{\n\"test\": \"testing\",\n\"more\": {\n\"testing\": \"fun\",\n\"work\": \"yay!\"\n}\n}");
 
