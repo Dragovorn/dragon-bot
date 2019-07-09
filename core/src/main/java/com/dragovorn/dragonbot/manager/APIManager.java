@@ -13,7 +13,7 @@ public final class APIManager implements IAPIManager {
 
     @Override
     public void registerAPI(IAPI api, Class<? extends IAPI> clazz) {
-        if (!clazz.isAssignableFrom(api.getClass())) {
+        if (!clazz.isAssignableFrom(api.getClass()) && clazz != IAPI.class) {
             throw new UnsupportedOperationException(api.getClass().getName() + " is not assignable to " + clazz.getName() + "!");
         }
 
