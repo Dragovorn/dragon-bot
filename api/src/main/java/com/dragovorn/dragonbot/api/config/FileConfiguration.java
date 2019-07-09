@@ -1,5 +1,6 @@
 package com.dragovorn.dragonbot.api.config;
 
+import com.dragovorn.dragonbot.api.bot.AbstractIRCBot;
 import com.dragovorn.dragonbot.api.factory.FileReaderFactory;
 import com.dragovorn.dragonbot.api.factory.FileWriterFactory;
 import com.dragovorn.dragonbot.api.factory.IFactory;
@@ -15,8 +16,6 @@ import java.io.Writer;
 import java.nio.file.Path;
 
 public class FileConfiguration extends Configuration {
-
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     private final Path path;
 
@@ -67,7 +66,7 @@ public class FileConfiguration extends Configuration {
                 writeToJsonObject(keys, 0, object, value);
             });
 
-            GSON.toJson(object, writer);
+            AbstractIRCBot.getInstance().getGSON().toJson(object, writer);
             writer.flush();
         } catch (IOException e) {
             e.printStackTrace();
@@ -79,7 +78,7 @@ public class FileConfiguration extends Configuration {
         try {
             Reader reader = this.readerFactory.create(this.path.toFile());
 
-            JsonObject object = GSON.fromJson(reader, JsonObject.class);
+            JsonObject object = AbstractIRCBot.getInstance().getGSON().fromJson(reader, JsonObject.class);
 
             if (object == null) {
                 return;
@@ -126,7 +125,7 @@ public class FileConfiguration extends Configuration {
      * @return The JsonElement of the passed object.
      */
     private JsonElement toJsonElement(Object object) {
-        return GSON.toJsonTree(object);
+        return AbstractIRCBot.getInstance().getGSON().toJsonTree(object);
     }
 
     /**

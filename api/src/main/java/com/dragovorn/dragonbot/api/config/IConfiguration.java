@@ -42,6 +42,13 @@ public interface IConfiguration {
     void set(String key, Object value);
 
     /**
+     * Saves the given {@link IConfigurationSerializable} to this configuration.
+     *
+     * @param serializable The given serializable.
+     */
+    void set(IConfigurationSerializable serializable);
+
+    /**
      * Check if the configuration has the given key.
      *
      * @param key The key to check.

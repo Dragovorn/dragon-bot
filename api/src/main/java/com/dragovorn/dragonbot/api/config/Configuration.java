@@ -38,6 +38,11 @@ public abstract class Configuration implements IConfiguration {
     }
 
     @Override
+    public void set(IConfigurationSerializable serializable) {
+        serializable.save(this);
+    }
+
+    @Override
     public boolean has(String key) {
         return this.values.containsKey(key);
     }

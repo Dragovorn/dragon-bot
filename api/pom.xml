@@ -19,7 +19,7 @@
         </profile>
     </profiles>
     <build>
-        <finalName>DragonBotAPI-${project.version}</finalName>
+        <finalName>dragonbotapi-${project.version}</finalName>
         <defaultGoal>clean package</defaultGoal>
     </build>
     <dependencies>
@@ -33,6 +33,13 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.8.5</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.2</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>

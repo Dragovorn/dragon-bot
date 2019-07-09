@@ -3,15 +3,20 @@ package com.dragovorn.dragonbot;
 import com.dragovorn.dragonbot.api.IAPIManager;
 import com.dragovorn.dragonbot.api.bot.AbstractIRCBot;
 import com.dragovorn.dragonbot.api.bot.channel.IChannel;
-import com.dragovorn.dragonbot.api.config.IConfiguration;
 import com.dragovorn.dragonbot.api.gui.IGuiManager;
 import com.dragovorn.dragonbot.api.file.Resources;
+import com.dragovorn.dragonbot.api.user.IUser;
 import com.dragovorn.dragonbot.api.web.api.ITwitchAPI;
 import com.dragovorn.dragonbot.gui.scene.MainScene;
 import com.dragovorn.dragonbot.manager.APIManager;
 import com.dragovorn.dragonbot.manager.GuiManager;
+import com.dragovorn.dragonbot.user.BotAccount;
 import com.dragovorn.dragonbot.web.api.TwitchAPI;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import javafx.stage.Stage;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,6 +32,12 @@ public final class DragonBot extends AbstractIRCBot {
 
     private BotConfiguration configuration;
 
+    private BotAccount botAccount;
+
+    private final HttpClient client = HttpClientBuilder.create().build();
+
+    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
     private final GuiManager guiManager;
 
     private final APIManager apiManager;
@@ -40,6 +51,7 @@ public final class DragonBot extends AbstractIRCBot {
     DragonBot(Stage stage) {
         this.guiManager = new GuiManager(stage);
         this.apiManager = new APIManager();
+        this.botAccount = new BotAccount();
         this.mainThread = Thread.currentThread();
 
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
@@ -140,7 +152,21 @@ public final class DragonBot extends AbstractIRCBot {
     }
 
     @Override
-    public IConfiguration getConfiguration() {
+    public IUser getAccount() {
+        return this.botAccount;
+    }
+
+    @Override
+    public HttpClient getClient() {
+        return this.client;
+    }
+
+    @Override
+    public Gson getGSON() {
+        return this.gson;
+    }
+
+    public BotConfiguration getConfiguration() {
         return this.configuration;
     }
 }

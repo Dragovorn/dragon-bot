@@ -1,8 +1,16 @@
 package com.dragovorn.dragonbot.api.web.api;
 
 import com.dragovorn.dragonbot.api.IAPI;
+import com.google.gson.JsonObject;
 
-public interface ITwitchAPI extends IAPI {
+import java.io.IOException;
 
-    String getUsernameFromAccessToken(String token);
+public interface ITwitchAPI extends IAPI, IWebAPI {
+
+    void invalidateToken(String token) throws IOException;
+
+    String getUsernameFromAccessToken(String token) throws IOException;
+
+    JsonObject lookupUser(String username) throws IOException;
+    JsonObject lookupUser(long userId) throws IOException;
 }
