@@ -8,8 +8,7 @@
         <version>2.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>updater</artifactId>
-    <packaging>jar</packaging>
+    <artifactId>twitch</artifactId>
     <profiles>
         <profile>
             <id>build-bot</id>
@@ -39,7 +38,7 @@
         </profile>
     </profiles>
     <build>
-        <finalName>Updater</finalName>
+        <finalName>DragonBot</finalName>
         <defaultGoal>clean package shade:shade</defaultGoal>
         <plugins>
             <plugin>
@@ -49,18 +48,35 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.dragovorn.dragonbot.updater.Main</mainClass>
+                            <mainClass>com.dragovorn.dragonbot.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
             </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources/</directory>
+                <includes>
+                    <include>project.properties</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/resources/</directory>
+                <excludes>
+                    <exclude>project.properties</exclude>
+                </excludes>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
     </build>
     <dependencies>
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.5.7</version>
+            <groupId>com.dragovorn.ircbot</groupId>
+            <artifactId>core</artifactId>
+            <version>2.0.0-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>
