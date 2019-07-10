@@ -4,10 +4,8 @@ import com.google.common.collect.ImmutableMap;
 
 public interface IUser {
 
-    boolean isMod();
+    boolean isValid();
     boolean hasTag(String tag);
-
-    long getUserId();
 
     String getLogin();
     String getHostname();

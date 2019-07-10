@@ -11,6 +11,8 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
-        new DragonBot(stage).startup();
+        DragonBot bot = new DragonBot(stage);
+
+        bot.startup();
     }
 }

@@ -16,6 +16,7 @@ public interface IIRCBot {
     void startup();
     void shutdown();
     void connect();
+    void sendRaw(String line);
 
     boolean isRunning();
 

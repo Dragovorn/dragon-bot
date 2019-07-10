@@ -23,7 +23,7 @@ public final class CheckingAccountScene extends AbstractFXMLScene {
         BotAccount botAccount = (BotAccount) DragonBot.getInstance().getAccount();
 
         botAccount.setUsername(username);
-        botAccount.setAccessToken(token);
+        botAccount.setPassword(token);
 
         DragonBot bot = (DragonBot) DragonBot.getInstance();
 

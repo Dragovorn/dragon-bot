@@ -24,6 +24,6 @@ public final class BotConfiguration extends FileConfiguration {
         BotAccount botAccount = (BotAccount) DragonBot.getInstance().getAccount();
 
         botAccount.setUsername(get("account.username"));
-        botAccount.setAccessToken(get("account.access_token"));
+        botAccount.setPassword(get("account.password"));
     }
 }

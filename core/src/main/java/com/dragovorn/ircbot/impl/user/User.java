@@ -7,21 +7,14 @@ public class User implements IUser {
 
     protected String username;
 
-    protected long userId;
-
     @Override
-    public boolean isMod() {
-        throw new UnsupportedOperationException("Unimplemented");
+    public boolean isValid() {
+        return true; // TODO: Stubbed.
     }
 
     @Override
     public boolean hasTag(String tag) {
         throw new UnsupportedOperationException("Unimplemented");
-    }
-
-    @Override
-    public long getUserId() {
-        return this.userId;
     }
 
     @Override

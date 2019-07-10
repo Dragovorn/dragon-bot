@@ -13,6 +13,7 @@ import com.google.gson.GsonBuilder;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 
+import java.io.IOException;
 import java.nio.file.Path;
 
 public abstract class AbstractIRCBot implements IIRCBot {
@@ -153,13 +154,19 @@ public abstract class AbstractIRCBot implements IIRCBot {
             this.homePath.toFile().mkdirs();
         }
 
+        Path plugins = this.homePath.resolve("plugins");
+
+        if (!plugins.toFile().exists()) {
+            plugins.toFile().mkdirs();
+        }
+
         postHomePathFileCreation();
         initializeScenes(this.guiManager);
         registerAPIs(this.apiManager);
 
         this.guiManager.useScene(getMainScene());
 
-        this.pluginManager.loadPlugins(this.homePath.resolve("plugins"));
+        this.pluginManager.loadPlugins(plugins);
         this.pluginManager.enablePlugins();
 
         postPluginInitialize();
@@ -181,6 +188,14 @@ public abstract class AbstractIRCBot implements IIRCBot {
 
         this.pluginManager.disablePlugins();
 
+        if (this.server.isConnected()) {
+            try {
+                this.server.getConnection().getSocket().close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         System.out.println("Shutting down!");
 
         postShutdown();
@@ -193,6 +208,11 @@ public abstract class AbstractIRCBot implements IIRCBot {
         }
 
         this.server.getConnection(); // This creates a new connection, which does connection code.
+    }
+
+    @Override
+    public void sendRaw(String line) {
+        this.dispatcher.dispatch(line);
     }
 
     @Override

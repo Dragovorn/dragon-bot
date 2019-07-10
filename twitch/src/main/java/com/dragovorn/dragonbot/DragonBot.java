@@ -47,6 +47,13 @@ public final class DragonBot extends SimpleIRCBot {
     protected void postHomePathFileCreation() {
         this.configuration = new BotConfiguration();
         this.configuration.load();
+
+        if (getAccount().isValid()) {
+            System.out.println("Valid account, connecting to IRC.");
+            connect();
+        } else {
+            System.out.println("Invalid account, not connecting to IRC.");
+        }
     }
 
     @Override

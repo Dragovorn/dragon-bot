@@ -43,13 +43,13 @@ public final class BotAccountScene extends AbstractFXMLScene {
                 .filter(r -> r == ButtonType.OK)
                 .ifPresent(r -> {
                     try {
-                        apiManager.getAPI(ITwitchAPI.class).invalidateToken(this.account.getAccessToken());
+                        apiManager.getAPI(ITwitchAPI.class).invalidateToken(this.account.getPassword());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                     System.out.println("Logout " + username);
                     this.account.setUsername("");
-                    this.account.setAccessToken("");
+                    this.account.setPassword("");
                     ((DragonBot) DragonBot.getInstance()).getConfiguration().set(this.account);
                 });
 
@@ -82,7 +82,7 @@ public final class BotAccountScene extends AbstractFXMLScene {
 
         String username = this.account.getUsername();
 
-        if (username.equals("") || this.account.getAccessToken().equals("")) {
+        if (username.equals("") || this.account.getPassword().equals("")) {
             this.button.setText(LOGIN);
             this.button.setOnAction(this::handleLoginWithTwitch);
 

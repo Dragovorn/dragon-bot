@@ -2,12 +2,13 @@ package com.dragovorn.ircbot.api.irc;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.net.Socket;
 import java.util.List;
 
 public interface IConnection {
 
-    void sendRawLine(String line);
+    void sendRawLine(String line) throws IOException;
     void sendMessageToAll(String line);
     void joinChannel(IChannel channel);
     void leaveChannel(IChannel channel);

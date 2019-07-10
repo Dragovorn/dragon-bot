@@ -3,6 +3,7 @@ package com.dragovorn.ircbot.impl.irc;
 import com.dragovorn.ircbot.impl.bot.AbstractIRCBot;
 import com.dragovorn.ircbot.api.irc.IDispatcher;
 
+import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -17,6 +18,12 @@ public class Dispatcher implements IDispatcher {
     }
 
     public void dispatch(String line) {
-        this.executorService.submit(() -> this.bot.getServer().getConnection().sendRawLine(line));
+        this.executorService.submit(() -> {
+            try {
+                this.bot.getServer().getConnection().sendRawLine(line);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 }
