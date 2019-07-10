@@ -5,9 +5,11 @@ import com.dragovorn.dragonbot.api.bot.AbstractIRCBot;
 import com.dragovorn.dragonbot.api.channel.IChannel;
 import com.dragovorn.dragonbot.api.gui.IGuiManager;
 import com.dragovorn.dragonbot.api.file.Resources;
+import com.dragovorn.dragonbot.api.irc.IConnection;
 import com.dragovorn.dragonbot.api.user.IUser;
 import com.dragovorn.dragonbot.api.web.api.ITwitchAPI;
 import com.dragovorn.dragonbot.bot.BotDispatcher;
+import com.dragovorn.dragonbot.bot.Connection;
 import com.dragovorn.dragonbot.gui.scene.MainScene;
 import com.dragovorn.dragonbot.manager.APIManager;
 import com.dragovorn.dragonbot.manager.GuiManager;
@@ -45,6 +47,8 @@ public final class DragonBot extends AbstractIRCBot {
 
     private final BotDispatcher botDispatcher;
 
+    private final IConnection connection;
+
     private final String version;
 
     private boolean running;
@@ -55,6 +59,8 @@ public final class DragonBot extends AbstractIRCBot {
         this.guiManager = new GuiManager(stage);
         this.apiManager = new APIManager();
         this.botAccount = new BotAccount();
+        this.connection = new Connection();
+        this.botDispatcher = new BotDispatcher();
         this.mainThread = Thread.currentThread();
 
         Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
@@ -120,16 +126,6 @@ public final class DragonBot extends AbstractIRCBot {
     }
 
     @Override
-    public void joinChannel(IChannel channel) {
-
-    }
-
-    @Override
-    public void sendMessage(IChannel channel, String name) {
-
-    }
-
-    @Override
     public String getVersion() {
         return this.version;
     }
@@ -142,6 +138,11 @@ public final class DragonBot extends AbstractIRCBot {
     @Override
     public IAPIManager getAPIManager() {
         return this.apiManager;
+    }
+
+    @Override
+    public IConnection getConnection() {
+        return this.connection;
     }
 
     @Override
@@ -171,5 +172,9 @@ public final class DragonBot extends AbstractIRCBot {
 
     public BotConfiguration getConfiguration() {
         return this.configuration;
+    }
+
+    public BotDispatcher getBotDispatcher() {
+        return this.botDispatcher;
     }
 }
