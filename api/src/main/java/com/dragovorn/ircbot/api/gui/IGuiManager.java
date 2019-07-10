@@ -1,6 +1,5 @@
 package com.dragovorn.ircbot.api.gui;
 
-import com.dragovorn.ircbot.api.gui.scene.IScene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 

@@ -1,4 +1,4 @@
-package com.dragovorn.ircbot.api.gui.scene;
+package com.dragovorn.ircbot.api.gui;
 
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
@@ -22,8 +22,4 @@ public interface IScene extends Initializable {
 
     int getWidth();
     int getHeight();
-
-    Parent getParent();
-
-    Scene toJFXScene();
 }

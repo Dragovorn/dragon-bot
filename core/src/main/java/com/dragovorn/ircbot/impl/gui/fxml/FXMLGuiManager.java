@@ -3,7 +3,7 @@ package com.dragovorn.ircbot.impl.gui.fxml;
 import com.dragovorn.ircbot.impl.bot.AbstractIRCBot;
 import com.dragovorn.ircbot.api.file.Resources;
 import com.dragovorn.ircbot.api.gui.IGuiManager;
-import com.dragovorn.ircbot.api.gui.scene.IScene;
+import com.dragovorn.ircbot.api.gui.IScene;
 import com.google.common.collect.Maps;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -18,8 +18,8 @@ public class FXMLGuiManager implements IGuiManager {
 
     private Stage stage;
 
-    private final Map<Class<? extends IScene>, IScene> scenes = Maps.newHashMap();
-    private final Map<String, Class<? extends IScene>> recentlyLoaded = Maps.newHashMap();
+    private final Map<Class<? extends AbstractFXMLScene>, IScene> scenes = Maps.newHashMap();
+    private final Map<String, Class<? extends AbstractFXMLScene>> recentlyLoaded = Maps.newHashMap();
 
     private final Map<Stage, IScene> currentScenes = Maps.newHashMap();
 
@@ -65,6 +65,10 @@ public class FXMLGuiManager implements IGuiManager {
 
     @Override
     public void useScene(IScene scene, Stage stage) {
+        if (!(scene instanceof AbstractFXMLScene)) {
+            throw new IllegalArgumentException("Cannot use non-AbstractFXMLScene scenes with FXMLGuiManager!");
+        }
+
         IScene previous = this.currentScenes.get(stage);
 
         if (previous != null) {
@@ -75,7 +79,7 @@ public class FXMLGuiManager implements IGuiManager {
             stage.setOnCloseRequest((event -> scene.onHide()));
         }
 
-        stage.setScene(scene.toJFXScene());
+        stage.setScene(((AbstractFXMLScene) scene).toJFXScene());
         scene.onShow();
 
         this.currentScenes.put(stage, scene);
@@ -93,8 +97,12 @@ public class FXMLGuiManager implements IGuiManager {
 
     @Override
     public void registerScene(IScene scene, String fxmlPath) {
-        this.scenes.put(scene.getClass(), scene);
-        this.recentlyLoaded.put(fxmlPath, scene.getClass());
+        if (!(scene instanceof AbstractFXMLScene)) {
+            throw new IllegalArgumentException("Scene has to extend AbstractFXMLScene!");
+        }
+
+        this.scenes.put(((AbstractFXMLScene) scene).getClass(), scene);
+        this.recentlyLoaded.put(fxmlPath, ((AbstractFXMLScene) scene).getClass());
     }
 
     @Override

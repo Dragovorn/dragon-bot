@@ -3,7 +3,7 @@ package com.dragovorn.ircbot.impl.bot;
 import com.dragovorn.ircbot.api.IAPIManager;
 import com.dragovorn.ircbot.api.bot.IIRCBot;
 import com.dragovorn.ircbot.api.gui.IGuiManager;
-import com.dragovorn.ircbot.api.gui.scene.IScene;
+import com.dragovorn.ircbot.api.gui.IScene;
 import com.dragovorn.ircbot.api.irc.IDispatcher;
 import com.dragovorn.ircbot.api.irc.IIRCServer;
 import com.dragovorn.ircbot.api.plugin.IPluginManager;

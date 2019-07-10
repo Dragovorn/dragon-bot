@@ -6,7 +6,7 @@ import com.dragovorn.ircbot.impl.bot.SimpleIRCBot;
 import com.dragovorn.ircbot.api.IAPIManager;
 import com.dragovorn.ircbot.api.file.Resources;
 import com.dragovorn.ircbot.api.gui.IGuiManager;
-import com.dragovorn.ircbot.api.gui.scene.IScene;
+import com.dragovorn.ircbot.api.gui.IScene;
 import com.dragovorn.dragonbot.api.web.ITwitchAPI;
 import com.dragovorn.dragonbot.scene.MainScene;
 import javafx.stage.Stage;

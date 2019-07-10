@@ -4,7 +4,7 @@ import com.dragovorn.ircbot.api.IAPIManager;
 import com.dragovorn.ircbot.impl.bot.AbstractIRCBot;
 import com.dragovorn.ircbot.api.bot.IIRCBot;
 import com.dragovorn.ircbot.api.gui.IGuiManager;
-import com.dragovorn.ircbot.api.gui.scene.IScene;
+import com.dragovorn.ircbot.api.gui.IScene;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import javafx.scene.Parent;
@@ -78,12 +78,10 @@ public abstract class AbstractFXMLScene implements IScene {
         this.parent = parent;
     }
 
-    @Override
     public Parent getParent() {
         return this.parent;
     }
 
-    @Override
     public Scene toJFXScene() {
         return (this.scene == null ? this.scene = new Scene(getParent(), getWidth(), getHeight()) : this.scene);
     }
