@@ -2,6 +2,7 @@ package com.dragovorn.dragonbot.gui.scene.account;
 
 import com.dragovorn.dragonbot.DragonBot;
 import com.dragovorn.dragonbot.api.gui.scene.AbstractScene;
+import fi.iki.elonen.NanoHTTPD;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.scene.web.WebEngine;
@@ -85,5 +86,17 @@ public final class AccountLoginScene extends AbstractScene {
         guiManager.useScene(scene, this.botAccountScene.getLogin());
 
         scene.convertTokenToUsername(token);
+    }
+
+    private final class OAuthWebServer extends NanoHTTPD {
+
+        OAuthWebServer(int port) {
+            super(port);
+        }
+
+        @Override
+        public NanoHTTPD.Response serve(IHTTPSession session) {
+            return newFixedLengthResponse("<html></html>");
+        }
     }
 }

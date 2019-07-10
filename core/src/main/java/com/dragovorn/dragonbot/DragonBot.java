@@ -2,11 +2,12 @@ package com.dragovorn.dragonbot;
 
 import com.dragovorn.dragonbot.api.IAPIManager;
 import com.dragovorn.dragonbot.api.bot.AbstractIRCBot;
-import com.dragovorn.dragonbot.api.bot.channel.IChannel;
+import com.dragovorn.dragonbot.api.channel.IChannel;
 import com.dragovorn.dragonbot.api.gui.IGuiManager;
 import com.dragovorn.dragonbot.api.file.Resources;
 import com.dragovorn.dragonbot.api.user.IUser;
 import com.dragovorn.dragonbot.api.web.api.ITwitchAPI;
+import com.dragovorn.dragonbot.bot.BotDispatcher;
 import com.dragovorn.dragonbot.gui.scene.MainScene;
 import com.dragovorn.dragonbot.manager.APIManager;
 import com.dragovorn.dragonbot.manager.GuiManager;
@@ -41,6 +42,8 @@ public final class DragonBot extends AbstractIRCBot {
     private final GuiManager guiManager;
 
     private final APIManager apiManager;
+
+    private final BotDispatcher botDispatcher;
 
     private final String version;
 

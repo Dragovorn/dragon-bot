@@ -1,4 +1,4 @@
-package com.dragovorn.dragonbot.api.bot.channel;
+package com.dragovorn.dragonbot.api.channel;
 
 public interface IChannel {
 
