@@ -51,6 +51,7 @@ public final class BotAccountScene extends AbstractFXMLScene {
                     this.account.setUsername("");
                     this.account.setPassword("");
                     ((DragonBot) DragonBot.getInstance()).getConfiguration().set(this.account);
+                    // TODO: disconnect twitch from server!
                 });
 
         updateButtons();

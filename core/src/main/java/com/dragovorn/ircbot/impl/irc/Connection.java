@@ -39,7 +39,7 @@ public class Connection implements IConnection {
             String line;
             try {
                 while (((line = this.reader.readLine()) != null)) {
-                    System.out.println(line);
+                    System.out.println("GET: " + line);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -64,11 +64,16 @@ public class Connection implements IConnection {
     }
 
     @Override
+    public void disconnect() {
+        // TODO: close socket and part from everything.
+    }
+
+    @Override
     public void sendRawLine(String line) throws IOException {
         this.writer.write(line + "\r\n");
         this.writer.flush();
 
-        System.out.println(line);
+        System.out.println("SEND: " + line);
     }
 
     @Override

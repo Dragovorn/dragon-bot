@@ -2,6 +2,7 @@ package com.dragovorn.ircbot.impl.bot;
 
 import com.dragovorn.ircbot.api.IAPIManager;
 import com.dragovorn.ircbot.api.bot.IIRCBot;
+import com.dragovorn.ircbot.api.event.IEventBus;
 import com.dragovorn.ircbot.api.gui.IGuiManager;
 import com.dragovorn.ircbot.api.gui.IScene;
 import com.dragovorn.ircbot.api.irc.IDispatcher;
@@ -32,6 +33,8 @@ public abstract class AbstractIRCBot implements IIRCBot {
     private HttpClient httpClient = HttpClientBuilder.create().build();
 
     private IUser user;
+
+    private IEventBus eventBus;
 
     private Path homePath;
 
@@ -77,6 +80,10 @@ public abstract class AbstractIRCBot implements IIRCBot {
         }
 
         this.server = server;
+    }
+
+    protected void setEventBus(IEventBus eventBus) {
+        this.eventBus = eventBus;
     }
 
     protected void setMainThread(Thread thread) {
@@ -127,51 +134,55 @@ public abstract class AbstractIRCBot implements IIRCBot {
 
     @Override
     public final void startup() {
-        if (this.running) {
+        if (isRunning()) {
             throw new IllegalStateException("IRCBot is already running!");
         }
 
-        if (this.homePath == null) {
+        if (getHomePath() == null) {
             throw new IllegalStateException("IRCBot requires a home path!");
         }
 
-        if (this.guiManager == null) {
+        if (getGuiManager() == null) {
             throw new IllegalStateException("IRCBot requires a gui manager!");
         }
 
-        if (this.apiManager == null) {
+        if (getAPIManager() == null) {
             throw new IllegalStateException("IRCBot requires an api manager!");
         }
 
-        if (this.pluginManager == null) {
+        if (getPluginManager() == null) {
             throw new IllegalStateException("IRCBot requires a plugin manager!");
+        }
+
+        if (getEventBus() == null) {
+            throw new IllegalStateException("IRCBot requires an event bus!");
         }
 
         preStartup();
 
-        System.out.println("Starting " + this.name + " v" + this.version);
-        if (!this.homePath.toFile().exists()) {
-            this.homePath.toFile().mkdirs();
+        System.out.println("Starting " + getName() + " v" + getVersion());
+        if (!getHomePath().toFile().exists()) {
+            getHomePath().toFile().mkdirs();
         }
 
-        Path plugins = this.homePath.resolve("plugins");
+        Path plugins = getHomePath().resolve("plugins");
 
         if (!plugins.toFile().exists()) {
             plugins.toFile().mkdirs();
         }
 
         postHomePathFileCreation();
-        initializeScenes(this.guiManager);
-        registerAPIs(this.apiManager);
+        initializeScenes(getGuiManager());
+        registerAPIs(getAPIManager());
 
-        this.guiManager.useScene(getMainScene());
+        getGuiManager().useScene(getMainScene());
 
-        this.pluginManager.loadPlugins(plugins);
-        this.pluginManager.enablePlugins();
+        getPluginManager().loadPlugins(plugins);
+        getPluginManager().enablePlugins();
 
         postPluginInitialize();
 
-        this.guiManager.init();
+        getGuiManager().init();
 
         this.running = true;
 
@@ -180,17 +191,17 @@ public abstract class AbstractIRCBot implements IIRCBot {
 
     @Override
     public final void shutdown() {
-        if (!this.running) {
+        if (!isRunning()) {
             throw new IllegalStateException("IRCBot isn't running!");
         }
 
         preShutdown();
 
-        this.pluginManager.disablePlugins();
+        getPluginManager().disablePlugins();
 
-        if (this.server.isConnected()) {
+        if (getServer().isConnected()) {
             try {
-                this.server.getConnection().getSocket().close();
+                getServer().getConnection().getSocket().close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -243,6 +254,11 @@ public abstract class AbstractIRCBot implements IIRCBot {
     @Override
     public IIRCServer getServer() {
         return this.server;
+    }
+
+    @Override
+    public IEventBus getEventBus() {
+        return this.eventBus;
     }
 
     @Override
