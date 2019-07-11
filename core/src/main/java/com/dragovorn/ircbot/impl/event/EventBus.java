@@ -12,10 +12,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class EventBus implements IEventBus {
 
     private Map<Class<? extends IEvent>, List<Listener>> listeners = Maps.newHashMap();
+
+    private ExecutorService executor = Executors.newCachedThreadPool();
 
     @Override
     public void fireEvent(IEvent event) {
@@ -26,9 +30,11 @@ public class EventBus implements IEventBus {
                 }
 
                 try {
-                    // TODO: check if async handling.
-
-                    listener.getMethod().invoke(listener.getParent(), event);
+                    if (listener.isAsync()) {
+                        this.executor.submit(() -> listener.getMethod().invoke(listener.getParent(), event));
+                    } else {
+                        listener.getMethod().invoke(listener.getParent(), event);
+                    }
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     e.printStackTrace();
                 }
@@ -54,8 +60,8 @@ public class EventBus implements IEventBus {
                         throw new IllegalStateException(convertMethodToString(m) + " a listener method can only have 1 parameter");
                     }
 
-                    if (!paramTypes[0].isAssignableFrom(IEvent.class)) {
-                        throw new IllegalStateException(convertMethodToString(m) + " a listener parameter needs to extend IEvent!");
+                    if (!IEvent.class.isAssignableFrom(paramTypes[0])) {
+                        throw new IllegalStateException(convertMethodToString(m) + " a listener parameter needs to be a child of IEvent!");
                     }
 
                     Class<? extends IEvent> event = paramTypes[0].asSubclass(IEvent.class);
