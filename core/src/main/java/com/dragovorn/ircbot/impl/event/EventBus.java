@@ -23,35 +23,38 @@ public class EventBus implements IEventBus {
 
     @Override
     public void fireEvent(IEvent event) {
-        this.listeners.computeIfPresent(event.getClass(), ((clazz, list) -> {
-            list.forEach(listener -> {
-                if (event instanceof ICancellable && ((ICancellable) event).isCancelled() && !listener.isIgnoreCancelled()) {
-                    return;
-                }
+        List<Listener> target = Lists.newArrayList();
 
-                try {
-                    if (listener.isAsync()) {
-                        this.executor.submit(() -> listener.getMethod().invoke(listener.getParent(), event));
-                    } else {
-                        listener.getMethod().invoke(listener.getParent(), event);
-                    }
-                } catch (IllegalAccessException | InvocationTargetException e) {
-                    e.printStackTrace();
-                }
-            });
+        this.listeners.forEach((clazz, list) -> {
+            if (clazz.isAssignableFrom(event.getClass()) || clazz.equals(event.getClass())) {
+                target.addAll(list);
+            }
+        });
 
-            return null;
-        }));
+        Collections.sort(target);
+
+        target.forEach(listener -> {
+            if (event instanceof ICancellable && ((ICancellable) event).isCancelled() && !listener.isIgnoreCancelled()) {
+                return;
+            }
+
+            try {
+                if (listener.isAsync()) {
+                    this.executor.submit(() -> listener.getMethod().invoke(listener.getParent(), event));
+                } else {
+                    listener.getMethod().invoke(listener.getParent(), event);
+                }
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @Override
     public void registerListeners(Object object) {
         Arrays.stream(object.getClass().getMethods())
+                .filter(m -> m.isAnnotationPresent(com.dragovorn.ircbot.api.event.Listener.class))
                 .forEach(m -> {
-                    if (!m.isAnnotationPresent(com.dragovorn.ircbot.api.event.Listener.class)) {
-                        return;
-                    }
-
                     com.dragovorn.ircbot.api.event.Listener listener = m.getAnnotation(com.dragovorn.ircbot.api.event.Listener.class);
 
                     Class<?>[] paramTypes = m.getParameterTypes();
@@ -69,8 +72,6 @@ public class EventBus implements IEventBus {
                     this.listeners.putIfAbsent(event, Lists.newArrayList());
                     List<Listener> listeners = this.listeners.get(paramTypes[0]);
                     listeners.add(new Listener(object, m, listener));
-
-                    Collections.sort(listeners);
                 });
     }
 

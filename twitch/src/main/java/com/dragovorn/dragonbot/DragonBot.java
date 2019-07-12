@@ -2,6 +2,7 @@ package com.dragovorn.dragonbot;
 
 import com.dragovorn.dragonbot.api.TwitchAPI;
 import com.dragovorn.dragonbot.irc.TwitchIRCServer;
+import com.dragovorn.dragonbot.listener.RawInputMessageListener;
 import com.dragovorn.ircbot.impl.bot.SimpleIRCBot;
 import com.dragovorn.ircbot.api.IAPIManager;
 import com.dragovorn.ircbot.api.file.Resources;
@@ -47,6 +48,8 @@ public final class DragonBot extends SimpleIRCBot {
     protected void postHomePathFileCreation() {
         this.configuration = new BotConfiguration();
         this.configuration.load();
+
+        getEventBus().registerListeners(new RawInputMessageListener());
 
         if (getAccount().isValid()) {
             System.out.println("Valid account, connecting to IRC.");

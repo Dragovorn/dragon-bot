@@ -1,5 +1,6 @@
 package com.dragovorn.ircbot.impl.irc;
 
+import com.dragovorn.ircbot.api.event.irc.RawInputMessageEvent;
 import com.dragovorn.ircbot.api.irc.IChannel;
 import com.dragovorn.ircbot.api.irc.IConnection;
 import com.dragovorn.ircbot.api.irc.IIRCServer;
@@ -39,7 +40,7 @@ public class Connection implements IConnection {
             String line;
             try {
                 while (((line = this.reader.readLine()) != null)) {
-                    System.out.println("GET: " + line);
+                    AbstractIRCBot.getInstance().getEventBus().fireEvent(new RawInputMessageEvent(line));
                 }
             } catch (IOException e) {
                 e.printStackTrace();
