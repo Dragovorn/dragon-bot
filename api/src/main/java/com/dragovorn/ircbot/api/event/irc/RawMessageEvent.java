@@ -1,12 +1,14 @@
 package com.dragovorn.ircbot.api.event.irc;
 
-import com.dragovorn.ircbot.api.event.IEvent;
+import com.dragovorn.ircbot.api.irc.IConnection;
 
-public class RawMessageEvent implements IEvent {
+public class RawMessageEvent extends IRCEvent {
 
     private String message;
 
-    RawMessageEvent(String message) {
+    RawMessageEvent(IConnection connection, String message) {
+        super(connection);
+
         this.message = message;
     }
 

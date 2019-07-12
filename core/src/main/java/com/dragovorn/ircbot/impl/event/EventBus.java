@@ -1,5 +1,6 @@
 package com.dragovorn.ircbot.impl.event;
 
+import com.dragovorn.ircbot.api.event.IAsyncEvent;
 import com.dragovorn.ircbot.api.event.ICancellable;
 import com.dragovorn.ircbot.api.event.IEvent;
 import com.dragovorn.ircbot.api.event.IEventBus;
@@ -39,7 +40,7 @@ public class EventBus implements IEventBus {
             }
 
             try {
-                if (listener.isAsync()) {
+                if (listener.isAsync() && !(event instanceof IAsyncEvent)) {
                     this.executor.submit(() -> listener.getMethod().invoke(listener.getParent(), event));
                 } else {
                     listener.getMethod().invoke(listener.getParent(), event);

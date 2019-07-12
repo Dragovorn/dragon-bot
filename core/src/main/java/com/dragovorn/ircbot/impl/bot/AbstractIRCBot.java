@@ -9,6 +9,7 @@ import com.dragovorn.ircbot.api.irc.IDispatcher;
 import com.dragovorn.ircbot.api.irc.IIRCServer;
 import com.dragovorn.ircbot.api.plugin.IPluginManager;
 import com.dragovorn.ircbot.api.user.IUser;
+import com.dragovorn.ircbot.impl.handler.RawLineHandler;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.http.client.HttpClient;
@@ -20,6 +21,7 @@ import java.nio.file.Path;
 public abstract class AbstractIRCBot implements IIRCBot {
 
     private boolean running;
+    private boolean logRaw;
 
     private final String version;
     private final String name;
@@ -80,6 +82,10 @@ public abstract class AbstractIRCBot implements IIRCBot {
         }
 
         this.server = server;
+    }
+
+    protected void setLogRawLines(boolean logRaw) {
+        this.logRaw = logRaw;
     }
 
     protected void setEventBus(IEventBus eventBus) {
@@ -171,6 +177,8 @@ public abstract class AbstractIRCBot implements IIRCBot {
             plugins.toFile().mkdirs();
         }
 
+        getEventBus().registerListeners(new RawLineHandler());
+
         postHomePathFileCreation();
         initializeScenes(getGuiManager());
         registerAPIs(getAPIManager());
@@ -195,30 +203,35 @@ public abstract class AbstractIRCBot implements IIRCBot {
             throw new IllegalStateException("IRCBot isn't running!");
         }
 
+        System.out.println("Shutting down...");
+
+        this.running = false;
+
         preShutdown();
 
         getPluginManager().disablePlugins();
 
         if (getServer().isConnected()) {
             try {
-                getServer().getConnection().getSocket().close();
+                System.out.println("Disconnecting from IRC Server...");
+                getServer().getConnection().disconnect();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
-        System.out.println("Shutting down!");
-
         postShutdown();
+
+        System.out.println("Goodbye!");
     }
 
     @Override
-    public void connect() {
+    public void connect() throws IOException {
         if (this.server == null) {
             throw new IllegalStateException("IRCBot requires a server to connect to!");
         }
 
-        this.server.getConnection(); // This creates a new connection, which does connection code.
+        this.server.connect(); // Time to connect to server!
     }
 
     @Override
@@ -229,6 +242,11 @@ public abstract class AbstractIRCBot implements IIRCBot {
     @Override
     public boolean isRunning() {
         return this.running;
+    }
+
+    @Override
+    public boolean isLogRawLinesEnabled() {
+        return this.logRaw;
     }
 
     @Override

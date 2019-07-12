@@ -33,7 +33,11 @@ public final class CheckingAccountScene extends AbstractFXMLScene {
 
         guiManager.close(scene.getLogin());
 
-        // TODO: connect to twitch servers!
+        try {
+            bot.getServer().getConnection().connect();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         scene.updateButtons();
     }

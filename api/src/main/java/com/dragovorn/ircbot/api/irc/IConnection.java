@@ -8,7 +8,8 @@ import java.util.List;
 
 public interface IConnection {
 
-    void disconnect();
+    void connect() throws IOException;
+    void disconnect() throws IOException;
     void sendRawLine(String line) throws IOException;
     void sendMessageToAll(String line);
     void joinChannel(IChannel channel);

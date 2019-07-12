@@ -15,6 +15,7 @@ public interface IGuiManager {
     void useScene(IScene scene, Stage stage);
     void registerScene(IScene scene, String fxmlPath);
     void useScene(Class<? extends IScene> clazz, Stage stage);
+    void alert(String alert);
 
     boolean isInitialized();
 

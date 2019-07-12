@@ -18,7 +18,7 @@ public final class AccountLoginScene extends AbstractFXMLScene {
             "?client_id=" + DragonBot.CLIENT_ID +
             "&redirect_uri=http://localhost:" + PORT +
             "&response_type=token" +
-            "&scope=chat:edit";
+            "&scope=chat:edit+chat:read";
 
     private OAuthWebServer server;
 

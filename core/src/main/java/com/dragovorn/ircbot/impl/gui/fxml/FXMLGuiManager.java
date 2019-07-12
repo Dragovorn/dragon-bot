@@ -7,6 +7,7 @@ import com.dragovorn.ircbot.api.gui.IScene;
 import com.google.common.collect.Maps;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -108,6 +109,11 @@ public class FXMLGuiManager implements IGuiManager {
     @Override
     public void useScene(Class<? extends IScene> clazz, Stage stage) {
         useScene(getScene(clazz), stage);
+    }
+
+    @Override
+    public void alert(String alert) {
+        new Alert(Alert.AlertType.ERROR, alert).show();
     }
 
     @Override
