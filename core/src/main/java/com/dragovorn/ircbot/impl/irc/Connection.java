@@ -63,6 +63,8 @@ public class Connection implements IConnection {
             }
         });
         this.inputThread.setName("Input Thread");
+
+        this.socket.setSoTimeout(5 * 60 * 1000);
     }
 
     @Override
