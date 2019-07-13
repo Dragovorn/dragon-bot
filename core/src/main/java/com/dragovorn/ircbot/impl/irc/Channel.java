@@ -32,14 +32,14 @@ public class Channel implements IChannel {
             throw new IllegalStateException("Haven't joined #" + this.name + " yet!");
         }
 
-        BOT.sendRaw(" PART #" + this.name);
+        BOT.sendRaw("PART #" + this.name);
 
         this.joined = false;
     }
 
     @Override
     public void sendMessage(String message) {
-
+        BOT.sendRaw("PRIVMSG #" + this.name + " :" + message);
     }
 
     @Override

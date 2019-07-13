@@ -34,7 +34,7 @@ public final class CheckingAccountScene extends AbstractFXMLScene {
         guiManager.close(scene.getLogin());
 
         try {
-            bot.getServer().getConnection().connect();
+            bot.getServer().connect();
         } catch (IOException e) {
             e.printStackTrace();
         }

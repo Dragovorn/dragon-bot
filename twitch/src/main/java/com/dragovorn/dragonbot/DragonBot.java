@@ -2,8 +2,10 @@ package com.dragovorn.dragonbot;
 
 import com.dragovorn.dragonbot.api.TwitchAPI;
 import com.dragovorn.dragonbot.handler.ServerConnectHandler;
+import com.dragovorn.dragonbot.handler.UserChannelHandler;
 import com.dragovorn.dragonbot.irc.TwitchBotAccount;
 import com.dragovorn.dragonbot.irc.TwitchIRCServer;
+import com.dragovorn.dragonbot.user.TwitchUserFactory;
 import com.dragovorn.ircbot.impl.bot.SimpleIRCBot;
 import com.dragovorn.ircbot.api.IAPIManager;
 import com.dragovorn.ircbot.api.file.Resources;
@@ -42,7 +44,8 @@ public final class DragonBot extends SimpleIRCBot {
         super(stage, "Dragon Bot", VERSION);
 
         setServer(new TwitchIRCServer());
-        setUser(new TwitchBotAccount());
+        setBotAccount(new TwitchBotAccount());
+        setUserFactory(new TwitchUserFactory());
         setLogRawLines(true);
         setHomePath(Paths.get(System.getProperty("user.home") + File.separator + ".dragonbot"));
     }
@@ -53,6 +56,7 @@ public final class DragonBot extends SimpleIRCBot {
         this.configuration.load();
 
         getEventBus().registerListeners(new ServerConnectHandler());
+        getEventBus().registerListeners(new UserChannelHandler());
 
         if (getAccount().isValid()) {
             System.out.println("Valid account, connecting to IRC.");

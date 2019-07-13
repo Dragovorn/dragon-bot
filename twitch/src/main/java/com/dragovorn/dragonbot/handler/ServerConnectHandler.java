@@ -12,5 +12,7 @@ public class ServerConnectHandler {
         event.getConnection().sendRawLine("CAP REQ :twitch.tv/membership");
         event.getConnection().sendRawLine("CAP REQ :twitch.tv/commands");
         event.getConnection().sendRawLine("CAP REQ :twitch.tv/tags");
+
+        event.getConnection().joinChannel("dragovorn");
     }
 }

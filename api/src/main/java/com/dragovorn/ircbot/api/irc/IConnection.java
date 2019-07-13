@@ -12,9 +12,14 @@ public interface IConnection {
     void disconnect() throws IOException;
     void sendRawLine(String line) throws IOException;
     void sendMessageToAll(String line);
+    void joinChannel(String name);
     void joinChannel(IChannel channel);
+    void leaveChannel(String name);
     void leaveChannel(IChannel channel);
     void sendMessage(IChannel channel, String line);
+    void sendMessage(String name, String line);
+
+    IChannel getChannel(String name);
 
     IIRCServer getIRCServer();
 

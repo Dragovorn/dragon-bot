@@ -1,12 +1,14 @@
 package com.dragovorn.ircbot.impl.irc;
 
 import com.dragovorn.ircbot.api.event.irc.RawInputMessageEvent;
+import com.dragovorn.ircbot.api.event.irc.server.ServerConnectEvent;
 import com.dragovorn.ircbot.api.irc.IChannel;
 import com.dragovorn.ircbot.api.irc.IConnection;
 import com.dragovorn.ircbot.api.irc.IIRCServer;
 import com.dragovorn.ircbot.impl.bot.AbstractIRCBot;
 import com.dragovorn.ircbot.impl.user.BotAccount;
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -16,12 +18,13 @@ import java.io.InterruptedIOException;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.List;
+import java.util.Map;
 
 public class Connection implements IConnection {
 
     private static final AbstractIRCBot BOT = AbstractIRCBot.getInstance();
 
-    private final List<IChannel> activeChannels = Lists.newArrayList();
+    private final Map<String, IChannel> channels = Maps.newHashMap();
 
     private final Socket socket;
 
@@ -38,6 +41,8 @@ public class Connection implements IConnection {
         this.reader = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
         this.writer = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream()));
         this.inputThread = new Thread(() -> {
+            System.out.println("Input thread started!");
+
             try {
                 boolean running = true;
 
@@ -78,12 +83,16 @@ public class Connection implements IConnection {
         sendRawLine("USER " + username + " 8 * :" + username);
 
         if (this.server.handleConnection(this.reader)) {
+            AbstractIRCBot.getInstance().getEventBus().fireEvent(new ServerConnectEvent(this));
             this.inputThread.start();
         }
     }
 
     @Override
     public void disconnect() throws IOException {
+        this.channels.values().forEach(IChannel::part);
+        this.channels.clear();
+
         sendRawLine("QUIT : Disconnected");
     }
 
@@ -103,23 +112,44 @@ public class Connection implements IConnection {
 
     @Override
     public void sendMessageToAll(String line) {
-        this.activeChannels.forEach((c -> c.sendMessage(line)));
+        this.channels.values().forEach((c -> c.sendMessage(line)));
+    }
+
+    @Override
+    public void joinChannel(String name) {
+        joinChannel(new Channel(name));
     }
 
     @Override
     public void joinChannel(IChannel channel) {
-        this.activeChannels.add(channel);
+        this.channels.put(channel.getName(), channel);
         channel.join();
     }
 
     @Override
+    public void leaveChannel(String name) {
+        leaveChannel(this.channels.get(name));
+    }
+
+    @Override
     public void leaveChannel(IChannel channel) {
-        this.activeChannels.remove(channel);
+        this.channels.remove(channel.getName());
+        channel.part();
     }
 
     @Override
     public void sendMessage(IChannel channel, String line) {
         channel.sendMessage(line);
+    }
+
+    @Override
+    public void sendMessage(String name, String line) {
+        sendMessage(this.channels.get(name), line);
+    }
+
+    @Override
+    public IChannel getChannel(String name) {
+        return this.channels.get(name);
     }
 
     @Override
@@ -129,7 +159,7 @@ public class Connection implements IConnection {
 
     @Override
     public List<IChannel> getChannels() {
-        return this.activeChannels;
+        return ImmutableList.copyOf(this.channels.values());
     }
 
     @Override

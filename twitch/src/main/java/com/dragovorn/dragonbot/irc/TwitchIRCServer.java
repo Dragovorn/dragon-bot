@@ -42,7 +42,9 @@ public final class TwitchIRCServer implements IIRCServer {
 
         // Use our own reading for initial connection.
         while (((line = reader.readLine()) != null)) {
-            System.out.println("GET: " + line);
+            if (AbstractIRCBot.getInstance().isLogRawLinesEnabled()) {
+                System.out.println("GET: " + line);
+            }
 
             if (line.equals(":tmi.twitch.tv NOTICE * :Improperly formatted auth")) {
                 fail("Improperly formatted auth");

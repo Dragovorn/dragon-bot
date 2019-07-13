@@ -3,12 +3,14 @@ package com.dragovorn.ircbot.impl.bot;
 import com.dragovorn.ircbot.api.IAPIManager;
 import com.dragovorn.ircbot.api.bot.IIRCBot;
 import com.dragovorn.ircbot.api.event.IEventBus;
+import com.dragovorn.ircbot.api.factory.IFactory;
 import com.dragovorn.ircbot.api.gui.IGuiManager;
 import com.dragovorn.ircbot.api.gui.IScene;
 import com.dragovorn.ircbot.api.irc.IDispatcher;
 import com.dragovorn.ircbot.api.irc.IIRCServer;
 import com.dragovorn.ircbot.api.plugin.IPluginManager;
 import com.dragovorn.ircbot.api.user.IUser;
+import com.dragovorn.ircbot.api.user.UserInfo;
 import com.dragovorn.ircbot.impl.handler.RawLineHandler;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -37,6 +39,8 @@ public abstract class AbstractIRCBot implements IIRCBot {
     private IUser user;
 
     private IEventBus eventBus;
+
+    private IFactory<? extends IUser, UserInfo> userFactory;
 
     private Path homePath;
 
@@ -100,8 +104,12 @@ public abstract class AbstractIRCBot implements IIRCBot {
         this.homePath = homePath;
     }
 
-    protected void setUser(IUser user) {
+    protected void setBotAccount(IUser user) {
         this.user = user;
+    }
+
+    protected void setUserFactory(IFactory<? extends IUser, UserInfo> factory) {
+        this.userFactory = factory;
     }
 
     protected void setDispatcher(IDispatcher dispatcher) {
@@ -162,6 +170,10 @@ public abstract class AbstractIRCBot implements IIRCBot {
 
         if (getEventBus() == null) {
             throw new IllegalStateException("IRCBot requires an event bus!");
+        }
+
+        if (getUserFactory() == null) {
+            throw new IllegalStateException("IRCBot requires a user factory!");
         }
 
         preStartup();
@@ -292,6 +304,11 @@ public abstract class AbstractIRCBot implements IIRCBot {
     @Override
     public IUser getAccount() {
         return this.user;
+    }
+
+    @Override
+    public IFactory<? extends IUser, UserInfo> getUserFactory() {
+        return this.userFactory;
     }
 
     @Override

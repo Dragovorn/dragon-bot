@@ -16,7 +16,7 @@ public abstract class SimpleIRCBot extends AbstractIRCBot {
         setGuiManager(new FXMLGuiManager(stage)); // TODO: Make a console GUI manager later to make this even more simple.
         setPluginManager(new PluginManager());
         setAPIManager(new APIManager());
-        setUser(new BotAccount());
+        setBotAccount(new BotAccount());
         setDispatcher(new Dispatcher());
         setEventBus(new EventBus());
     }

@@ -2,11 +2,13 @@ package com.dragovorn.ircbot.api.bot;
 
 import com.dragovorn.ircbot.api.IAPIManager;
 import com.dragovorn.ircbot.api.event.IEventBus;
+import com.dragovorn.ircbot.api.factory.IFactory;
 import com.dragovorn.ircbot.api.gui.IGuiManager;
 import com.dragovorn.ircbot.api.irc.IDispatcher;
 import com.dragovorn.ircbot.api.irc.IIRCServer;
 import com.dragovorn.ircbot.api.plugin.IPluginManager;
 import com.dragovorn.ircbot.api.user.IUser;
+import com.dragovorn.ircbot.api.user.UserInfo;
 import com.google.gson.Gson;
 import org.apache.http.client.HttpClient;
 
@@ -39,6 +41,8 @@ public interface IIRCBot {
     Path getHomePath();
 
     IUser getAccount();
+
+    IFactory<? extends IUser, UserInfo> getUserFactory();
 
     IDispatcher getDispatcher();
 
