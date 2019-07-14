@@ -2,6 +2,7 @@ package com.dragovorn.ircbot.impl.bot;
 
 import com.dragovorn.ircbot.api.IAPIManager;
 import com.dragovorn.ircbot.api.bot.IIRCBot;
+import com.dragovorn.ircbot.api.command.ICommandManager;
 import com.dragovorn.ircbot.api.event.IEventBus;
 import com.dragovorn.ircbot.api.factory.IFactory;
 import com.dragovorn.ircbot.api.gui.IGuiManager;
@@ -39,6 +40,8 @@ public abstract class AbstractIRCBot implements IIRCBot {
     private IUser user;
 
     private IEventBus eventBus;
+
+    private ICommandManager commandManager;
 
     private IFactory<? extends IUser, UserInfo> userFactory;
 
@@ -78,6 +81,10 @@ public abstract class AbstractIRCBot implements IIRCBot {
 
     protected void setAPIManager(IAPIManager apiManager) {
         this.apiManager = apiManager;
+    }
+
+    protected void setCommandManager(ICommandManager commandManager) {
+        this.commandManager = commandManager;
     }
 
     protected void setServer(IIRCServer server) {
@@ -174,6 +181,10 @@ public abstract class AbstractIRCBot implements IIRCBot {
 
         if (getUserFactory() == null) {
             throw new IllegalStateException("IRCBot requires a user factory!");
+        }
+
+        if (getCommandManager() == null) {
+            throw new IllegalStateException("IRCBot requires a command manager!");
         }
 
         preStartup();
@@ -279,6 +290,11 @@ public abstract class AbstractIRCBot implements IIRCBot {
     @Override
     public IAPIManager getAPIManager() {
         return this.apiManager;
+    }
+
+    @Override
+    public ICommandManager getCommandManager() {
+        return this.commandManager;
     }
 
     @Override

@@ -19,10 +19,11 @@ import java.util.StringTokenizer;
 
 public class RawLineHandler {
 
-    @Listener(priority = EventPriority.LOWEST)
+    @Listener(priority = EventPriority.MONITOR)
     public void onRawInputMessage(RawInputMessageEvent event) throws IOException {
         String line = event.getMessage();
 
+        // Log the raw input lines.
         if (AbstractIRCBot.getInstance().isLogRawLinesEnabled()) {
             System.out.println("GET: " + line);
         }

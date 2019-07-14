@@ -1,6 +1,7 @@
 package com.dragovorn.ircbot.api.bot;
 
 import com.dragovorn.ircbot.api.IAPIManager;
+import com.dragovorn.ircbot.api.command.ICommandManager;
 import com.dragovorn.ircbot.api.event.IEventBus;
 import com.dragovorn.ircbot.api.factory.IFactory;
 import com.dragovorn.ircbot.api.gui.IGuiManager;
@@ -31,6 +32,8 @@ public interface IIRCBot {
     IGuiManager getGuiManager();
 
     IAPIManager getAPIManager();
+
+    ICommandManager getCommandManager();
 
     IIRCServer getServer();
 

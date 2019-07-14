@@ -1,5 +1,6 @@
 package com.dragovorn.ircbot.impl.bot;
 
+import com.dragovorn.ircbot.impl.command.CommandManager;
 import com.dragovorn.ircbot.impl.event.EventBus;
 import com.dragovorn.ircbot.impl.gui.fxml.FXMLGuiManager;
 import com.dragovorn.ircbot.impl.irc.Dispatcher;
@@ -19,5 +20,6 @@ public abstract class SimpleIRCBot extends AbstractIRCBot {
         setBotAccount(new BotAccount());
         setDispatcher(new Dispatcher());
         setEventBus(new EventBus());
+        setCommandManager(new CommandManager());
     }
 }

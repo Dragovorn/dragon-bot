@@ -1,6 +1,7 @@
 package com.dragovorn.dragonbot.handler;
 
 import com.dragovorn.dragonbot.user.TwitchUser;
+import com.dragovorn.ircbot.api.event.EventPriority;
 import com.dragovorn.ircbot.api.event.Listener;
 import com.dragovorn.ircbot.api.event.irc.user.channel.UserJoinChannelEvent;
 import com.dragovorn.ircbot.api.event.irc.user.channel.UserPartChannelEvent;
@@ -10,11 +11,9 @@ import com.dragovorn.ircbot.impl.bot.AbstractIRCBot;
 
 public class UserChannelHandler {
 
-    @Listener
+    @Listener(priority = EventPriority.MONITOR)
     public void onUserMessageChannel(UserMessageChannelEvent event) {
         TwitchUser user = (TwitchUser) event.getUser();
-
-        event.getChannel().sendMessage("RESPOND: " + user.getDisplayName());
 
         String prefix = "";
 
@@ -29,7 +28,7 @@ public class UserChannelHandler {
         System.out.println("[" + event.getChannel().getName() + "] [CHAT]: " + prefix + " " + user.getDisplayName() + ": " + event.getMessage());
     }
 
-    @Listener
+    @Listener(priority = EventPriority.MONITOR)
     public void onUserJoinChannel(UserJoinChannelEvent event) {
         IUser user = event.getUser();
 
@@ -40,7 +39,7 @@ public class UserChannelHandler {
         System.out.println("[" + event.getChannel().getName() + "] [JOIN]: " + user.getUsername());
     }
 
-    @Listener
+    @Listener(priority = EventPriority.MONITOR)
     public void onUserLeaveChannel(UserPartChannelEvent event) {
         IUser user = event.getUser();
 
