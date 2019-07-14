@@ -15,7 +15,10 @@ import com.dragovorn.ircbot.impl.command.argument.StringArgument;
 public class GithubCommand {
 
     @Executor
-    public void execute(@Parameter(ParameterType.USER) IUser executor, @Parameter(ParameterType.CHANNEL) IChannel executed, @Parameter(ParameterType.ARGUMENT) String more, @Parameter(ParameterType.ARGUMENT) String test) {
+    public void execute(@Parameter(ParameterType.USER) IUser executor,
+                        @Parameter(ParameterType.CHANNEL) IChannel executed,
+                        @Parameter(ParameterType.ARGUMENT) String more,
+                        @Parameter(ParameterType.ARGUMENT) String test) {
         executed.sendMessage(executor.getUsername() + ", " + more);
         executed.sendMessage(executor.getUsername() + " overflow, " + test);
     }
