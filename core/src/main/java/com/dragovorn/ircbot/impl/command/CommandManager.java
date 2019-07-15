@@ -3,13 +3,16 @@ package com.dragovorn.ircbot.impl.command;
 import com.dragovorn.ircbot.api.command.Executor;
 import com.dragovorn.ircbot.api.command.ICommandManager;
 import com.dragovorn.ircbot.api.command.ParameterType;
+import com.dragovorn.ircbot.api.command.argument.IArgument;
 import com.dragovorn.ircbot.api.command.argument.annotation.Argument;
 import com.dragovorn.ircbot.api.irc.IChannel;
 import com.dragovorn.ircbot.api.irc.IConnection;
 import com.dragovorn.ircbot.api.user.IUser;
+import com.dragovorn.ircbot.impl.bot.AbstractIRCBot;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
@@ -94,16 +97,63 @@ public class CommandManager implements ICommandManager {
         }
 
         // Create the parsed command object and add it to our map.
-        this.commands.put(label, new ParsedCommand(label, obj, parameters));
+        this.commands.put(label, new ParsedCommand(label, obj, parameters, method));
     }
 
     @Override
-    public void execute(String line) {
+    public void execute(IChannel channel, IUser user, String line) {
         String[] split = line.split(" ");
 
-        ParsedCommand command = this.commands.get(split[0]);
+        ParsedCommand command = this.commands.get(split[0].substring(1));
+
+        if (command == null) {
+            throw new IllegalArgumentException(split[0] + " isn't a registered command!");
+        }
 
         List<Object> parameters = Lists.newLinkedList();
+
+        int current = 1;
+
+        for (ParsedArgument argument : command.getParameters()) {
+            switch (argument.getParameterType()) {
+                case CONNECTION:
+                    parameters.add(AbstractIRCBot.getInstance().getServer().getConnection());
+                    break;
+                case CHANNEL:
+                    parameters.add(channel);
+                    break;
+                case USER:
+                    parameters.add(user);
+                    break;
+                case ARGUMENT:
+                    if (current > split.length) {
+                        continue;
+                    }
+
+                    try {
+                        IArgument<?> argumentParser = argument.getArgument().newInstance();
+
+                        String cur = split[current];
+
+                        if (argumentParser.is(cur)) {
+                            argumentParser.parse(cur);
+                            parameters.add(argumentParser.get());
+
+                            current++;
+                        }
+                    } catch (InstantiationException | IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+
+                    break;
+            }
+        }
+
+        try {
+            command.getMethod().invoke(command.getParent(), parameters.toArray(new Object[0]));
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
