@@ -12,6 +12,7 @@ import com.dragovorn.ircbot.api.irc.IIRCServer;
 import com.dragovorn.ircbot.api.plugin.IPluginManager;
 import com.dragovorn.ircbot.api.user.IUser;
 import com.dragovorn.ircbot.api.user.UserInfo;
+import com.dragovorn.ircbot.impl.handler.MessageHandler;
 import com.dragovorn.ircbot.impl.handler.RawLineHandler;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -201,6 +202,7 @@ public abstract class AbstractIRCBot implements IIRCBot {
         }
 
         getEventBus().registerListeners(new RawLineHandler());
+        getEventBus().registerListeners(new MessageHandler());
 
         postHomePathFileCreation();
         initializeScenes(getGuiManager());

@@ -8,5 +8,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
 public @interface Parameter {
+
+    String DEFAULT_NAME = "[DEFAULT NAME]";
+
     ParameterType value();
+
+    String name() default DEFAULT_NAME;
 }

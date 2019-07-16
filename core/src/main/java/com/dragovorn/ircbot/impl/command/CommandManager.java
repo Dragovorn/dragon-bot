@@ -5,10 +5,13 @@ import com.dragovorn.ircbot.api.command.ICommandManager;
 import com.dragovorn.ircbot.api.command.ParameterType;
 import com.dragovorn.ircbot.api.command.argument.IArgument;
 import com.dragovorn.ircbot.api.command.argument.annotation.Argument;
+import com.dragovorn.ircbot.api.exception.command.CommandExecutionException;
+import com.dragovorn.ircbot.api.exception.command.InvalidArgumentException;
+import com.dragovorn.ircbot.api.exception.command.NotEnoughArgumentsException;
+import com.dragovorn.ircbot.api.exception.command.UnregisteredCommandException;
 import com.dragovorn.ircbot.api.irc.IChannel;
 import com.dragovorn.ircbot.api.irc.IConnection;
 import com.dragovorn.ircbot.api.user.IUser;
-import com.dragovorn.ircbot.impl.bot.AbstractIRCBot;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -25,6 +28,9 @@ public class CommandManager implements ICommandManager {
     private Map<String, ParsedCommand> commands = Maps.newHashMap();
 
     private char prefix;
+
+    private boolean logInvalidCommand;
+    private boolean logInvalidArgument;
 
     @Override
     public void setPrefix(char prefix) {
@@ -85,9 +91,14 @@ public class CommandManager implements ICommandManager {
                     parameters.add(new ParsedArgument(IChannel.class, true, false, parameterType));
                     break;
                 case ARGUMENT:
+                    // Make sure parameter annotation has a non-default name.
+                    if (parameter.name().equals(com.dragovorn.ircbot.api.command.Parameter.DEFAULT_NAME)) {
+                        throw new IllegalStateException(clazz.getName() + " an argument parameter requires a name field!");
+                    }
+
                     // Find the argument that aligns with this parameter.
                     Optional<Argument> optionalArgument = Arrays.stream((Argument[]) clazz.getAnnotationsByType(Argument.class))
-                            .filter(a -> a.key().equals(param.getName()))
+                            .filter(a -> a.key().equals(parameter.name()))
                             .findFirst();
 
                     // If we found the argument add it to parameters.
@@ -101,23 +112,54 @@ public class CommandManager implements ICommandManager {
     }
 
     @Override
-    public void execute(IChannel channel, IUser user, String line) {
+    public void setLogInvalidCommand(boolean logInvalidCommand) {
+        this.logInvalidCommand = logInvalidCommand;
+    }
+
+    @Override
+    public void setLogInvalidArgument(boolean logInvalidArgument) {
+        this.logInvalidArgument = logInvalidArgument;
+    }
+
+    @Override
+    public void execute(IChannel channel, IUser user, IConnection connection, String line) throws CommandExecutionException {
+        // Split the whole line on spaces
         String[] split = line.split(" ");
 
-        ParsedCommand command = this.commands.get(split[0].substring(1));
+        String label = split[0].substring(1);
 
+        // Get command, trim off the prefix though.
+        ParsedCommand command = this.commands.get(label);
+
+        // Make sure we've actually got a command.
         if (command == null) {
-            throw new IllegalArgumentException(split[0] + " isn't a registered command!");
+            throw new UnregisteredCommandException(label);
         }
 
+        // Count the required arguments.
+        int required = (int) command.getParameters().stream()
+                .filter(p -> p.getParameterType() == ParameterType.ARGUMENT)
+                .filter(ParsedArgument::isRequired)
+                .count();
+
+        // Make sure we have enough arguments for the required arguments.
+        if (split.length - 1 < required) {
+            throw new NotEnoughArgumentsException();
+        }
+
+        // Keep track of the parameter objects to convert it to method parameters.
         List<Object> parameters = Lists.newLinkedList();
 
+        // Keep track of where we are in the split, want to make sure we're after the command.
         int current = 1;
 
+        boolean overflow = false;
+
+        // Iterate over the arguments of the command object to begin building our parameters.
         for (ParsedArgument argument : command.getParameters()) {
             switch (argument.getParameterType()) {
                 case CONNECTION:
-                    parameters.add(AbstractIRCBot.getInstance().getServer().getConnection());
+                    parameters.add(connection);
                     break;
                 case CHANNEL:
                     parameters.add(channel);
@@ -126,20 +168,41 @@ public class CommandManager implements ICommandManager {
                     parameters.add(user);
                     break;
                 case ARGUMENT:
+                    // We shouldn't be processing any more arguments after an overflow argument.
+                    if (overflow) {
+                        continue;
+                    }
+
+                    // If we are out of split string don't process.
                     if (current > split.length) {
+                        parameters.add(null);
                         continue;
                     }
 
                     try {
+                        // Make a new instance of the argument parser class that this argument uses.
                         IArgument<?> argumentParser = argument.getArgument().newInstance();
 
-                        String cur = split[current];
+                        String cur;
 
+                        // If the argument is an overflow argument use the rest of the array as the param.
+                        if (overflow = argument.isOverflow()) {
+                            cur = compileSplit(split, current);
+                        } else {
+                            cur = split[current];
+                        }
+
+                        // Make sure that the argument is parsable from the current string.
                         if (argumentParser.is(cur)) {
+                            // Parse the string.
                             argumentParser.parse(cur);
                             parameters.add(argumentParser.get());
 
+                            // Increment current.
                             current++;
+                        } else {
+                            // Invalid argument, throw exception!
+                            throw new InvalidArgumentException();
                         }
                     } catch (InstantiationException | IllegalAccessException e) {
                         e.printStackTrace();
@@ -150,10 +213,32 @@ public class CommandManager implements ICommandManager {
         }
 
         try {
+            // Execute the command's method.
             command.getMethod().invoke(command.getParent(), parameters.toArray(new Object[0]));
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public boolean isLogInvalidCommandEnabled() {
+        return this.logInvalidCommand;
+    }
+
+    @Override
+    public boolean isLogInvalidArgumentEnabled() {
+        return this.logInvalidArgument;
+    }
+
+    private String compileSplit(String[] split, int index) {
+        StringBuilder builder = new StringBuilder();
+
+        // Simply iterate over the split args and make them into one string.
+        for (; index < split.length; index++) {
+            builder.append(split[index]).append(" ");
+        }
+
+        return builder.toString().trim();
     }
 
     @Override

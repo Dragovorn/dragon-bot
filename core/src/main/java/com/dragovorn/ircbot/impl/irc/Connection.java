@@ -90,8 +90,9 @@ public class Connection implements IConnection {
 
     @Override
     public void disconnect() throws IOException {
-        this.channels.values().forEach(IChannel::part);
-        this.channels.clear();
+        for (IChannel channel : this.channels.values()) {
+            channel.part();
+        }
 
         sendRawLine("QUIT : Disconnected");
     }

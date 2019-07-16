@@ -45,4 +45,9 @@ public class ParsedArgument {
     public boolean isOverflow() {
         return this.overflow;
     }
+
+    @Override
+    public String toString() {
+        return "ParsedArgument[type=" + this.parameterType.name() + ",type=" + this.type.getName() + "]";
+    }
 }

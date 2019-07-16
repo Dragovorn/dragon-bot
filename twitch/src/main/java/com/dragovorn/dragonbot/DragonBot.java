@@ -1,6 +1,7 @@
 package com.dragovorn.dragonbot;
 
 import com.dragovorn.dragonbot.api.TwitchAPI;
+import com.dragovorn.dragonbot.command.GithubCommand;
 import com.dragovorn.dragonbot.handler.ServerConnectHandler;
 import com.dragovorn.dragonbot.handler.UserChannelHandler;
 import com.dragovorn.dragonbot.irc.TwitchBotAccount;
@@ -57,6 +58,12 @@ public final class DragonBot extends SimpleIRCBot {
 
         getEventBus().registerListeners(new ServerConnectHandler());
         getEventBus().registerListeners(new UserChannelHandler());
+
+        getCommandManager().setLogInvalidArgument(true);
+        getCommandManager().setLogInvalidCommand(true);
+
+        getCommandManager().setPrefix('!');
+        getCommandManager().register(new GithubCommand());
 
         if (getAccount().isValid()) {
             System.out.println("Valid account, connecting to IRC.");
