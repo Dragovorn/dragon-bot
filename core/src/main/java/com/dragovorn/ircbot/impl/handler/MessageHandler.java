@@ -11,7 +11,6 @@ import com.dragovorn.ircbot.api.exception.command.UnregisteredCommandException;
 import com.dragovorn.ircbot.api.irc.IChannel;
 import com.dragovorn.ircbot.api.irc.IConnection;
 import com.dragovorn.ircbot.api.user.IUser;
-import com.dragovorn.ircbot.impl.bot.AbstractIRCBot;
 
 public class MessageHandler {
 
