@@ -1,11 +1,13 @@
 package com.dragovorn.ircbot.impl.irc;
 
+import com.dragovorn.ircbot.api.bot.IIRCBot;
+import com.dragovorn.ircbot.api.bot.IRCBot;
 import com.dragovorn.ircbot.api.irc.IChannel;
 import com.dragovorn.ircbot.impl.bot.AbstractIRCBot;
 
 public class Channel implements IChannel {
 
-    private static final AbstractIRCBot BOT = AbstractIRCBot.getInstance();
+    private static final IIRCBot BOT = IRCBot.getInstance();
 
     private final String name;
 

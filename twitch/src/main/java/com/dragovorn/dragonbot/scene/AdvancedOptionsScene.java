@@ -10,7 +10,7 @@ public final class AdvancedOptionsScene extends AbstractFXMLScene {
 
     @FXML
     public void handleBackButton() {
-        guiManager.setToDefaultScene();
+        guiManager.useScene(MainScene.class);
     }
 
     @Override

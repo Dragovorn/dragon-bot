@@ -6,14 +6,14 @@ import com.dragovorn.dragonbot.handler.ServerConnectHandler;
 import com.dragovorn.dragonbot.handler.UserChannelHandler;
 import com.dragovorn.dragonbot.irc.TwitchBotAccount;
 import com.dragovorn.dragonbot.irc.TwitchIRCServer;
+import com.dragovorn.dragonbot.scene.MainScene;
 import com.dragovorn.dragonbot.user.TwitchUserFactory;
 import com.dragovorn.ircbot.impl.bot.SimpleIRCBot;
 import com.dragovorn.ircbot.api.IAPIManager;
 import com.dragovorn.ircbot.api.file.Resources;
 import com.dragovorn.ircbot.api.gui.IGuiManager;
-import com.dragovorn.ircbot.api.gui.IScene;
 import com.dragovorn.dragonbot.api.web.ITwitchAPI;
-import com.dragovorn.dragonbot.scene.MainScene;
+import com.dragovorn.ircbot.impl.gui.fxml.FXMLGuiManager;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -64,6 +64,11 @@ public final class DragonBot extends SimpleIRCBot {
 
         getCommandManager().setPrefix('!');
         getCommandManager().register(new GithubCommand());
+    }
+
+    @Override
+    public void postPluginInitialize() {
+        getGuiManager().useScene(MainScene.class);
 
         if (getAccount().isValid()) {
             System.out.println("Valid account, connecting to IRC.");
@@ -88,11 +93,6 @@ public final class DragonBot extends SimpleIRCBot {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public Class<? extends IScene> getMainScene() {
-        return MainScene.class;
     }
 
     @Override

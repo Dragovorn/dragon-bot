@@ -1,5 +1,7 @@
 package com.dragovorn.ircbot.impl.irc;
 
+import com.dragovorn.ircbot.api.bot.IIRCBot;
+import com.dragovorn.ircbot.api.bot.IRCBot;
 import com.dragovorn.ircbot.api.event.irc.RawInputMessageEvent;
 import com.dragovorn.ircbot.api.event.irc.server.ServerConnectEvent;
 import com.dragovorn.ircbot.api.irc.IChannel;
@@ -22,7 +24,7 @@ import java.util.Map;
 
 public class Connection implements IConnection {
 
-    private static final AbstractIRCBot BOT = AbstractIRCBot.getInstance();
+    private static final IIRCBot BOT = IRCBot.getInstance();
 
     private final Map<String, IChannel> channels = Maps.newHashMap();
 

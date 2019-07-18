@@ -87,11 +87,6 @@ public class FXMLGuiManager implements IGuiManager {
     }
 
     @Override
-    public void setToDefaultScene() {
-        useScene(getDefaultScene());
-    }
-
-    @Override
     public void useScene(Class<? extends IScene> clazz) {
         useScene(getScene(clazz));
     }
@@ -119,11 +114,6 @@ public class FXMLGuiManager implements IGuiManager {
     @Override
     public boolean isInitialized() {
         return this.init;
-    }
-
-    @Override
-    public IScene getDefaultScene() {
-        return getScene(AbstractIRCBot.getInstance().getMainScene());
     }
 
     @Override

@@ -5,7 +5,7 @@ import com.dragovorn.ircbot.impl.event.EventBus;
 import com.dragovorn.ircbot.impl.gui.fxml.FXMLGuiManager;
 import com.dragovorn.ircbot.impl.irc.Dispatcher;
 import com.dragovorn.ircbot.impl.manager.APIManager;
-import com.dragovorn.ircbot.impl.manager.PluginManager;
+import com.dragovorn.ircbot.impl.plugin.PluginManager;
 import com.dragovorn.ircbot.impl.user.BotAccount;
 import javafx.stage.Stage;
 

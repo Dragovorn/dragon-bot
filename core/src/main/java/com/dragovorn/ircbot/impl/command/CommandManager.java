@@ -102,8 +102,14 @@ public class CommandManager implements ICommandManager {
                             .findFirst();
 
                     // If we found the argument add it to parameters.
-                    optionalArgument.ifPresent(a ->
-                            parameters.add(new ParsedArgument(param.getType(), a.clazz(), a.required(), a.overflow(), ParameterType.ARGUMENT)));
+                    if (optionalArgument.isPresent()) {
+                        Argument a = optionalArgument.get();
+
+                        parameters.add(new ParsedArgument(param.getType(), a.clazz(), a.required(), a.overflow(), ParameterType.ARGUMENT));
+                    } else {
+                        throw new IllegalStateException(clazz.getName() + " a parameter doesn't have a valid argument to accompany it!");
+                    }
+                    break;
             }
         }
 

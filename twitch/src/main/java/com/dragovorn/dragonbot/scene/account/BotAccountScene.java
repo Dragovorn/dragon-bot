@@ -1,6 +1,7 @@
 package com.dragovorn.dragonbot.scene.account;
 
 import com.dragovorn.dragonbot.DragonBot;
+import com.dragovorn.dragonbot.scene.MainScene;
 import com.dragovorn.ircbot.impl.gui.fxml.AbstractFXMLScene;
 import com.dragovorn.dragonbot.api.web.ITwitchAPI;
 import com.dragovorn.ircbot.impl.user.BotAccount;
@@ -59,7 +60,7 @@ public final class BotAccountScene extends AbstractFXMLScene {
 
     @FXML
     public void handleBackButton() {
-        guiManager.setToDefaultScene();
+        guiManager.useScene(MainScene.class);
     }
 
     @Override

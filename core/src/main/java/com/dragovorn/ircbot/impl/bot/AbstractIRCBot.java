@@ -2,6 +2,7 @@ package com.dragovorn.ircbot.impl.bot;
 
 import com.dragovorn.ircbot.api.IAPIManager;
 import com.dragovorn.ircbot.api.bot.IIRCBot;
+import com.dragovorn.ircbot.api.bot.IRCBot;
 import com.dragovorn.ircbot.api.command.ICommandManager;
 import com.dragovorn.ircbot.api.event.IEventBus;
 import com.dragovorn.ircbot.api.factory.IFactory;
@@ -22,15 +23,13 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import java.io.IOException;
 import java.nio.file.Path;
 
-public abstract class AbstractIRCBot implements IIRCBot {
+public abstract class AbstractIRCBot extends IRCBot {
 
     private boolean running;
     private boolean logRaw;
 
     private final String version;
     private final String name;
-
-    private static AbstractIRCBot instance;
 
     private IDispatcher dispatcher;
 
@@ -63,8 +62,6 @@ public abstract class AbstractIRCBot implements IIRCBot {
     }
 
     public AbstractIRCBot(String name, String version) {
-        instance = this;
-
         this.name = name;
         this.version = version;
         this.mainThread = Thread.currentThread();
@@ -148,8 +145,6 @@ public abstract class AbstractIRCBot implements IIRCBot {
 
     protected abstract void initializeScenes(IGuiManager guiManager);
 
-    public abstract Class<? extends IScene> getMainScene();
-
     protected void preShutdown() { }
 
     protected void postShutdown() { }
@@ -207,9 +202,6 @@ public abstract class AbstractIRCBot implements IIRCBot {
         postHomePathFileCreation();
         initializeScenes(getGuiManager());
         registerAPIs(getAPIManager());
-
-        getGuiManager().useScene(getMainScene());
-
         getPluginManager().loadPlugins(plugins);
         getPluginManager().enablePlugins();
 
@@ -347,9 +339,5 @@ public abstract class AbstractIRCBot implements IIRCBot {
     @Override
     public Gson getGSON() {
         return this.gson;
-    }
-
-    public static AbstractIRCBot getInstance() {
-        return instance;
     }
 }

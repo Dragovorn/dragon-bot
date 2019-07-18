@@ -9,7 +9,6 @@ public interface IGuiManager {
 
     void init();
     void close(Stage stage);
-    void setToDefaultScene();
     void useScene(Class<? extends IScene> clazz);
     void useScene(IScene scene);
     void useScene(IScene scene, Stage stage);
@@ -20,7 +19,6 @@ public interface IGuiManager {
     boolean isInitialized();
 
     IScene registerScene(String fxmlPath) throws IOException;
-    IScene getDefaultScene();
     IScene getCurrentScene();
     IScene getCurrentScene(Stage stage);
     <T extends IScene> T getScene(Class<T> clazz);

@@ -1,6 +1,4 @@
-package com.dragovorn.ircbot.impl.command.argument;
-
-import com.dragovorn.ircbot.api.command.argument.IArgument;
+package com.dragovorn.ircbot.api.command.argument;
 
 public class StringArgument implements IArgument<String> {
 

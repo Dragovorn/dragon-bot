@@ -1,5 +1,6 @@
 package com.dragovorn.ircbot.impl.handler;
 
+import com.dragovorn.ircbot.api.bot.IRCBot;
 import com.dragovorn.ircbot.api.command.ICommandManager;
 import com.dragovorn.ircbot.api.event.Listener;
 import com.dragovorn.ircbot.api.event.irc.user.channel.message.UserMessageChannelEvent;
@@ -21,7 +22,7 @@ public class MessageHandler {
         IChannel channel = event.getChannel();
         IConnection connection = event.getConnection();
 
-        ICommandManager manager = AbstractIRCBot.getInstance().getCommandManager();
+        ICommandManager manager = IRCBot.getInstance().getCommandManager();
 
         if (message.startsWith(String.valueOf(manager.getPrefix())) && message.length() > 1) {
             try {

@@ -1,5 +1,6 @@
 package com.dragovorn.ircbot.impl.config.test;
 
+import com.dragovorn.ircbot.api.bot.IRCBot;
 import com.dragovorn.ircbot.impl.bot.AbstractIRCBot;
 import com.dragovorn.ircbot.impl.config.FileConfiguration;
 import com.dragovorn.ircbot.api.factory.IFactory;
@@ -26,7 +27,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(AbstractIRCBot.class)
+@PrepareForTest(IRCBot.class)
 public class TestFileConfiguration {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -39,10 +40,10 @@ public class TestFileConfiguration {
 
     @Before
     public void before() throws Exception {
-        AbstractIRCBot ircBot = mock(AbstractIRCBot.class);
+        IRCBot ircBot = mock(IRCBot.class);
 
-        mockStatic(AbstractIRCBot.class);
-        when(AbstractIRCBot.getInstance()).thenReturn(ircBot);
+        mockStatic(IRCBot.class);
+        when(IRCBot.getInstance()).thenReturn(ircBot);
         when(ircBot.getGSON()).thenReturn(new GsonBuilder().setPrettyPrinting().create());
 
         this.writer = new StringWriter();
