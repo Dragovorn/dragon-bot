@@ -1,6 +1,6 @@
 Dragon Bot
 ==========
-**THIS BRANCH IS OUTDATED AND WILL BE MERGED OVER WITH THE [2.0.0 BRANCH](https://github.com/Dragovorn/dragon-bot/tree/2.0.0 "Version 2 Branch")  
+**THIS BRANCH IS OUTDATED AND WILL BE MERGED OVER WITH THE [2.0.0 BRANCH](https://github.com/Dragovorn/dragon-bot/tree/2.0.0 "Version 2 Branch")**  
 The Dragon Bot is a [Twitch](https://twitch.tv/ "Twitch.tv") bot that allows other developers to make plugins and expand it to make it better,
 this bot was created with the ideas that [Spigot](https://www.spigotmc.org/ "Spigot's Webpage") was created under. To allow the users to make their
 own addons to it to make it fit their needs.
